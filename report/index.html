@@ -37,14 +37,26 @@
 
     </head><body>
 
-        <!-- Map section -->
-        <div id="vmap"></div>
+        <!-- Title of the report -->
+        <h1 id="report-title" class="centered"></h1>
 
-        <!-- Map legend -->
-        <img id="vmap-legend" src="static/infection_scale.png">
+        <!-- Description of the report -->
+        <p id="report-description"></p>
 
-        <!-- Setup map data -->
-        <script>loadData(o=>{const e=o.world.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),r=o.world.reduce((o,e)=>{const r=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),t=Math.log10(r||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=t||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:r,selectedColor:null,scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(r,t,a)=>{t=t.toUpperCase();const n=e[t];if(!o.charts[t])return void alert(`No data available for ${n}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[t][Object.keys(o.charts[t])[0]];window.open(`/report/?countryCode=${t}`,"_blank")}})});</script>
+        <!-- First report chart image -->
+        <img id="report-chart-image-1" class="fullwidth" src="../static/transparent.png">
+
+        <!-- Text under first chart -->
+        <p id="report-chart-text-1"></p>
+
+        <!-- Second report chart image -->
+        <img id="report-chart-image-2" class="fullwidth" src="../static/transparent.png">
+
+        <!-- Text under second chart -->
+        <p id="report-chart-text-2"></p>
+
+        <!-- Setup report data -->
+        <script>loadData(t=>{const r=URLSearchParameters().countryCode,a=t=>t.CountryCode===r,e=t.world.filter(a)[0],o=t.forecasting.filter(a),c=`${OPEN_COVID_19_URL}/forecasting/${o[0].ForecastChart}`;$("#report-title").text(`${e.CountryName} COVID-19 Data`),$("#report-chart-image-1").attr("src",c)});</script>
 
         <!-- Load analytics at the end of the page -->
         <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
