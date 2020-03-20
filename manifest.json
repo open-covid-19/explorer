@@ -1,0 +1,22 @@
+{
+    "name": "{{name}}",
+    "scope": "./",
+    "start_url": "index.html",
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "{{theme-primary}}",
+    "background_color": "{{theme-background}}",
+    "icons": [{
+        "src": "static/logo-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+    }, {
+        "src": "static/logo-128.png",
+        "sizes": "128x128",
+        "type": "image/png"
+    }, {
+        "src": "static/logo-64.png",
+        "sizes": "64x64",
+        "type": "image/png"
+    }]
+}
