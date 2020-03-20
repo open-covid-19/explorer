@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+    <!-- HTML page head -->
+    <script src="../templates/head.tpl.html" data-include></script>
+
+    <body>
+
+        <!-- Title of the report -->
+        <h1 id="report-title" class="centered"></h1>
+
+        <!-- Description of the report -->
+        <p id="report-description"></p>
+
+        <!-- First report chart image -->
+        <img id="report-chart-image-1" class="fullwidth" src="../static/transparent.png" />
+
+        <!-- Text under first chart -->
+        <p id="report-chart-text-1"></p>
+
+        <!-- Second report chart image -->
+        <img id="report-chart-image-2" class="fullwidth" src="../static/transparent.png" />
+
+        <!-- Text under second chart -->
+        <p id="report-chart-text-2"></p>
+
+        <!-- Setup report data -->
+        <script>
+
+            loadData(data => {
+                const code = URLSearchParameters().countryCode;
+                const codeFilter = row => row.CountryCode === code;
+                const latest = data.world.filter(codeFilter)[0];
+                const forecast = data.forecasting.filter(codeFilter);
+                const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
+
+                $('#report-title').text(`${latest.CountryName} COVID-19 Data`);
+                $('#report-chart-image-1').attr('src', chartUrl);
+            });
+        </script>
+
+        <!-- Load analytics at the end of the page -->
+        <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
+    </body>
+</html>

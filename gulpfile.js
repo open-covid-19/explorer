@@ -16,10 +16,11 @@ gulp.task('lint:html', function() {
 });
 
 gulp.task('lint:js', function() {
-    const jshint = require('gulp-jshint');
+    const linter = require('gulp-eslint');
     return gulp.src(['src/**/*.js'])
-        .pipe(jshint({ newcap: false, sub: true }))
-        .pipe(jshint.reporter('fail'));
+        .pipe(linter())
+        .pipe(linter.format())
+        .pipe(linter.failAfterError());
 });
 
 gulp.task('lint:all', gulp.series('lint:html', 'lint:js'));
@@ -130,11 +131,11 @@ gulp.task('copy:all', gulp.series('copy:static'));
 // Minification tasks
 
 gulp.task('minify:js', function() {
-    const uglify = require('gulp-uglify');
+    const terser = require('gulp-terser');
     const rename = require('gulp-rename');
 
     return gulp.src(['public/**/*.js', '!public/third_party/**/*', '!public/open-covid-19/**/*'])
-        .pipe(uglify())
+        .pipe(terser())
         .pipe(rename( {suffix: '.min'} ))
         .pipe(gulp.dest('public'));
 });
