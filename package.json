@@ -1,0 +1,63 @@
+{
+  "displayName": "Open COVID-19 Forecasting",
+  "description": "Forecasting of COVID-19 positive cases using open COVID-19 dataset",
+  "vars": {
+    "analytics": "UA-103644138-1",
+    "email": "oscar@wahltinez.org",
+    "theme": {
+      "primary": "#FF8700",
+      "accent": "#DD4444",
+      "background": "#FCFCFC",
+      "text-on-background": "#000000"
+    }
+  },
+  "scripts": {
+    "gulp": "gulp",
+    "build": "gulp build",
+    "clean": "gulp clean",
+    "rebuild": "gulp clean ; gulp build:prod",
+    "deploy": "gulp deploy",
+    "start": "http-server public -p 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-covid-19/forecasting.git"
+  },
+  "author": "owahltinez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/open-covid-19/forecasting/issues"
+  },
+  "homepage": "https://open-covid-19.github.io/forecasting",
+  "devDependencies": {
+    "bluebird": "^3.5.5",
+    "del": "^5.0.0",
+    "firebase-tools": "^7.2.4",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-git": "^2.10.0",
+    "gulp-htmlhint": "^2.2.1",
+    "gulp-imagemin": "^6.1.0",
+    "gulp-jimp": "^1.2.9",
+    "gulp-jshint": "^2.1.0",
+    "gulp-mancha": "^0.2.1",
+    "gulp-minify-inline": "^1.1.0",
+    "gulp-remote-src": "^0.4.4",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify": "^3.0.2",
+    "gulp-yarn": "^2.0.0",
+    "http-server": "^0.11.1",
+    "merge2": "^1.2.4",
+    "minimist": "^1.2.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "jqvmap": "^1.5.1"
+  }
+}

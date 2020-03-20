@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+    <!-- HTML page head -->
+    <script src="templates/head.tpl.html" data-include></script>
+
+    <body>
+
+        <!-- Main section -->
+        <div id="vmap"></div>
+
+        <!-- Chart overlay -->
+        <img id="chart" class="fill" />
+
+        <!-- Setup map data -->
+        <script>
+            $('#chart').hide();
+            $.getJSON(`${OPEN_COVID_19_URL}/forecasting/charts.json`, function(charts) {
+                console.log('Loaded charts:', charts)
+                $('#vmap').vectorMap({
+                    map: 'world_en',
+                    onRegionSelect: (event, code, region) => {
+                        console.log(code)
+                        code = code.toUpperCase();
+                        const chartImage = charts[code][Object.keys(charts[code])[0]];
+                        window.open(`${OPEN_COVID_19_URL}/forecasting/${chartImage}`, '_blank')
+                        // window.goto(`${CHARTS_URL}/${chartImage}`, true)
+                        // $('#chart').show();
+                    }
+                });
+            });
+        </script>
+
+        <!-- Load analytics at the end of the page -->
+        <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
+    </body>
+</html>
