@@ -36,14 +36,14 @@
 
     </head><body>
 
-        <!-- Main section -->
+        <!-- Map section -->
         <div id="vmap"></div>
 
-        <!-- Chart overlay -->
-        <img id="chart" class="fill">
+        <!-- Map legend -->
+        <img id="vmap-legend" src="static/infection_scale.png">
 
         <!-- Setup map data -->
-        <script>$("#chart").hide(),$.getJSON(`${OPEN_COVID_19_URL}/forecasting/charts.json`,function(o){console.log("Loaded charts:",o),$("#vmap").vectorMap({map:"world_en",onRegionSelect:(e,n,c)=>{console.log(n),n=n.toUpperCase();const t=o[n][Object.keys(o[n])[0]];window.open(`${OPEN_COVID_19_URL}/forecasting/${t}`,"_blank")}})});</script>
+        <script>function loadData(o){let e=null,l=null;$.getJSON(`${OPEN_COVID_19_URL}/data/world_latest.json`,n=>{e=n,l&&o(e,l)}),$.getJSON(`${OPEN_COVID_19_URL}/forecasting/charts.json`,n=>{l=n,e&&o(e,l)})}loadData((o,e)=>{const l=o.reduce((o,e)=>{const l=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),n=Math.log10(l||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=n||0,o},{null:1});console.log(l),$("#vmap").vectorMap({map:"world_en",values:l,selectedColor:null,scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(o,l,n)=>{console.log(l),l=l.toUpperCase();const t=e[l][Object.keys(e[l])[0]];window.open(`${OPEN_COVID_19_URL}/forecasting/${t}`,"_blank")}})});</script>
 
         <!-- Load analytics at the end of the page -->
         <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
