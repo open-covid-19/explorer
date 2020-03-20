@@ -6,26 +6,52 @@
 
     <body>
 
-        <!-- Main section -->
+        <!-- Map section -->
         <div id="vmap"></div>
 
-        <!-- Chart overlay -->
-        <img id="chart" class="fill" />
+        <!-- Map legend -->
+        <img id="vmap-legend" src="static/infection_scale.png" />
 
         <!-- Setup map data -->
         <script>
-            $('#chart').hide();
-            $.getJSON(`${OPEN_COVID_19_URL}/forecasting/charts.json`, function(charts) {
-                console.log('Loaded charts:', charts)
+
+            /** Wait until all data is loaded, then perform callback */
+            function loadData(callback) {
+                let world = null;
+                let charts = null;
+                $.getJSON(`${OPEN_COVID_19_URL}/data/world_latest.json`, data => {
+                    world = data;
+                    if (charts) callback(world, charts);
+                });
+                $.getJSON(`${OPEN_COVID_19_URL}/forecasting/charts.json`, data => {
+                    charts = data;
+                    if (world) callback(world, charts);
+                });
+            }
+
+            loadData((world, charts) => {
+                const infectionRate = world.reduce((dict, row) => {
+                    const maxInfected = 1E6;
+                    const confirmed =
+                        Math.max(1.0, Math.min(maxInfected, parseFloat(row['Confirmed'])));
+                    const ratio = confirmed / maxInfected;
+                    const logRatio = Math.log10(confirmed || 0.0) / Math.log10(maxInfected);
+                    dict[row['CountryCode'].toLowerCase()] = logRatio || 0.0;
+                    return dict;
+                }, {null: 1.0});
+                console.log(infectionRate);
+
                 $('#vmap').vectorMap({
                     map: 'world_en',
+                    values: infectionRate,
+                    selectedColor: null,
+                    scaleColors: ['#FFFFFF', '#FF0000'],
+                    normalizeFunction: null,
                     onRegionSelect: (event, code, region) => {
                         console.log(code)
                         code = code.toUpperCase();
                         const chartImage = charts[code][Object.keys(charts[code])[0]];
                         window.open(`${OPEN_COVID_19_URL}/forecasting/${chartImage}`, '_blank')
-                        // window.goto(`${CHARTS_URL}/${chartImage}`, true)
-                        // $('#chart').show();
                     }
                 });
             });

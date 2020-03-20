@@ -58,8 +58,8 @@ gulp.task('build:css', function() {
         }));
 
     return stream
-        .pipe(cssmin())
         .pipe(concat('styles.min.css'))
+        .pipe(cssmin())
         .pipe(gulp.dest('public/static'))
 });
 
@@ -123,28 +123,6 @@ gulp.task('copy:static', function() {
     return gulp.src(['src/**/*', '!src/**/*.ts', '!src/**/*.css', '!src/**/*.html'])
         .pipe(gulp.dest('public'));
 });
-
-// gulp.task('copy:deps:forecasting', function() {
-//     const remote = require('gulp-remote-src');
-
-//     return remote(['charts.json'], {
-//         base: 'https://raw.githubusercontent.com/open-covid-19/forecasting/master/output/'
-//     }).pipe(gulp.dest('public/static'))
-// });
-
-// gulp.task('copy:deps:data', function() {
-//     const git = require('gulp-git');
-//     return git.clone('https://github.com/open-covid-19/data', { args: 'public/open-covid-19/data' }, err => {
-//         if (err) throw err;
-//     });
-// });
-
-// gulp.task('copy:deps:forecasting', function() {
-//     const git = require('gulp-git');
-//     return git.clone('https://github.com/open-covid-19/forecasting', { args: 'public/open-covid-19/forecasting' }, err => {
-//         if (err) throw err;
-//     });
-// });
 
 gulp.task('copy:all', gulp.series('copy:static'));
 

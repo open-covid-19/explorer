@@ -3,6 +3,8 @@ This repository contains an interactive map that allows to explore data related
 to COVID-19. Selecting a country for the map displays data related to COVID-19
 for the specific country, including a forecasting model if available.
 
+![Explorer Screenshot](screenshots/explorer.png)
+
 ### Data
 The dataset used for this interactive map is the [Open COVID-19 Dataset][1],
 which contains total confirmed positive cases and total fatal cases for all
