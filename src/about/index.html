@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+    <!-- HTML page head -->
+    <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+    <body class="mdpadding">
+
+        <main>
+            <h1 class="centered">COVID-19 Data Explorer</h1>
+
+            <h3>Where does the data come from?</h3>
+            <p class="justify">
+                The dataset used to perform the forecasting is the
+                <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
+                contains total confirmed positive cases and total fatal cases for all reporting
+                countries as well as subregions of USA, Spain and China.
+            </p>
+
+            <h3>How often is the data updated?</h3>
+            <p class="justify">
+                Data is updated daily for most countries and subregions. It's also worth noting that
+                the dates in the data represent when the data is reported to the relevant authorities,
+                like WHO or ECDC, which normally includes a delay of one day.
+            </p>
+
+            <h3>How is the forecasting done?</h3>
+            <p class="justify">
+                The forecasting is done by fitting the data to a specialized logistic curve, called
+                <a href="https://en.wikipedia.org/wiki/Gompertz_function">Gompertz function</a>. For a
+                walkthrough of why this was chosen over other potential models, see the
+                <a href="https://github.com/open-covid-19/analysis/blob/master/logistic_modeling.ipynb">relevant analysis</a>.
+            </p>
+
+            <!-- Setup report data -->
+            <script>
+
+                loadData(data => {
+                    const code = URLSearchParameters().countryCode;
+                    const codeFilter = row => row.CountryCode === code;
+                    const latest = data.world.filter(codeFilter)[0];
+                    const forecast = data.forecasting.filter(codeFilter);
+                    const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
+
+                    $('#report-title').text(`${latest.CountryName} COVID-19 Data`);
+                    $('#report-chart-image-1').attr('src', chartUrl);
+                });
+            </script>
+        </main>
+
+        <script src="../templates/footer.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+        <!-- Load analytics at the end of the page -->
+        <script src="../templates/analytics.tpl.html" data-include></script>
+    </body>
+</html>

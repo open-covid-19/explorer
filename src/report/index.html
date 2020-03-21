@@ -6,40 +6,68 @@
 
     <body>
 
-        <!-- Title of the report -->
-        <h1 id="report-title" class="centered"></h1>
+        <main>
+            <!-- Title of the report -->
+            <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
 
-        <!-- Description of the report -->
-        <p id="report-description"></p>
+            <!-- First report chart image -->
+            <img id="report-chart-image" class="fullwidth" src="../static/transparent.png" />
 
-        <!-- First report chart image -->
-        <img id="report-chart-image-1" class="fullwidth" src="../static/transparent.png" />
+            <!-- Summary of the report: more cases expected -->
+            <p id="report-summary-more" class="mdpadding justify" style="display: none;">
+                The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
+                of <b><span class="_confirmed"></span> (+<span class="_percent"></span>%)</b> over the
+                next <span class="_days"></span> days.
+            </p>
 
-        <!-- Text under first chart -->
-        <p id="report-chart-text-1"></p>
+            <!-- Summary of the report: same cases expected -->
+            <p id="report-summary-same" class="mdpadding justify" style="display: none;">
+                The forecast shows an expected roughly equal number of confirmed COVID-19 cases over the
+                next <span class="_days"></span> days.
+            </p>
 
-        <!-- Second report chart image -->
-        <img id="report-chart-image-2" class="fullwidth" src="../static/transparent.png" />
+            <!-- Footnote of the report -->
+            <p id="report-summary-footnote" class="mdpadding justify" style="font-size: small;">
+                NOTE: The dates in the data may be delayed by one day. Please see the
+                <a href="../about/">about page</a> for more information.
+            </p>
 
-        <!-- Text under second chart -->
-        <p id="report-chart-text-2"></p>
+            <!-- Setup report data -->
+            <script>
 
-        <!-- Setup report data -->
-        <script>
+                loadData(data => {
+                    const code = URLSearchParameters().countryCode;
+                    const codeFilter = row => row.CountryCode === code;
+                    const latest = data.world.filter(codeFilter);
+                    const forecast = data.forecasting.filter(codeFilter);
+                    const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
 
-            loadData(data => {
-                const code = URLSearchParameters().countryCode;
-                const codeFilter = row => row.CountryCode === code;
-                const latest = data.world.filter(codeFilter)[0];
-                const forecast = data.forecasting.filter(codeFilter);
-                const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
+                    const recordedLast = latest.map(row => row.Confirmed)[latest.length - 1];
+                    const estimatedLast = forecast.map(row => row.Estimated)[forecast.length - 1];
+                    const totalIncrease = estimatedLast - recordedLast;
+                    const percentIncrease = 100 * (totalIncrease / recordedLast);
+                    const estimatedDays = forecast.filter(row => row.Confirmed === null).length;
 
-                $('#report-title').text(`${latest.CountryName} COVID-19 Data`);
-                $('#report-chart-image-1').attr('src', chartUrl);
-            });
-        </script>
+                    console.log(forecast)
+
+                    if (percentIncrease < 1) {
+                        $('#report-summary-same').show();
+                    } else {
+                        $('#report-summary-more').show();
+                    }
+
+                    $('#report-chart-image').attr('src', chartUrl);
+                    $('._name').each(function() { $(this).text(latest[0].CountryName) });
+                    $('._days').each(function() { $(this).text(estimatedDays) });
+                    $('._percent').each(function() { $(this).text(percentIncrease.toFixed(2)) });
+                    $('._confirmed').each(function() { $(this).text(estimatedLast.toFixed(0)) });
+                });
+            </script>
+        </main>
+
+        <script src="../templates/footer.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
         <!-- Load analytics at the end of the page -->
-        <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
+        <script src="../templates/analytics.tpl.html" data-include></script>
     </body>
 </html>

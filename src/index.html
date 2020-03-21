@@ -45,7 +45,7 @@
 
                         // Early exit: If there is no data available
                         if (!data.charts[code]) {
-                            alert(`No data available for ${name || code}`);
+                            alert(`No forecast available for ${name || code}`);
                             return;
                         }
 
@@ -60,6 +60,6 @@
         </script>
 
         <!-- Load analytics at the end of the page -->
-        <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
+        <script src="templates/analytics.tpl.html" data-include></script>
     </body>
 </html>

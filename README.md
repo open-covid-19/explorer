@@ -24,6 +24,6 @@ npm run-script start
 ```
 
 [1]: https://github.com/open-covid-19/data
-[3]: https://github.com/open-covid-19/forecasting
+[2]: https://github.com/open-covid-19/forecasting
 [3]: https://en.wikipedia.org/wiki/Gompertz_function
 [4]: https://github.com/open-covid-19/analysis/blob/master/logistic_modeling.ipynb

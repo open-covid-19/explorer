@@ -117,6 +117,10 @@ button.centered {
     cursor: pointer;
 }
 
+.uppercase {
+    text-transform: uppercase;
+}
+
 .invisible, .invisible:hover, .invisible:active {
     color: transparent;
     background-color: transparent;
