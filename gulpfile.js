@@ -23,7 +23,7 @@ gulp.task('lint:js', function() {
         .pipe(linter.failAfterError());
 });
 
-gulp.task('lint:all', gulp.series('lint:html', 'lint:js'));
+gulp.task('lint:all', gulp.series('lint:js'));
 
 
 // Clean tasks

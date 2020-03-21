@@ -2,7 +2,7 @@
 <html>
 
     <!-- HTML page head -->
-    <script src="templates/head.tpl.html" data-include></script>
+    <script src="templates/head.tpl.html" data-include data-vars='{"root": "."}'></script>
 
     <body>
 
@@ -44,7 +44,7 @@
 
                         // Early exit: If there is no data available
                         if (!data.charts[code]) {
-                            alert(`No data available for ${name}`);
+                            alert(`No data available for ${name || code}`);
                             return;
                         }
 

@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <title>{{name}}</title>
     <meta name="description" content="{{description}}" />
-    <link rel="icon" type="image/png" href="/static/logo-64.png" />
+    <link rel="icon" type="image/png" href="{{root}}/static/logo-64.png" />
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -11,27 +11,27 @@
     <meta name="apple-mobile-web-app-title" content="{{name}}" />
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="/static/icon-64x64.png" />
-    <link rel="apple-touch-icon" sizes="64x64" href="/static/icon-64x64.png" />
-    <link rel="apple-touch-icon" sizes="128x128" href="/static/icon-128x128.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="/static/icon-512x512.png" />
+    <link rel="apple-touch-icon" href="{{root}}/static/icon-64x64.png" />
+    <link rel="apple-touch-icon" sizes="64x64" href="{{root}}/static/icon-64x64.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="{{root}}/static/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="{{root}}/static/icon-512x512.png" />
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
 
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="/third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="/third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="/third_party/jqvmap/dist/jqvmap.min.css" />
+    <script type="text/javascript" src="{{root}}/third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="{{root}}/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="{{root}}/third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="{{root}}/third_party/jqvmap/dist/jqvmap.min.css" />
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="https://unpkg.com/picnic" />
-    <link rel="stylesheet" href="/static/styles.min.css" />
+    <link rel="stylesheet" href="{{root}}/static/styles.min.css" />
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="/static/polyfills.min.js"></script>
-    <script type="text/javascript" src="/static/open-covid-19.min.js"></script>
+    <script type="text/javascript" src="{{root}}/static/polyfills.min.js"></script>
+    <script type="text/javascript" src="{{root}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
         const OPEN_COVID_19_URL = 'https://open-covid-19.github.io'
     </script>
