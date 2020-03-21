@@ -46,6 +46,9 @@
         <!-- Setup map data -->
         <script>loadData(o=>{const e=o.world.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),r=o.world.reduce((o,e)=>{const r=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),t=Math.log10(r||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=t||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:r,selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(r,t,a)=>{t=t.toUpperCase();const n=e[t];if(!o.charts[t])return void alert(`No forecast available for ${n||t}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[t][Object.keys(o.charts[t])[0]];window.open(`report/?countryCode=${t}`,"_blank")}})});</script>
 
+        <!-- Information button -->
+        <a id="vmap-help" href="about">?</a>
+
         <!-- Load analytics at the end of the page -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
 <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-53249564-6");</script>

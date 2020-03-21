@@ -67,6 +67,7 @@
             <script>loadData(t=>{const e=URLSearchParameters().countryCode,r=t=>t.CountryCode===e,o=t.world.filter(r),a=t.forecasting.filter(r),n=`${OPEN_COVID_19_URL}/forecasting/${a[0].ForecastChart}`,i=o.map(t=>t.Confirmed)[o.length-1],c=a.map(t=>t.Estimated)[a.length-1],s=(c-i)/i*100,h=a.filter(t=>null===t.Confirmed).length;console.log(a),s<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-chart-image").attr("src",n),$("._name").each(function(){$(this).text(o[0].CountryName)}),$("._days").each(function(){$(this).text(h)}),$("._percent").each(function(){$(this).text(s.toFixed(2))}),$("._confirmed").each(function(){$(this).text(c.toFixed(0))})});</script>
         </main>
 
+        <!-- Footer with links -->
         <footer class="flex">
     <a class="centered uppercase" href="..">Home</a>
     <a class="centered uppercase" href="../about">About</a>
