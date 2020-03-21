@@ -52,7 +52,7 @@
                         if ('ontouchstart' in window && !confirm(`See data for ${name}?`)) return
 
                         const chartImage = data.charts[code][Object.keys(data.charts[code])[0]];
-                        window.open(`/report/?countryCode=${code}`, '_blank')
+                        window.open(`report/?countryCode=${code}`, '_blank')
                     }
                 });
             });
