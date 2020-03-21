@@ -18,11 +18,28 @@
 
 #vmap-legend {
     position: absolute;
-    bottom: 0;
-    left: 0;
+    top: 0;
+    right: 0;
     height: 3em;
     width: auto;
     max-width: 100%;
+}
+
+#vmap-help {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    width: 2em;
+    height: 2em;
+    font-size: large;
+    border-radius: 50%;
+    color: white;
+    text-align: center;
+    line-height: 1.8em;
+    font-family: sans-serif;
+    border: 2px solid white;
+    text-decoration: none;
+    display: inline-block;
 }
 
 footer {
