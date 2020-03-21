@@ -5,8 +5,8 @@
     "analytics": "UA-103644138-1",
     "email": "oscar@wahltinez.org",
     "theme": {
-      "primary": "#FF8700",
-      "accent": "#DD4444",
+      "primary": "#BF360C",
+      "accent": "#F9683A",
       "background": "#FCFCFC",
       "text-on-background": "#000000"
     }
