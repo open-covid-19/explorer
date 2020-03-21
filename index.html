@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>Open COVID-19 Explorer</title>
     <meta name="description" content="Interactive map for the Open COVID-19 Dataset">
-    <link rel="icon" type="image/png" href="/static/logo-64.png">
+    <link rel="icon" type="image/png" href="./static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,27 +11,27 @@
     <meta name="apple-mobile-web-app-title" content="Open COVID-19 Explorer">
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="/static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="64x64" href="/static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="/static/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="/static/icon-512x512.png">
+    <link rel="apple-touch-icon" href="./static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="64x64" href="./static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="./static/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./static/icon-512x512.png">
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="/third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="/third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="/third_party/jqvmap/dist/jqvmap.min.css">
+    <script type="text/javascript" src="./third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="./third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="./third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="./third_party/jqvmap/dist/jqvmap.min.css">
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="https://unpkg.com/picnic">
-    <link rel="stylesheet" href="/static/styles.min.css">
+    <link rel="stylesheet" href="./static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="/static/polyfills.min.js"></script>
-    <script type="text/javascript" src="/static/open-covid-19.min.js"></script>
+    <script type="text/javascript" src="./static/polyfills.min.js"></script>
+    <script type="text/javascript" src="./static/open-covid-19.min.js"></script>
     <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io";</script>
 
 
@@ -44,7 +44,7 @@
         <img id="vmap-legend" src="static/infection_scale.png">
 
         <!-- Setup map data -->
-        <script>loadData(o=>{const e=o.world.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),r=o.world.reduce((o,e)=>{const r=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),t=Math.log10(r||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=t||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:r,selectedColor:null,scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(r,t,a)=>{t=t.toUpperCase();const n=e[t];if(!o.charts[t])return void alert(`No data available for ${n}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[t][Object.keys(o.charts[t])[0]];window.open(`/report/?countryCode=${t}`,"_blank")}})});</script>
+        <script>loadData(o=>{const e=o.world.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),r=o.world.reduce((o,e)=>{const r=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),t=Math.log10(r||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=t||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:r,selectedColor:null,scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(r,t,a)=>{t=t.toUpperCase();const n=e[t];if(!o.charts[t])return void alert(`No data available for ${n||t}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[t][Object.keys(o.charts[t])[0]];window.open(`/report/?countryCode=${t}`,"_blank")}})});</script>
 
         <!-- Load analytics at the end of the page -->
         <!-- <script src="templates/analytics.tpl.html" data-include></script> -->
