@@ -41,8 +41,16 @@
             <!-- Title of the report -->
             <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
 
-            <!-- First report chart image -->
-            <img id="report-chart-image" class="fullwidth" src="../static/transparent.png">
+            <h3 class="centered">Total Confirmed Cases</h3>
+            <img id="report-confirmed-image" class="fullwidth" src="../static/transparent.png">
+
+            <h3 class="centered">Total Deaths</h3>
+            <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png">
+
+            <div id="report-forecast">
+                <h3 class="centered">Confirmed Cases Forecast</h3>
+                <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png">
+            </div>
 
             <!-- Summary of the report: more cases expected -->
             <p id="report-summary-more" class="mdpadding justify" style="display: none;">
@@ -53,8 +61,8 @@
 
             <!-- Summary of the report: same cases expected -->
             <p id="report-summary-same" class="mdpadding justify" style="display: none;">
-                The forecast shows an expected roughly equal number of confirmed COVID-19 cases over the
-                next <span class="_days"></span> days.
+                The forecast shows minimum (less than 5) new cases of confirmed COVID-19 cases over
+                the next <span class="_days"></span> days.
             </p>
 
             <!-- Footnote of the report -->
@@ -64,7 +72,7 @@
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(t=>{const e=URLSearchParameters().countryCode,r=t=>t.CountryCode===e,o=t.world.filter(r),a=t.forecasting.filter(r),n=`${OPEN_COVID_19_URL}/forecasting/${a[0].ForecastChart}`,i=o.map(t=>t.Confirmed)[o.length-1],c=a.map(t=>t.Estimated)[a.length-1],s=(c-i)/i*100,h=a.filter(t=>null===t.Confirmed).length;console.log(a),s<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-chart-image").attr("src",n),$("._name").each(function(){$(this).text(o[0].CountryName)}),$("._days").each(function(){$(this).text(h)}),$("._percent").each(function(){$(this).text(s.toFixed(2))}),$("._confirmed").each(function(){$(this).text(c.toFixed(0))})});</script>
+            <script>loadData(t=>{window.data=t;const e=URLSearchParameters().countryCode,r=t=>!t.RegionCode&&t.CountryCode===e,a=t.world.filter(r),o=t.forecasting.filter(r),i=t.charts[e],n=t=>`${OPEN_COVID_19_URL}/data/charts/${i[t]}`,s=a.map(t=>t.Confirmed)[a.length-1],c=o.map(t=>t.Estimated)[o.length-1],m=(c-s)/s*100,d=o.filter(t=>null===t.Confirmed).length;i.Forecast?m<1?$("#report-summary-same").show():$("#report-summary-more").show():$("#report-forecast").hide(),i.Confirmed&&$("#report-confirmed-image").attr("src",n("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",n("Deaths")),i.Forecast&&$("#report-forecast-image").attr("src",n("Forecast")),$("._name").each(function(){$(this).text(a[0].CountryName)}),$("._days").each(function(){$(this).text(d)}),$("._percent").each(function(){$(this).text(m.toFixed(2))}),$("._confirmed").each(function(){$(this).text(c.toFixed(0))})});</script>
         </main>
 
         <!-- Footer with links -->
