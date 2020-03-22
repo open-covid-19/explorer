@@ -43,9 +43,19 @@
 
             <h3 class="centered">Total Confirmed Cases</h3>
             <img id="report-confirmed-image" class="fullwidth" src="../static/transparent.png">
+            <p class="side-padding justify">
+                The last reported number of confirmed cases is
+                <b><span class="_confirmed_curr"></span></b>, which is a difference of
+                <b>+<span class="_confirmed_diff"></span></b> from yesterday.
+            </p>
 
             <h3 class="centered">Total Deaths</h3>
             <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png">
+            <p class="side-padding justify">
+                The latest reports claim a death toll related to COVID-19 of
+                <b><span class="_deaths_curr"></span></b>, which is an increase of
+                <b>+<span class="_deaths_diff"></span></b> since yesterday.
+            </p>
 
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
@@ -53,26 +63,35 @@
             </div>
 
             <!-- Summary of the report: more cases expected -->
-            <p id="report-summary-more" class="mdpadding justify" style="display: none;">
+            <p id="report-summary-more" class="side-padding justify" style="display: none;">
                 The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                of <b><span class="_confirmed"></span> (+<span class="_percent"></span>%)</b> over the
-                next <span class="_days"></span> days.
+                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)</b> over the
+                next <span class="_pred_days"></span> days.
             </p>
 
             <!-- Summary of the report: same cases expected -->
-            <p id="report-summary-same" class="mdpadding justify" style="display: none;">
-                The forecast shows minimum (less than 5) new cases of confirmed COVID-19 cases over
-                the next <span class="_days"></span> days.
+            <p id="report-summary-same" class="side-padding justify" style="display: none;">
+                The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
+                over the next <span class="_pred_days"></span> days.
             </p>
 
+            <div id="report-region" style="display: none;">
+                <h3 class="centered">Regional Data</h3>
+                <p class="side-padding justify">
+                    Please see below for a list of regions for which data is individually reported.
+                </p>
+                <ul id="region-list"></ul>
+            </div>
+
+
             <!-- Footnote of the report -->
-            <p id="report-summary-footnote" class="mdpadding justify" style="font-size: small;">
+            <p id="report-summary-footnote" class="side-padding justify" style="font-size: small;">
                 NOTE: The dates in the data may be delayed by one day. Please see the
                 <a href="../about/">about page</a> for more information.
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(t=>{window.data=t;const e=URLSearchParameters().countryCode,r=t=>!t.RegionCode&&t.CountryCode===e,a=t.world.filter(r),o=t.forecasting.filter(r),i=t.charts[e],n=t=>`${OPEN_COVID_19_URL}/data/charts/${i[t]}`,s=a.map(t=>t.Confirmed)[a.length-1],c=o.map(t=>t.Estimated)[o.length-1],m=(c-s)/s*100,d=o.filter(t=>null===t.Confirmed).length;i.Forecast?m<1?$("#report-summary-same").show():$("#report-summary-more").show():$("#report-forecast").hide(),i.Confirmed&&$("#report-confirmed-image").attr("src",n("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",n("Deaths")),i.Forecast&&$("#report-forecast-image").attr("src",n("Forecast")),$("._name").each(function(){$(this).text(a[0].CountryName)}),$("._days").each(function(){$(this).text(d)}),$("._percent").each(function(){$(this).text(m.toFixed(2))}),$("._confirmed").each(function(){$(this).text(c.toFixed(0))})});</script>
+            <script>loadData(e=>{window.data=e;const r=URLSearchParameters().code;let t;if(-1!==r.indexOf("_")){const e=r.split("_");t=(r=>r.RegionCode===e[1]&&r.CountryCode===e[0])}else t=(e=>!e.RegionCode&&e.CountryCode===r);const o=e.world.filter(t)[0],a=e.history.filter(t),n=e.forecast.filter(t),i=e.charts[r],s=e=>`${OPEN_COVID_19_URL}/data/charts/${i[e]}`;i.Confirmed&&$("#report-confirmed-image").attr("src",s("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",s("Deaths"));const d=(e,r)=>$(`._${e}`).each(function(){$(this).text(r)});d("name",o.RegionName||o.CountryName),d("confirmed_curr",o.Confirmed),d("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),d("deaths_curr",o.Deaths),d("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths);const c=e.world.filter(e=>e.RegionCode&&e.CountryCode==r).sort((e,r)=>e.RegionName.localeCompare(r.RegionName));c.length>1&&($("#report-region").show(),$("#region-list").html(c.map(e=>`<li><a href="?code=${e.CountryCode}_${e.RegionCode}">${e.RegionName}</a></li>`)));try{const e=o.Confirmed,r=n[n.length-1].Estimated,t=(r-e)/e*100;d("pred_days",n.filter(e=>null===e.Confirmed).length),d("pred_percent",t.toFixed(2)),d("confirmed_pred",r.toFixed(0)),i.Forecast&&$("#report-forecast-image").attr("src",s("Forecast"))}catch(e){console.log(e)}i.Forecast?percentIncrease<1?$("#report-summary-same").show():$("#report-summary-more").show():$("#report-forecast").hide()});</script>
         </main>
 
         <!-- Footer with links -->
