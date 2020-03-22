@@ -10,8 +10,16 @@
             <!-- Title of the report -->
             <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
 
-            <!-- First report chart image -->
-            <img id="report-chart-image" class="fullwidth" src="../static/transparent.png" />
+            <h3 class="centered">Total Confirmed Cases</h3>
+            <img id="report-confirmed-image" class="fullwidth" src="../static/transparent.png" />
+
+            <h3 class="centered">Total Deaths</h3>
+            <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png" />
+
+            <div id="report-forecast">
+                <h3 class="centered">Confirmed Cases Forecast</h3>
+                <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png" />
+            </div>
 
             <!-- Summary of the report: more cases expected -->
             <p id="report-summary-more" class="mdpadding justify" style="display: none;">
@@ -22,8 +30,8 @@
 
             <!-- Summary of the report: same cases expected -->
             <p id="report-summary-same" class="mdpadding justify" style="display: none;">
-                The forecast shows an expected roughly equal number of confirmed COVID-19 cases over the
-                next <span class="_days"></span> days.
+                The forecast shows minimum (less than 5) new cases of confirmed COVID-19 cases over
+                the next <span class="_days"></span> days.
             </p>
 
             <!-- Footnote of the report -->
@@ -36,11 +44,13 @@
             <script>
 
                 loadData(data => {
+                    window.data = data
                     const code = URLSearchParameters().countryCode;
-                    const codeFilter = row => row.CountryCode === code;
-                    const latest = data.world.filter(codeFilter);
-                    const forecast = data.forecasting.filter(codeFilter);
-                    const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
+                    const countryFilter = row => !row.RegionCode && row.CountryCode === code;
+                    const latest = data.world.filter(countryFilter);
+                    const forecast = data.forecasting.filter(countryFilter);
+                    const chartEntry = data.charts[code];
+                    const chartUrl = key => `${OPEN_COVID_19_URL}/data/charts/${chartEntry[key]}`;
 
                     const recordedLast = latest.map(row => row.Confirmed)[latest.length - 1];
                     const estimatedLast = forecast.map(row => row.Estimated)[forecast.length - 1];
@@ -48,15 +58,17 @@
                     const percentIncrease = 100 * (totalIncrease / recordedLast);
                     const estimatedDays = forecast.filter(row => row.Confirmed === null).length;
 
-                    console.log(forecast)
-
-                    if (percentIncrease < 1) {
+                    if (!chartEntry.Forecast) {
+                        $('#report-forecast').hide();
+                    } else if (percentIncrease < 1) {
                         $('#report-summary-same').show();
                     } else {
                         $('#report-summary-more').show();
                     }
 
-                    $('#report-chart-image').attr('src', chartUrl);
+                    chartEntry.Confirmed && $('#report-confirmed-image').attr('src', chartUrl('Confirmed'));
+                    chartEntry.Deaths && $('#report-deaths-image').attr('src', chartUrl('Deaths'));
+                    chartEntry.Forecast && $('#report-forecast-image').attr('src', chartUrl('Forecast'));
                     $('._name').each(function() { $(this).text(latest[0].CountryName) });
                     $('._days').each(function() { $(this).text(estimatedDays) });
                     $('._percent').each(function() { $(this).text(percentIncrease.toFixed(2)) });

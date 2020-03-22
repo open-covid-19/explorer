@@ -17,12 +17,14 @@
 
             loadData(data => {
 
-                const countryNames = data.world.reduce((dict, row) => {
+                const countriesOnly = data.world.filter(row => !row.RegionCode);
+
+                const countryNames = countriesOnly.reduce((dict, row) => {
                     dict[row.CountryCode] = row.CountryName;
                     return dict;
                 }, {});
 
-                const infectionRate = data.world.reduce((dict, row) => {
+                const infectionRate = countriesOnly.reduce((dict, row) => {
                     const maxInfected = 1E6;
                     const confirmed =
                         Math.max(1.0, Math.min(maxInfected, parseFloat(row['Confirmed'])));
@@ -53,7 +55,7 @@
                         if ('ontouchstart' in window && !confirm(`See data for ${name}?`)) return
 
                         const chartImage = data.charts[code][Object.keys(data.charts[code])[0]];
-                        window.open(`report/?countryCode=${code}`, '_blank')
+                        window.location = `report/?countryCode=${code}`;
                     }
                 });
             });
