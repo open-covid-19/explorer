@@ -114,16 +114,17 @@
                         sub('pred_percent', percentIncrease.toFixed(2))
                         sub('confirmed_pred', estimatedLast.toFixed(0))
                         chartEntry.Forecast && $('#report-forecast-image').attr('src', chartUrl('Forecast'));
+
+                        if (!chartEntry.Forecast) {
+                            $('#report-forecast').hide();
+                        } else if (percentIncrease < 1) {
+                            $('#report-summary-same').show();
+                        } else {
+                            $('#report-summary-more').show();
+                        }
+
                     } catch (exc) {
                         console.log(exc);
-                    }
-
-                    if (!chartEntry.Forecast) {
-                        $('#report-forecast').hide();
-                    } else if (percentIncrease < 1) {
-                        $('#report-summary-same').show();
-                    } else {
-                        $('#report-summary-more').show();
                     }
                });
             </script>
