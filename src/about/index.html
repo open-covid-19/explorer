@@ -39,7 +39,7 @@
                     const code = URLSearchParameters().countryCode;
                     const codeFilter = row => row.CountryCode === code;
                     const latest = data.world.filter(codeFilter)[0];
-                    const forecast = data.forecasting.filter(codeFilter);
+                    const forecast = data.forecast.filter(codeFilter);
                     const chartUrl = `${OPEN_COVID_19_URL}/forecasting/${forecast[0].ForecastChart}`;
 
                     $('#report-title').text(`${latest.CountryName} COVID-19 Data`);

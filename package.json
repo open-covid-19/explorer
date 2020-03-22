@@ -23,14 +23,14 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-covid-19/forecasting.git"
+    "url": "git+https://github.com/open-covid-19/explorer.git"
   },
   "author": "owahltinez",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/open-covid-19/forecasting/issues"
+    "url": "https://github.com/open-covid-19/explorer/issues"
   },
-  "homepage": "https://open-covid-19.github.io/forecasting",
+  "homepage": "https://open-covid-19.github.io/explorer",
   "devDependencies": {
     "bluebird": "^3.5.5",
     "del": "^5.0.0",
