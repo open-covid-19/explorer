@@ -4,7 +4,7 @@
     <!-- HTML page head -->
     <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
-    <body>
+    <body class="single-column">
 
         <main>
             <!-- Title of the report -->
@@ -12,7 +12,7 @@
 
             <h3 class="centered">Total Confirmed Cases</h3>
             <img id="report-confirmed-image" class="fullwidth" src="../static/transparent.png" />
-            <p class="side-padding justify">
+            <p class="justify">
                 The last reported number of confirmed cases is
                 <b><span class="_confirmed_curr"></span></b>, which is a difference of
                 <b>+<span class="_confirmed_diff"></span></b> from yesterday.
@@ -20,7 +20,7 @@
 
             <h3 class="centered">Total Deaths</h3>
             <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png" />
-            <p class="side-padding justify">
+            <p class="justify">
                 The latest reports claim a death toll related to COVID-19 of
                 <b><span class="_deaths_curr"></span></b>, which is an increase of
                 <b>+<span class="_deaths_diff"></span></b> since yesterday.
@@ -32,7 +32,7 @@
             </div>
 
             <!-- Summary of the report: more cases expected -->
-            <p id="report-summary-more" class="side-padding justify" style="display: none;">
+            <p id="report-summary-more" class="justify" style="display: none;">
                 The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
                 of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
                 </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
@@ -41,7 +41,7 @@
             </p>
 
             <!-- Summary of the report: same cases expected -->
-            <p id="report-summary-same" class="side-padding justify" style="display: none;">
+            <p id="report-summary-same" class="justify" style="display: none;">
                 The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
                 over the next <span class="_pred_days"></span> days. Forecasting is done by
                 fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
@@ -50,7 +50,7 @@
 
             <div id="report-region" style="display: none;">
                 <h3 class="centered">Regional Data</h3>
-                <p class="side-padding justify">
+                <p class="justify">
                     Please see below for a list of regions for which data is individually reported.
                 </p>
                 <ul id="region-list"></ul>
@@ -58,7 +58,7 @@
 
 
             <!-- Footnote of the report -->
-            <p id="report-summary-footnote" class="side-padding justify" style="font-size: small;">
+            <p id="report-summary-footnote" class="justify" style="font-size: small;">
                 NOTE: The dates in the data may be delayed by one day. Please see the
                 <a href="../about/">about page</a> for more information.
             </p>

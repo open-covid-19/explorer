@@ -8,7 +8,7 @@
 html, body {
     margin: 0;
     width: 100%;
-    height: 100%;
+    max-width: 100%;
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -154,92 +154,58 @@ button.centered {
     padding: 0;
 }
 
-.nopadding {
-    padding: 0;
+.padding-0 {
+    padding-left: 0;
+    padding-right: 0;
 }
-.xspadding {
-    padding: 8px;
+.padding-s {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
-.mdpadding {
-    padding: 16px;
+.padding-m {
+    padding-left: 1em;
+    padding-right: 1em;
 }
-.xlpadding {
-    padding: 32px;
-}
-
-.nomargin {
-    margin: 0;
-}
-.xsmargin {
-    margin: 8px;
-}
-.mdmargin {
-    margin: 16px;
-}
-.xlmargin {
-    margin: 32px;
+.padding-l {
+    padding-left: 2em;
+    padding-right: 2em;
 }
 
-@media (max-width: 840px) {
-    .xspadding {
-        padding: 4px;
-    }
-    .mdpadding {
-        padding: 12px;
-    }
-    .xlpadding {
-        padding: 24px;
-    }
-    .xsmargin {
-        margin: 4px;
-    }
-    .mdmargin {
-        margin: 12px;
-    }
-    .xlmargin {
-        margin: 24px;
-}}
-@media (max-width: 480px) {
-    .xspadding {
-        padding: 4px;
-    }
-    .mdpadding {
-        padding: 8px;
-    }
-    .xlpadding {
-        padding: 16px;
-    }
-    .xsmargin {
-        margin: 4px;
-    }
-    .mdmargin {
-        margin: 8px;
-    }
-    .xlmargin {
-        margin: 16px;
-}}
+.margin-0 {
+    margin-left: 0;
+    margin-right: 0;
+}
+.margin-s {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+.margin-m {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+.margin-l {
+    margin-left: 2em;
+    margin-right: 2em;
+}
 
-.thin {
+.font-thin {
     font-weight: 300;
 }
 
 .fullwidth {
     width: 100%;
     max-width: 100vw;
-    margin: 0;
-    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .spacer {
     padding-top: 16px;
 }
 
-.side-padding {
-    padding-left: 1em;
-    padding-right: 1em;
-}
-
 @media (max-width: 350px) {
-    .hide-xs {
+    .hide-s {
         display: none;
 }}

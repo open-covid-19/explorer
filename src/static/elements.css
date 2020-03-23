@@ -20,9 +20,9 @@
     position: absolute;
     top: 0;
     right: 0;
-    height: 3em;
-    width: auto;
-    max-width: 100%;
+    height: auto;
+    width: calc(100% - 3em);
+    max-width: 480px;
 }
 
 #vmap-help {
@@ -44,4 +44,10 @@
 
 footer {
     padding-top: 2em;
+}
+
+.single-column {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 1080px;
 }
