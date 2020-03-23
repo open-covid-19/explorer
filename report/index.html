@@ -65,14 +65,18 @@
             <!-- Summary of the report: more cases expected -->
             <p id="report-summary-more" class="side-padding justify" style="display: none;">
                 The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)</b> over the
-                next <span class="_pred_days"></span> days.
+                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
+                </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
             </p>
 
             <!-- Summary of the report: same cases expected -->
             <p id="report-summary-same" class="side-padding justify" style="display: none;">
                 The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
-                over the next <span class="_pred_days"></span> days.
+                over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
             </p>
 
             <div id="report-region" style="display: none;">
@@ -91,7 +95,7 @@
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(e=>{window.data=e;const o=URLSearchParameters().code;let t;if(-1!==o.indexOf("_")){const e=o.split("_");t=(o=>o.RegionCode===e[1]&&o.CountryCode===e[0])}else t=(e=>!e.RegionCode&&e.CountryCode===o);const r=e.world.filter(t)[0],a=e.history.filter(t),n=e.forecast.filter(t),i=e.charts[o],d=e=>`${OPEN_COVID_19_URL}/data/charts/${i[e]}`;i.Confirmed&&$("#report-confirmed-image").attr("src",d("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",d("Deaths"));const s=(e,o)=>$(`._${e}`).each(function(){$(this).text(o)});s("name",r.RegionName||r.CountryName),s("confirmed_curr",r.Confirmed),s("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),s("deaths_curr",r.Deaths),s("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths);const c=e.world.filter(e=>e.RegionCode&&e.CountryCode==o).sort((e,o)=>e.RegionName.localeCompare(o.RegionName));c.length>1&&($("#report-region").show(),$("#region-list").html(c.map(e=>`<li><a href="?code=${e.CountryCode}_${e.RegionCode}">${e.RegionName}</a></li>`)));try{const e=r.Confirmed,o=n[n.length-1].Estimated,t=(o-e)/e*100;s("pred_days",n.filter(e=>null===e.Confirmed).length),s("pred_percent",t.toFixed(2)),s("confirmed_pred",o.toFixed(0)),i.Forecast&&$("#report-forecast-image").attr("src",d("Forecast")),i.Forecast?t<1?$("#report-summary-same").show():$("#report-summary-more").show():$("#report-forecast").hide()}catch(e){console.log(e)}});</script>
+            <script>loadData(e=>{window.data=e;const o=URLSearchParameters().code;let t;if(-1!==o.indexOf("_")){const e=o.split("_");t=(o=>o.RegionCode===e[1]&&o.CountryCode===e[0])}else t=(e=>!e.RegionCode&&e.CountryCode===o);const r=e.world.filter(t)[0],a=e.history.filter(t),n=e.forecast.filter(t),i=e.charts[o],d=e=>`${OPEN_COVID_19_URL}/data/charts/${i[e]}`;i.Confirmed&&$("#report-confirmed-image").attr("src",d("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",d("Deaths"));const s=(e,o)=>$(`._${e}`).each(function(){$(this).text(o)});s("name",r.RegionName||r.CountryName),s("confirmed_curr",r.Confirmed),s("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),s("deaths_curr",r.Deaths),s("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths);const c=e.world.filter(e=>e.RegionCode&&e.CountryCode==o).sort((e,o)=>e.RegionName.localeCompare(o.RegionName));c.length>1&&($("#report-region").show(),$("#region-list").html(c.map(e=>`<li><a href="?code=${e.CountryCode}_${e.RegionCode}">${e.RegionName}</a></li>`)));try{i.Forecast||$("#report-forecast").hide();const e=r.Confirmed,o=n[n.length-1].Estimated,t=(o-e)/e*100;s("pred_days",n.filter(e=>null===e.Confirmed).length),s("pred_percent",t.toFixed(2)),s("confirmed_pred",o.toFixed(0)),$("#report-forecast-image").attr("src",d("Forecast")),t<1?$("#report-summary-same").show():$("#report-summary-more").show()}catch(e){console.log(e)}});</script>
         </main>
 
         <!-- Footer with links -->

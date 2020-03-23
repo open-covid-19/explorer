@@ -40,31 +40,28 @@
         <main>
             <h1 class="centered">COVID-19 Data Explorer</h1>
 
-            <h3>Where does the data come from?</h3>
-            <p class="justify">
+            <h3 class="centered">Where does the data come from?</h3>
+            <p class="side-padding justify">
                 The dataset used to perform the forecasting is the
                 <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
                 contains total confirmed positive cases and total fatal cases for all reporting
                 countries as well as subregions of USA, Spain and China.
             </p>
 
-            <h3>How often is the data updated?</h3>
-            <p class="justify">
+            <h3 class="centered">How often is the data updated?</h3>
+            <p class="side-padding justify">
                 Data is updated daily for most countries and subregions. It's also worth noting that
                 the dates in the data represent when the data is reported to the relevant authorities,
                 like WHO or ECDC, which normally includes a delay of one day.
             </p>
 
-            <h3>How is the forecasting done?</h3>
-            <p class="justify">
+            <h3 class="centered">How is the forecasting done?</h3>
+            <p class="side-padding justify">
                 The forecasting is done by fitting the data to a specialized logistic curve, called
                 <a href="https://en.wikipedia.org/wiki/Gompertz_function">Gompertz function</a>. For a
                 walkthrough of why this was chosen over other potential models, see the
-                <a href="https://github.com/open-covid-19/analysis/blob/master/logistic_modeling.ipynb">relevant analysis</a>.
+                <a href="https://github.com/open-covid-19/data/blob/master/examples/logistic_modeling.ipynb">relevant analysis</a>.
             </p>
-
-            <!-- Setup report data -->
-            <script>loadData(t=>{const r=URLSearchParameters().countryCode,a=t=>t.CountryCode===r,e=t.world.filter(a)[0],o=t.forecast.filter(a),c=`${OPEN_COVID_19_URL}/forecasting/${o[0].ForecastChart}`;$("#report-title").text(`${e.CountryName} COVID-19 Data`),$("#report-chart-image-1").attr("src",c)});</script>
         </main>
 
         <!-- Footer with links -->
