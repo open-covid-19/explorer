@@ -34,14 +34,18 @@
             <!-- Summary of the report: more cases expected -->
             <p id="report-summary-more" class="side-padding justify" style="display: none;">
                 The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)</b> over the
-                next <span class="_pred_days"></span> days.
+                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
+                </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
             </p>
 
             <!-- Summary of the report: same cases expected -->
             <p id="report-summary-same" class="side-padding justify" style="display: none;">
                 The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
-                over the next <span class="_pred_days"></span> days.
+                over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
             </p>
 
             <div id="report-region" style="display: none;">
@@ -104,6 +108,9 @@
 
                     // Fill out prediction-related data
                     try {
+                        // Hide the forecast part altogether if we don't have a chart
+                        if (!chartEntry.Forecast) $('#report-forecast').hide();
+
                         const recordedLast = latest.Confirmed;
                         const estimatedLast = forecast[forecast.length - 1].Estimated;
                         const totalIncrease = estimatedLast - recordedLast;
@@ -113,11 +120,9 @@
                         sub('pred_days', estimatedDays)
                         sub('pred_percent', percentIncrease.toFixed(2))
                         sub('confirmed_pred', estimatedLast.toFixed(0))
-                        chartEntry.Forecast && $('#report-forecast-image').attr('src', chartUrl('Forecast'));
+                        $('#report-forecast-image').attr('src', chartUrl('Forecast'));
 
-                        if (!chartEntry.Forecast) {
-                            $('#report-forecast').hide();
-                        } else if (percentIncrease < 1) {
+                        if (percentIncrease < 1) {
                             $('#report-summary-same').show();
                         } else {
                             $('#report-summary-more').show();
