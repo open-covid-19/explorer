@@ -27,8 +27,8 @@
 
 #vmap-help {
     position: absolute;
-    bottom: 12px;
-    left: 12px;
+    bottom: 1em;
+    left: 1em;
     width: 2em;
     height: 2em;
     font-size: large;
@@ -38,6 +38,18 @@
     line-height: 1.8em;
     font-family: sans-serif;
     border: 2px solid white;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#vmap-title {
+    position: absolute;
+    bottom: 1em;
+    left: 3em;
+    line-height: 1em;
+    font-size: x-large;
+    color: white;
+    font-family: sans-serif;
     text-decoration: none;
     display: inline-block;
 }
