@@ -6,12 +6,15 @@
 
     <body class="single-column">
 
+        <!-- Header with links -->
+        <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
         <main>
-            <h1 class="centered">COVID-19 Data Explorer</h1>
+            <h1 class="centered">{{name}}</h1>
 
             <h3 class="centered">Where does the data come from?</h3>
             <p class="justify">
-                The dataset used in the Open COVID-19 Explorer is the
+                The dataset used in the Open COVID-19 map is the
                 <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
                 contains total confirmed positive cases and total fatal cases for all reporting
                 countries as well as subregions of Australia, China, Italy, Spain and USA.
@@ -32,9 +35,6 @@
                 <a href="https://github.com/open-covid-19/data/blob/master/examples/logistic_modeling.ipynb">this analysis</a>.
             </p>
         </main>
-
-        <!-- Footer with links -->
-        <script src="../templates/footer.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
         <!-- Load analytics at the end of the page -->
         <script src="../templates/analytics.tpl.html" data-include></script>

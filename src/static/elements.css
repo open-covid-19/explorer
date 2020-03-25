@@ -54,8 +54,19 @@
     display: inline-block;
 }
 
-footer {
-    padding-top: 2em;
+header {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: rgba(0,0,0,.05);
+    padding: 0.5em 0.2em;
+    margin-top: 1em;
+    line-height: 1em;
+}
+
+header * {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    padding: 1em 0.2em;
 }
 
 .single-column {

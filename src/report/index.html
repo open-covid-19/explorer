@@ -6,6 +6,9 @@
 
     <body class="single-column">
 
+        <!-- Header with links -->
+        <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
         <main>
             <!-- Title of the report -->
             <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
@@ -135,9 +138,6 @@
                });
             </script>
         </main>
-
-        <!-- Footer with links -->
-        <script src="../templates/footer.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
         <!-- Load analytics at the end of the page -->
         <script src="../templates/analytics.tpl.html" data-include></script>
