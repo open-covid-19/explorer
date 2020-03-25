@@ -1,14 +1,14 @@
 <!DOCTYPE html><html><!-- HTML page head --><head>
     <!-- HTML metadata -->
     <meta charset="UTF-8">
-    <title>Open COVID-19 Explorer</title>
+    <title>Open COVID-19</title>
     <meta name="description" content="Interactive map for the Open COVID-19 Dataset">
     <link rel="icon" type="image/png" href="../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Open COVID-19 Explorer">
+    <meta name="apple-mobile-web-app-title" content="Open COVID-19">
 
     <!-- Homescreen icons -->
     <link rel="apple-touch-icon" href="../static/icon-64x64.png">
@@ -36,6 +36,14 @@
 
 
     </head><body class="single-column">
+
+        <!-- Header with links -->
+        <header>
+    <a class="centered uppercase" href="..">World Map</a>
+    <a class="centered uppercase" href="../about">About</a>
+    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
+    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
+</header>
 
         <main>
             <!-- Title of the report -->
@@ -98,14 +106,6 @@
             <!-- Setup report data -->
             <script>loadData(e=>{window.data=e;const o=URLSearchParameters().code;let t;if(-1!==o.indexOf("_")){const e=o.split("_");t=(o=>o.RegionCode===e[1]&&o.CountryCode===e[0])}else t=(e=>!e.RegionCode&&e.CountryCode===o);const r=e.world.filter(t)[0],a=e.history.filter(t),n=e.forecast.filter(t),i=e.charts[o],d=e=>`${OPEN_COVID_19_URL}/data/charts/${i[e]}`;i.Confirmed&&$("#report-confirmed-image").attr("src",d("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",d("Deaths"));const s=(e,o)=>$(`._${e}`).each(function(){$(this).text(o)});s("name",r.RegionName||r.CountryName),s("confirmed_curr",r.Confirmed),s("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),s("deaths_curr",r.Deaths),s("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths);const c=e.world.filter(e=>e.RegionCode&&e.CountryCode==o).sort((e,o)=>e.RegionName.localeCompare(o.RegionName));c.length>1&&($("#report-region").show(),$("#region-list").html(c.map(e=>`<li><a href="?code=${e.CountryCode}_${e.RegionCode}">${e.RegionName}</a></li>`)));try{i.Forecast||$("#report-forecast").hide();const e=r.Confirmed,o=n[n.length-1].Estimated,t=(o-e)/e*100;s("pred_days",n.filter(e=>null===e.Confirmed).length),s("pred_percent",t.toFixed(2)),s("confirmed_pred",o.toFixed(0)),$("#report-forecast-image").attr("src",d("Forecast")),t<1?$("#report-summary-same").show():$("#report-summary-more").show()}catch(e){console.log(e)}});</script>
         </main>
-
-        <!-- Footer with links -->
-        <footer class="flex">
-    <a class="centered uppercase" href="..">Home</a>
-    <a class="centered uppercase" href="../about">About</a>
-    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
-    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
-</footer>
 
         <!-- Load analytics at the end of the page -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>

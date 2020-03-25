@@ -1,14 +1,14 @@
 <!DOCTYPE html><html><!-- HTML page head --><head>
     <!-- HTML metadata -->
     <meta charset="UTF-8">
-    <title>Open COVID-19 Explorer</title>
+    <title>Open COVID-19</title>
     <meta name="description" content="Interactive map for the Open COVID-19 Dataset">
     <link rel="icon" type="image/png" href="../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Open COVID-19 Explorer">
+    <meta name="apple-mobile-web-app-title" content="Open COVID-19">
 
     <!-- Homescreen icons -->
     <link rel="apple-touch-icon" href="../static/icon-64x64.png">
@@ -37,12 +37,20 @@
 
     </head><body class="single-column">
 
+        <!-- Header with links -->
+        <header>
+    <a class="centered uppercase" href="..">World Map</a>
+    <a class="centered uppercase" href="../about">About</a>
+    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
+    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
+</header>
+
         <main>
-            <h1 class="centered">COVID-19 Data Explorer</h1>
+            <h1 class="centered">Open COVID-19</h1>
 
             <h3 class="centered">Where does the data come from?</h3>
             <p class="justify">
-                The dataset used in the Open COVID-19 Explorer is the
+                The dataset used in the Open COVID-19 map is the
                 <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
                 contains total confirmed positive cases and total fatal cases for all reporting
                 countries as well as subregions of Australia, China, Italy, Spain and USA.
@@ -63,14 +71,6 @@
                 <a href="https://github.com/open-covid-19/data/blob/master/examples/logistic_modeling.ipynb">this analysis</a>.
             </p>
         </main>
-
-        <!-- Footer with links -->
-        <footer class="flex">
-    <a class="centered uppercase" href="..">Home</a>
-    <a class="centered uppercase" href="../about">About</a>
-    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
-    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
-</footer>
 
         <!-- Load analytics at the end of the page -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
