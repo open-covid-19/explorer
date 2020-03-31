@@ -56,7 +56,7 @@
                 <p class="justify">
                     Please see below for a list of regions for which data is individually reported.
                 </p>
-                <ul id="region-list"></ul>
+                <select id="region-list"></select>
             </div>
 
 
@@ -72,18 +72,12 @@
 
                 loadData(data => {
                     window.data = data
-                    const code = URLSearchParameters().code;
-                    let dataFilter;
-                    if (code.indexOf('_') !== -1) {
-                        const parts = code.split('_');
-                        dataFilter = row => row.RegionCode === parts[1] && row.CountryCode === parts[0];
-                    } else {
-                        dataFilter = row => !row.RegionCode && row.CountryCode === code;
-                    }
+                    const key = URLSearchParameters().key || URLSearchParameters().code;
+                    const dataFilter = row => row.Key === key;
                     const latest = data.world.filter(dataFilter)[0];
                     const history = data.history.filter(dataFilter);
                     const forecast = data.forecast.filter(dataFilter);
-                    const chartEntry = data.charts[code];
+                    const chartEntry = data.charts[key];
                     const chartUrl = key => `${OPEN_COVID_19_URL}/data/charts/${chartEntry[key]}`;
 
                     chartEntry.Confirmed && $('#report-confirmed-image').attr('src', chartUrl('Confirmed'));
@@ -101,13 +95,19 @@
                         history[history.length - 1].Deaths - history[history.length - 2].Deaths)
 
                     const otherRegions = data.world
-                        .filter(row => row.RegionCode && row.CountryCode == code)
+                        .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
                         .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
                     if (otherRegions.length > 1) {
                         $('#report-region').show();
-                        $('#region-list').html(otherRegions.map(row => {
-                            return `<li><a href="?code=${row.CountryCode}_${row.RegionCode}">${row.RegionName}</a></li>`
-                        }))
+                        $('#region-list').html([
+                            `<option value="">Select Region</li>`
+                        ].concat(otherRegions.map(row => {
+                            return `<option value="?key=${row.CountryCode}_${row.RegionCode}">${row.RegionName}</li>`
+                        })));
+                        $('#region-list').on('change', event => {
+                            const href = $('#region-list option:selected')[0].value;
+                            if (href) window.goto(href);
+                        });
                     }
 
                     // Fill out prediction-related data
