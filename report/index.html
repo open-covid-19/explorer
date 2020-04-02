@@ -54,16 +54,20 @@
             <p class="justify">
                 The last reported number of confirmed cases is
                 <b><span class="_confirmed_curr"></span></b>, which is a difference of
-                <b>+<span class="_confirmed_diff"></span></b> from yesterday.
+                <b>+<span class="_confirmed_diff"></span></b> from yesterday. The first case was
+                reported on <b><span class="_confirmed_first"></span></b>.
             </p>
 
-            <h3 class="centered">Total Deaths</h3>
-            <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png">
-            <p class="justify">
-                The latest reports claim a death toll related to COVID-19 of
-                <b><span class="_deaths_curr"></span></b>, which is an increase of
-                <b>+<span class="_deaths_diff"></span></b> since yesterday.
-            </p>
+            <div id="report-deaths">
+                <h3 class="centered">Total Deaths</h3>
+                <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png">
+                <p class="justify">
+                    The latest reports claim a death toll related to COVID-19 of
+                    <b><span class="_deaths_curr"></span></b>, which is an increase of
+                    <b>+<span class="_deaths_diff"></span></b> since yesterday. The first death was
+                    reported on <b><span class="_deaths_first"></span></b>.
+                </p>
+            </div>
 
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
@@ -104,7 +108,7 @@
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(e=>{window.data=e;const o=URLSearchParameters().key||URLSearchParameters().code,t=e=>e.Key===o,r=e.world.filter(t)[0],a=e.history.filter(t),n=e.forecast.filter(t),i=e.charts[o],s=e=>`${OPEN_COVID_19_URL}/data/charts/${i[e]}`;i.Confirmed&&$("#report-confirmed-image").attr("src",s("Confirmed")),i.Deaths&&$("#report-deaths-image").attr("src",s("Deaths"));const d=(e,o)=>$(`._${e}`).each(function(){$(this).text(o)});d("name",r.RegionName||r.CountryName),d("confirmed_curr",r.Confirmed),d("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),d("deaths_curr",r.Deaths),d("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths);const c=e.world.filter(e=>e.CountryCode==r.CountryCode&&e.RegionCode).sort((e,o)=>e.RegionName.localeCompare(o.RegionName));c.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(c.map(e=>`<option value="?key=${e.CountryCode}_${e.RegionCode}">${e.RegionName}</li>`))),$("#region-list").on("change",e=>{const o=$("#region-list option:selected")[0].value;o&&window.goto(o)}));try{i.Forecast||$("#report-forecast").hide();const e=r.Confirmed,o=n[n.length-1].Estimated,t=(o-e)/e*100;d("pred_days",n.filter(e=>null===e.Confirmed).length),d("pred_percent",t.toFixed(2)),d("confirmed_pred",o.toFixed(0)),$("#report-forecast-image").attr("src",s("Forecast")),t<1?$("#report-summary-same").show():$("#report-summary-more").show()}catch(e){console.log(e)}});</script>
+            <script>loadData(e=>{window.data=e;const t=URLSearchParameters().key||URLSearchParameters().code,r=e=>e.Key===t,o=e.world.filter(r)[0],a=e.history.filter(r),i=e.forecast.filter(r),n=e.charts[t],s=e=>`${OPEN_COVID_19_URL}/data/charts/${n[e]}`;n.Confirmed&&$("#report-confirmed-image").attr("src",s("Confirmed"));const d=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)});d("name",o.RegionName||o.CountryName),d("confirmed_curr",o.Confirmed),d("confirmed_first",a.filter(e=>e.Confirmed)[0].Date),d("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),n.Deaths&&o.Deaths?(d("deaths_curr",o.Deaths),d("deaths_first",a.filter(e=>e.Deaths)[0].Date),d("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths),$("#report-deaths-image").attr("src",s("Deaths"))):$("#report-deaths").hide(),function(){if(!n.Forecast)return void $("#report-forecast").hide();const e=o.Confirmed,t=i[i.length-1].Estimated,r=(t-e)/e*100,a=i.filter(e=>null===e.Confirmed).length;d("pred_days",a),d("pred_percent",r.toFixed(2)),d("confirmed_pred",t.toFixed(0)),r<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-forecast-image").attr("src",s("Forecast"))}(),function(){const t=e.world.filter(e=>e.CountryCode==o.CountryCode&&e.RegionCode).sort((e,t)=>e.RegionName.localeCompare(t.RegionName));t.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(t.map(e=>{return`<option value="?key=${e.Key}">${e.RegionName}</li>`}))),$("#region-list").on("change",e=>{const t=$("#region-list option:selected")[0].value;t&&window.goto(t)}))}()});</script>
         </main>
 
         <!-- Load analytics at the end of the page -->
