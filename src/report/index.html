@@ -18,16 +18,20 @@
             <p class="justify">
                 The last reported number of confirmed cases is
                 <b><span class="_confirmed_curr"></span></b>, which is a difference of
-                <b>+<span class="_confirmed_diff"></span></b> from yesterday.
+                <b>+<span class="_confirmed_diff"></span></b> from yesterday. The first case was
+                reported on <b><span class="_confirmed_first"></span></b>.
             </p>
 
-            <h3 class="centered">Total Deaths</h3>
-            <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png" />
-            <p class="justify">
-                The latest reports claim a death toll related to COVID-19 of
-                <b><span class="_deaths_curr"></span></b>, which is an increase of
-                <b>+<span class="_deaths_diff"></span></b> since yesterday.
-            </p>
+            <div id="report-deaths">
+                <h3 class="centered">Total Deaths</h3>
+                <img id="report-deaths-image" class="fullwidth" src="../static/transparent.png" />
+                <p class="justify">
+                    The latest reports claim a death toll related to COVID-19 of
+                    <b><span class="_deaths_curr"></span></b>, which is an increase of
+                    <b>+<span class="_deaths_diff"></span></b> since yesterday. The first death was
+                    reported on <b><span class="_deaths_first"></span></b>.
+                </p>
+            </div>
 
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
@@ -81,39 +85,40 @@
                     const chartUrl = key => `${OPEN_COVID_19_URL}/data/charts/${chartEntry[key]}`;
 
                     chartEntry.Confirmed && $('#report-confirmed-image').attr('src', chartUrl('Confirmed'));
-                    chartEntry.Deaths && $('#report-deaths-image').attr('src', chartUrl('Deaths'));
 
                     const sub = (klass, text) =>
                         $(`._${klass}`).each(function() { $(this).text(text) });
 
                     sub('name', latest.RegionName || latest.CountryName)
-                    sub('confirmed_curr', latest.Confirmed)
+                    sub('confirmed_curr', latest.Confirmed);
+                    sub('confirmed_first', history.filter(row => row.Confirmed)[0].Date);
                     sub('confirmed_diff',
-                        history[history.length - 1].Confirmed - history[history.length - 2].Confirmed)
-                    sub('deaths_curr', latest.Deaths)
-                    sub('deaths_diff',
-                        history[history.length - 1].Deaths - history[history.length - 2].Deaths)
+                        history[history.length - 1].Confirmed - history[history.length - 2].Confirmed);
 
-                    const otherRegions = data.world
-                        .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
-                        .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
-                    if (otherRegions.length > 1) {
-                        $('#report-region').show();
-                        $('#region-list').html([
-                            `<option value="">Select Region</li>`
-                        ].concat(otherRegions.map(row => {
-                            return `<option value="?key=${row.CountryCode}_${row.RegionCode}">${row.RegionName}</li>`
-                        })));
-                        $('#region-list').on('change', event => {
-                            const href = $('#region-list option:selected')[0].value;
-                            if (href) window.goto(href);
-                        });
-                    }
+
+                    // Fill out deaths-related data
+                    (function() {
+                        // Early exit: hide the deaths part altogether if we don't have a chart
+                        if (!chartEntry.Deaths || !latest.Deaths) {
+                            $('#report-deaths').hide();
+                            return;
+                        }
+
+                        sub('deaths_curr', latest.Deaths);
+                        sub('deaths_first', history.filter(row => row.Deaths)[0].Date);
+                        sub('deaths_diff',
+                            history[history.length - 1].Deaths - history[history.length - 2].Deaths);
+
+                        $('#report-deaths-image').attr('src', chartUrl('Deaths'));
+                    })();
 
                     // Fill out prediction-related data
-                    try {
-                        // Hide the forecast part altogether if we don't have a chart
-                        if (!chartEntry.Forecast) $('#report-forecast').hide();
+                    (function() {
+                        // Early exit: hide the forecast part altogether if we don't have a chart
+                        if (!chartEntry.Forecast) {
+                            $('#report-forecast').hide();
+                            return;
+                        }
 
                         const recordedLast = latest.Confirmed;
                         const estimatedLast = forecast[forecast.length - 1].Estimated;
@@ -124,7 +129,6 @@
                         sub('pred_days', estimatedDays)
                         sub('pred_percent', percentIncrease.toFixed(2))
                         sub('confirmed_pred', estimatedLast.toFixed(0))
-                        $('#report-forecast-image').attr('src', chartUrl('Forecast'));
 
                         if (percentIncrease < 1) {
                             $('#report-summary-same').show();
@@ -132,9 +136,29 @@
                             $('#report-summary-more').show();
                         }
 
-                    } catch (exc) {
-                        console.log(exc);
-                    }
+                        $('#report-forecast-image').attr('src', chartUrl('Forecast'));
+                    })();
+
+                    // Fill out other regions data
+                    (function() {
+                        const otherRegions = data.world
+                            .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
+                            .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
+                        if (otherRegions.length > 1) {
+                            $('#report-region').show();
+                            $('#region-list').html([
+                                `<option value="">Select Region</li>`
+                            ].concat(otherRegions.map(row => {
+                                const key = row.Key;
+                                const text = row.RegionName;
+                                return `<option value="?key=${key}">${text}</li>`;
+                            })));
+                            $('#region-list').on('change', event => {
+                                const href = $('#region-list option:selected')[0].value;
+                                if (href) window.goto(href);
+                            });
+                        }
+                    })();
                });
             </script>
         </main>
