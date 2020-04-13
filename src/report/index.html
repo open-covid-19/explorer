@@ -174,13 +174,12 @@
 
                     // Fill out mobility data
                     (function() {
-                        const mobilityCategories = Object.keys((data.mobility || {})[0])
-                        if (mobilityCategories.length > 2) {
+                        if (mobility.length > 4) {
                             // Show the section if there is mobility data
                             $('#report-mobility').show();
 
                             // Put the data in array format
-                            const columns = ['Date'].concat(mobilityCategories.slice(2))
+                            const columns = ['Date'].concat(Object.keys(data.mobility[0]).slice(2))
                             const mobilityData = [columns].concat(
                                 mobility.map(row => columns.slice(0).map(col => row[col])));
 
