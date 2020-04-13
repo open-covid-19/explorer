@@ -4,6 +4,27 @@
     <!-- HTML page head -->
     <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
+    <!-- D3.js library -->
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+
+      let chartLoaded = false;
+      const pendingCallbacks = [];
+      window.chart = function(callback) {
+          if (chartLoaded) callback();
+          else pendingCallbacks.push(callback);
+      }
+
+      google.charts.setOnLoadCallback(() => {
+          chartLoaded = true;
+          pendingCallbacks.forEach(callback => callback());
+      })
+    </script>
+
     <body class="single-column">
 
         <!-- Header with links -->
@@ -36,24 +57,34 @@
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
                 <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png" />
+
+                <!-- Summary of the report: more cases expected -->
+                <p id="report-summary-more" class="justify" style="display: none;">
+                    The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
+                    of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
+                    </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
+                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
+                </p>
+
+                <!-- Summary of the report: same cases expected -->
+                <p id="report-summary-same" class="justify" style="display: none;">
+                    The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
+                    over the next <span class="_pred_days"></span> days. Forecasting is done by
+                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
+                </p>
             </div>
 
-            <!-- Summary of the report: more cases expected -->
-            <p id="report-summary-more" class="justify" style="display: none;">
-                The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
-                </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
-                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
-                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-            </p>
-
-            <!-- Summary of the report: same cases expected -->
-            <p id="report-summary-same" class="justify" style="display: none;">
-                The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
-                over the next <span class="_pred_days"></span> days. Forecasting is done by
-                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
-                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-            </p>
+            <div id="report-mobility" style="display: none;">
+                <h3 class="centered">Mobility Report</h3>
+                <p class="justify">
+                    The following chart is a condensed view of
+                    <a href="https://www.google.com/covid19/mobility/" target="_blank">Google's
+                    Mobility Report</a> for <span class="_name"></span>.
+                </p>
+                <div id="mobility-chart" class="fullwidth"></div>
+            </div>
 
             <div id="report-region" style="display: none;">
                 <h3 class="centered">Regional Data</h3>
@@ -62,7 +93,6 @@
                 </p>
                 <select id="region-list"></select>
             </div>
-
 
             <!-- Footnote of the report -->
             <p id="report-summary-footnote" class="justify" style="font-size: small;">
@@ -78,9 +108,10 @@
                     window.data = data
                     const key = URLSearchParameters().key || URLSearchParameters().code;
                     const dataFilter = row => row.Key === key;
-                    const latest = data.world.filter(dataFilter)[0];
+                    const latest = data.latest.filter(dataFilter)[0];
                     const history = data.history.filter(dataFilter);
                     const forecast = data.forecast.filter(dataFilter);
+                    const mobility = data.mobility.filter(dataFilter);
                     const chartEntry = data.charts[key];
                     const chartUrl = key => `${OPEN_COVID_19_URL}/data/charts/${chartEntry[key]}`;
 
@@ -139,9 +170,43 @@
                         $('#report-forecast-image').attr('src', chartUrl('Forecast'));
                     })();
 
+                    // Fill out mobility data
+                    (function() {
+                        const mobilityCategories = Object.keys((data.mobility || {})[0])
+                        if (mobilityCategories.length > 2) {
+                            // Show the section if there is mobility data
+                            $('#report-mobility').show();
+
+                            // Put the data in array format
+                            const columns = ['Date'].concat(mobilityCategories.slice(2))
+                            const mobilityData = [columns].concat(
+                                mobility.map(row => columns.slice(0).map(col => row[col])));
+
+                            // Wait for the chart library to load
+                            chart(() => {
+                                const elem = document.getElementById('mobility-chart');
+                                new google.visualization.AreaChart(elem).draw(
+                                    google.visualization.arrayToDataTable(mobilityData), {
+                                        height: 320,
+                                        legend: 'top',
+                                        hAxis: {
+                                            showTextEvery: 4,
+                                            slantedText: true,
+                                            slantedTextAngle: 90,
+                                        },
+                                        chartArea: {
+                                            top: 48,
+                                            width: '80%',
+                                            height: '60%',
+                                        }
+                                });
+                            });
+                        }
+                    })();
+
                     // Fill out other regions data
                     (function() {
-                        const otherRegions = data.world
+                        const otherRegions = data.latest
                             .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
                             .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
                         if (otherRegions.length > 1) {

@@ -17,7 +17,7 @@
 
             loadData(data => {
 
-                const countriesOnly = data.world.filter(row => !row.RegionCode);
+                const countriesOnly = data.latest.filter(row => !row.RegionCode);
 
                 const countryNames = countriesOnly.reduce((dict, row) => {
                     dict[row.CountryCode] = row.CountryName;
