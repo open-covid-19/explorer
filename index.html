@@ -44,7 +44,7 @@
         <img id="vmap-legend" src="static/infection_scale.png">
 
         <!-- Setup map data -->
-        <script>loadData(o=>{const e=o.world.filter(o=>!o.RegionCode),r=e.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),t=e.reduce((o,e)=>{const r=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),t=Math.log10(r||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=t||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:t,selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(e,t,a)=>{t=t.toUpperCase();const n=r[t];if(!o.charts[t])return void alert(`No report available for ${n||t}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[t][Object.keys(o.charts[t])[0]];window.location=`report/?key=${t}`}})});</script>
+        <script>loadData(o=>{const e=o.latest.filter(o=>!o.RegionCode),t=e.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),r=e.reduce((o,e)=>{const t=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),r=Math.log10(t||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=r||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:r,selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(e,r,a)=>{r=r.toUpperCase();const n=t[r];if(!o.charts[r])return void alert(`No report available for ${n||r}`);if("ontouchstart"in window&&!confirm(`See data for ${n}?`))return;o.charts[r][Object.keys(o.charts[r])[0]];window.location=`report/?key=${r}`}})});</script>
 
         <!-- Information button -->
         <a id="vmap-help" href="about">?</a>

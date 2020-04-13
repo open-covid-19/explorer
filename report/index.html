@@ -35,6 +35,13 @@
     <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io";</script>
 
 
+    <!-- D3.js library -->
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">google.charts.load("current",{packages:["corechart"]});let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?a():pendingCallbacks.push(a)},google.charts.setOnLoadCallback(()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>a())});</script>
+
     </head><body class="single-column">
 
         <!-- Header with links -->
@@ -72,24 +79,34 @@
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
                 <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png">
+
+                <!-- Summary of the report: more cases expected -->
+                <p id="report-summary-more" class="justify" style="display: none;">
+                    The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
+                    of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
+                    </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
+                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
+                </p>
+
+                <!-- Summary of the report: same cases expected -->
+                <p id="report-summary-same" class="justify" style="display: none;">
+                    The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
+                    over the next <span class="_pred_days"></span> days. Forecasting is done by
+                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
+                </p>
             </div>
 
-            <!-- Summary of the report: more cases expected -->
-            <p id="report-summary-more" class="justify" style="display: none;">
-                The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
-                </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
-                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
-                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-            </p>
-
-            <!-- Summary of the report: same cases expected -->
-            <p id="report-summary-same" class="justify" style="display: none;">
-                The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
-                over the next <span class="_pred_days"></span> days. Forecasting is done by
-                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
-                Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-            </p>
+            <div id="report-mobility" style="display: none;">
+                <h3 class="centered">Mobility Report</h3>
+                <p class="justify">
+                    The following chart is a condensed view of
+                    <a href="https://www.google.com/covid19/mobility/" target="_blank">Google's
+                    Mobility Report</a> for <span class="_name"></span>.
+                </p>
+                <div id="mobility-chart" class="fullwidth"></div>
+            </div>
 
             <div id="report-region" style="display: none;">
                 <h3 class="centered">Regional Data</h3>
@@ -99,7 +116,6 @@
                 <select id="region-list"></select>
             </div>
 
-
             <!-- Footnote of the report -->
             <p id="report-summary-footnote" class="justify" style="font-size: small;">
                 NOTE: The dates in the data reflects the reported date, which is at least one day
@@ -108,7 +124,7 @@
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(e=>{window.data=e;const t=URLSearchParameters().key||URLSearchParameters().code,r=e=>e.Key===t,o=e.world.filter(r)[0],a=e.history.filter(r),i=e.forecast.filter(r),n=e.charts[t],s=e=>`${OPEN_COVID_19_URL}/data/charts/${n[e]}`;n.Confirmed&&$("#report-confirmed-image").attr("src",s("Confirmed"));const d=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)});d("name",o.RegionName||o.CountryName),d("confirmed_curr",o.Confirmed),d("confirmed_first",a.filter(e=>e.Confirmed)[0].Date),d("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),n.Deaths&&o.Deaths?(d("deaths_curr",o.Deaths),d("deaths_first",a.filter(e=>e.Deaths)[0].Date),d("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths),$("#report-deaths-image").attr("src",s("Deaths"))):$("#report-deaths").hide(),function(){if(!n.Forecast)return void $("#report-forecast").hide();const e=o.Confirmed,t=i[i.length-1].Estimated,r=(t-e)/e*100,a=i.filter(e=>null===e.Confirmed).length;d("pred_days",a),d("pred_percent",r.toFixed(2)),d("confirmed_pred",t.toFixed(0)),r<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-forecast-image").attr("src",s("Forecast"))}(),function(){const t=e.world.filter(e=>e.CountryCode==o.CountryCode&&e.RegionCode).sort((e,t)=>e.RegionName.localeCompare(t.RegionName));t.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(t.map(e=>{return`<option value="?key=${e.Key}">${e.RegionName}</li>`}))),$("#region-list").on("change",e=>{const t=$("#region-list option:selected")[0].value;t&&window.goto(t)}))}()});</script>
+            <script>loadData(e=>{window.data=e;const t=URLSearchParameters().key||URLSearchParameters().code,o=e=>e.Key===t,r=e.latest.filter(o)[0],a=e.history.filter(o),i=e.forecast.filter(o),n=e.mobility.filter(o),s=e.charts[t],c=e=>`${OPEN_COVID_19_URL}/data/charts/${s[e]}`;s.Confirmed&&$("#report-confirmed-image").attr("src",c("Confirmed"));const l=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)});l("name",r.RegionName||r.CountryName),l("confirmed_curr",r.Confirmed),l("confirmed_first",a.filter(e=>e.Confirmed)[0].Date),l("confirmed_diff",a[a.length-1].Confirmed-a[a.length-2].Confirmed),s.Deaths&&r.Deaths?(l("deaths_curr",r.Deaths),l("deaths_first",a.filter(e=>e.Deaths)[0].Date),l("deaths_diff",a[a.length-1].Deaths-a[a.length-2].Deaths),$("#report-deaths-image").attr("src",c("Deaths"))):$("#report-deaths").hide(),function(){if(!s.Forecast)return void $("#report-forecast").hide();const e=r.Confirmed,t=i[i.length-1].Estimated,o=(t-e)/e*100,a=i.filter(e=>null===e.Confirmed).length;l("pred_days",a),l("pred_percent",o.toFixed(2)),l("confirmed_pred",t.toFixed(0)),o<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-forecast-image").attr("src",c("Forecast"))}(),function(){const t=Object.keys((e.mobility||{})[0]);if(t.length>2){$("#report-mobility").show();const e=["Date"].concat(t.slice(2)),o=[e].concat(n.map(t=>e.slice(0).map(e=>t[e])));chart(()=>{const e=document.getElementById("mobility-chart");new google.visualization.AreaChart(e).draw(google.visualization.arrayToDataTable(o),{height:320,legend:"top",hAxis:{showTextEvery:4,slantedText:!0,slantedTextAngle:90},chartArea:{top:48,width:"80%",height:"60%"}})})}}(),function(){const t=e.latest.filter(e=>e.CountryCode==r.CountryCode&&e.RegionCode).sort((e,t)=>e.RegionName.localeCompare(t.RegionName));t.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(t.map(e=>{return`<option value="?key=${e.Key}">${e.RegionName}</li>`}))),$("#region-list").on("change",e=>{const t=$("#region-list option:selected")[0].value;t&&window.goto(t)}))}()});</script>
         </main>
 
         <!-- Load analytics at the end of the page -->
