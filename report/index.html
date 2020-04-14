@@ -83,10 +83,10 @@
 
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
-                <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png">
+                <div id="forecast-chart" class="fullwidth"></div>
 
                 <!-- Summary of the report: more cases expected -->
-                <p id="report-summary-more" class="justify" style="display: none;">
+                <p id="forecast-more" class="justify" style="display: none;">
                     The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
                     of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
                     </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
@@ -95,7 +95,7 @@
                 </p>
 
                 <!-- Summary of the report: same cases expected -->
-                <p id="report-summary-same" class="justify" style="display: none;">
+                <p id="forecast-same" class="justify" style="display: none;">
                     The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
                     over the next <span class="_pred_days"></span> days. Forecasting is done by
                     fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
@@ -124,14 +124,14 @@
             </div>
 
             <!-- Footnote of the report -->
-            <p id="report-summary-footnote" class="justify" style="font-size: small; padding-top: 3em">
+            <p id="forecast-footnote" class="justify" style="font-size: small; padding-top: 3em">
                 NOTE: The dates in the data reflects the reported date, which is at least one day
                 behind the live data. Please see the <a href="../about/">about page</a> for more
                 information.
             </p>
 
             <!-- Setup report data -->
-            <script>loadData(e=>{window.data=e;const t=URLSearchParameters().key||URLSearchParameters().code,o=e=>e.Key===t,a=e.latest.filter(o)[0],r=e.history.filter(o),i=e.forecast.filter(o),n=e.mobility.filter(o),s=e.charts[t],c=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)});s.Confirmed&&a.Confirmed?(c("name",a.RegionName||a.CountryName),c("confirmed_curr",a.Confirmed),c("confirmed_first",r.filter(e=>e.Confirmed)[0].Date),c("confirmed_diff",r[r.length-1].Confirmed-r[r.length-2].Confirmed),chart(()=>{const e=["Date","Confirmed"],t=[e].concat(r.slice(-14).map(t=>e.slice(0).map(e=>t[e]))),o=document.getElementById("confirmed-chart");new google.charts.Bar(o).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:480,colors:["#1A237E"],legend:{position:"none"}}))})):$("#report-confirmed").hide(),function(){if(!s.Deaths||!a.Deaths)return void $("#report-deaths").hide();c("deaths_curr",a.Deaths),c("deaths_first",r.filter(e=>e.Deaths)[0].Date),c("deaths_diff",r[r.length-1].Deaths-r[r.length-2].Deaths);const e=["Date","Deaths"],t=[e].concat(r.slice(-14).map(t=>e.slice(0).map(e=>t[e]))),o=document.getElementById("deaths-chart");new google.charts.Bar(o).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:480,colors:["#B71C1C"],legend:{position:"none"}}))}(),function(){if(!s.Forecast)return void $("#report-forecast").hide();const e=a.Confirmed,t=i[i.length-1].Estimated,o=(t-e)/e*100,r=i.filter(e=>null===e.Confirmed).length;c("pred_days",r),c("pred_percent",o.toFixed(2)),c("confirmed_pred",t.toFixed(0)),o<1?$("#report-summary-same").show():$("#report-summary-more").show(),$("#report-forecast-image").attr("src",(e=>`${OPEN_COVID_19_URL}/data/charts/${s[e]}`)("Forecast"))}(),n.length>4&&($("#report-mobility").show(),chart(()=>{const t=["Date"].concat(Object.keys(e.mobility[0]).slice(2)),o=[t].concat(n.map(e=>t.slice(0).map(t=>e[t]))),a=document.getElementById("mobility-chart");new google.visualization.AreaChart(a).draw(google.visualization.arrayToDataTable(o),{height:320,legend:"top",hAxis:{showTextEvery:4,slantedText:!0,slantedTextAngle:90},chartArea:{top:48,width:"80%",height:"60%"}})})),function(){const t=e.latest.filter(e=>e.CountryCode==a.CountryCode&&e.RegionCode).sort((e,t)=>e.RegionName.localeCompare(t.RegionName));t.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(t.map(e=>{return`<option value="?key=${e.Key}">${e.RegionName}</li>`}))),$("#region-list").on("change",e=>{const t=$("#region-list option:selected")[0].value;t&&window.goto(t)}))}()});</script>
+            <script>loadData(e=>{window.data=e;const t=URLSearchParameters().key||URLSearchParameters().code,o=e=>e.Key===t,a=e.latest.filter(o)[0],i=e.history.filter(o),r=e.forecast.filter(o),n=e.mobility.filter(o),s=e.charts[t],l=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)});s.Confirmed&&a.Confirmed?(l("name",a.RegionName||a.CountryName),l("confirmed_curr",a.Confirmed),l("confirmed_first",i.filter(e=>e.Confirmed)[0].Date),l("confirmed_diff",i[i.length-1].Confirmed-i[i.length-2].Confirmed),chart(()=>{const e=["Date","Confirmed"],t=[e].concat(i.slice(-14).map(t=>e.slice(0).map(e=>t[e]))),o=document.getElementById("confirmed-chart");new google.charts.Bar(o).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:480,colors:["#1A237E"],legend:{position:"none"}}))})):$("#report-confirmed").hide(),function(){if(!s.Deaths||!a.Deaths)return void $("#report-deaths").hide();l("deaths_curr",a.Deaths),l("deaths_first",i.filter(e=>e.Deaths)[0].Date),l("deaths_diff",i[i.length-1].Deaths-i[i.length-2].Deaths);const e=["Date","Deaths"],t=[e].concat(i.slice(-14).map(t=>e.slice(0).map(e=>t[e]))),o=document.getElementById("deaths-chart");new google.charts.Bar(o).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:480,colors:["#B71C1C"],legend:{position:"none"}}))}(),function(){if(!s.Forecast)return void $("#report-forecast").hide();const e=a.Confirmed,t=r[r.length-1].Estimated,o=(t-e)/e*100,i=r.filter(e=>null===e.Confirmed).length;l("pred_days",i),l("pred_percent",o.toFixed(2)),l("confirmed_pred",t.toFixed(0)),o<1?$("#forecast-same").show():$("#forecast-more").show(),chart(()=>{const e={role:"style"},t=["Date","Confirmed",e,"Estimated"],o=[t].concat(r.slice(-14).map(t=>Object.assign({},t,t.Confirmed?{[e]:""}:{Confirmed:t.Estimated,[e]:"opacity: 0.3"})).map(e=>t.slice(0).map(t=>e[t]))),a=document.getElementById("forecast-chart");new google.visualization.ComboChart(a).draw(google.visualization.arrayToDataTable(o),google.charts.Bar.convertOptions({height:400,colors:["#1A237E","#FF9800"],legend:{position:"top"},hAxis:{slantedText:!1},chartArea:{top:48,left:48,width:"80%",height:"80%"},seriesType:"bars",series:{1:{type:"line"}}}))})}(),n.length>4&&($("#report-mobility").show(),chart(()=>{const t=["Date"].concat(Object.keys(e.mobility[0]).slice(2)),o=[t].concat(n.map(e=>t.slice(0).map(t=>e[t]))),a=document.getElementById("mobility-chart");new google.visualization.AreaChart(a).draw(google.visualization.arrayToDataTable(o),{height:400,legend:"top",hAxis:{slantedText:!1},chartArea:{top:48,width:"80%",height:"80%"}})})),function(){const t=e.latest.filter(e=>e.CountryCode==a.CountryCode&&e.RegionCode).sort((e,t)=>e.RegionName.localeCompare(t.RegionName));t.length>1&&($("#report-region").show(),$("#region-list").html(['<option value="">Select Region</li>'].concat(t.map(e=>{return`<option value="?key=${e.Key}">${e.RegionName}</li>`}))),$("#region-list").on("change",e=>{const t=$("#region-list option:selected")[0].value;t&&window.goto(t)}))}()});</script>
         </main>
 
         <!-- Load analytics at the end of the page -->
