@@ -61,10 +61,10 @@
 
             <div id="report-forecast">
                 <h3 class="centered">Confirmed Cases Forecast</h3>
-                <img id="report-forecast-image" class="fullwidth" src="../static/transparent.png" />
+                <div id="forecast-chart" class="fullwidth"></div>
 
                 <!-- Summary of the report: more cases expected -->
-                <p id="report-summary-more" class="justify" style="display: none;">
+                <p id="forecast-more" class="justify" style="display: none;">
                     The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
                     of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
                     </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
@@ -73,7 +73,7 @@
                 </p>
 
                 <!-- Summary of the report: same cases expected -->
-                <p id="report-summary-same" class="justify" style="display: none;">
+                <p id="forecast-same" class="justify" style="display: none;">
                     The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
                     over the next <span class="_pred_days"></span> days. Forecasting is done by
                     fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
@@ -102,7 +102,7 @@
             </div>
 
             <!-- Footnote of the report -->
-            <p id="report-summary-footnote" class="justify" style="font-size: small; padding-top: 3em">
+            <p id="forecast-footnote" class="justify" style="font-size: small; padding-top: 3em">
                 NOTE: The dates in the data reflects the reported date, which is at least one day
                 behind the live data. Please see the <a href="../about/">about page</a> for more
                 information.
@@ -145,7 +145,6 @@
                         chart(() => {
 
                             // Put the data in array format
-                            // const color = '#B71C1C'
                             const columns = ['Date', 'Confirmed']
                             const chartData = [columns].concat(
                                 history.slice(-14)
@@ -212,12 +211,45 @@
                         sub('confirmed_pred', estimatedLast.toFixed(0))
 
                         if (percentIncrease < 1) {
-                            $('#report-summary-same').show();
+                            $('#forecast-same').show();
                         } else {
-                            $('#report-summary-more').show();
+                            $('#forecast-more').show();
                         }
 
-                        $('#report-forecast-image').attr('src', chartUrl('Forecast'));
+                        // Load the section chart asynchronously
+                        chart(() => {
+
+                            // Put the data in array format
+                            const styleColumn = {role: 'style'};
+                            const columns = ['Date', 'Confirmed', styleColumn, 'Estimated']
+                            const chartData = [columns].concat(forecast.slice(-14)
+                                .map(row => Object.assign({}, row, row.Confirmed ?
+                                    {[styleColumn]: ''} :
+                                    {Confirmed: row.Estimated, [styleColumn]: 'opacity: 0.3'}))
+                                .map(row => columns.slice(0).map(col => row[col])));
+
+                            // Prepare and display chart
+                            const elem = document.getElementById('forecast-chart');
+                            new google.visualization.ComboChart(elem).draw(
+                                google.visualization.arrayToDataTable(chartData),
+                                google.charts.Bar.convertOptions({
+                                    height: 400,
+                                    colors: ['#1A237E', '#FF9800'],
+                                    legend: {position: 'top'},
+                                    hAxis: {
+                                        slantedText: false,
+                                    },
+                                    chartArea: {
+                                        top: 48,
+                                        left: 48,
+                                        width: '80%',
+                                        height: '80%',
+                                    },
+                                    seriesType: 'bars',
+                                    series: {1: {type: 'line'}},
+                            }));
+                        });
+
                     })();
 
                     // Fill out mobility data
@@ -238,17 +270,15 @@
                                 const elem = document.getElementById('mobility-chart');
                                 new google.visualization.AreaChart(elem).draw(
                                     google.visualization.arrayToDataTable(mobilityData), {
-                                        height: 320,
+                                        height: 400,
                                         legend: 'top',
                                         hAxis: {
-                                            showTextEvery: 4,
-                                            slantedText: true,
-                                            slantedTextAngle: 90,
+                                            slantedText: false,
                                         },
                                         chartArea: {
                                             top: 48,
                                             width: '80%',
-                                            height: '60%',
+                                            height: '80%',
                                         }
                                 });
                             });
