@@ -3,7 +3,6 @@ function loadData(callback) {
     const data = {
         'latest': null,
         'forecast': null,
-        'charts': null,
         'history': null,
         'mobility': null
     };
@@ -15,7 +14,6 @@ function loadData(callback) {
     }
     loadJSON('latest', 'data_latest.json');
     loadJSON('forecast', 'data_forecast.json');
-    loadJSON('charts', 'charts/map.json');
     loadJSON('history', 'data.json');
     loadJSON('mobility', 'mobility.json');
 }
