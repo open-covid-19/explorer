@@ -46,7 +46,7 @@
                         const name = countryNames[code];
 
                         // Early exit: If there is no data available
-                        if (!data.charts[code]) {
+                        if ((data.history[code] || {}).length > 7) {
                             alert(`No report available for ${name || code}`);
                             return;
                         }
@@ -54,7 +54,6 @@
                         // If this is a touch input device, ask for confirmation
                         if ('ontouchstart' in window && !confirm(`See data for ${name}?`)) return
 
-                        const chartImage = data.charts[code][Object.keys(data.charts[code])[0]];
                         window.location = `report/?key=${code}`;
                     }
                 });

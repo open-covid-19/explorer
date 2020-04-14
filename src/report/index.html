@@ -119,8 +119,11 @@
                     const history = data.history.filter(dataFilter);
                     const forecast = data.forecast.filter(dataFilter);
                     const mobility = data.mobility.filter(dataFilter);
-                    const chartEntry = data.charts[key];
-                    const chartUrl = key => `${OPEN_COVID_19_URL}/data/charts/${chartEntry[key]}`;
+
+                    const minLength = 7;
+                    const windowSize = 21;
+                    const width = document.querySelector('main').getBoundingClientRect().width
+                    const chartHeight = Math.min(480, Math.max(224, Math.round(width * 2 / 3)));
 
 
                     const sub = (klass, text) =>
@@ -130,7 +133,7 @@
                     // Fill out confirmed-related data
                     (function() {
                         // Early exit: hide the section part altogether if we don't have data
-                        if (!chartEntry.Confirmed || !latest.Confirmed) {
+                        if ((history.Confirmed || {}).length < minLength) {
                             $('#report-confirmed').hide();
                             return;
                         }
@@ -146,8 +149,7 @@
 
                             // Put the data in array format
                             const columns = ['Date', 'Confirmed']
-                            const chartData = [columns].concat(
-                                history.slice(-14)
+                            const chartData = [columns].concat(history.slice(-windowSize)
                                 .map(row => columns.slice(0).map(col => row[col])));
 
                             // Prepare and display chart
@@ -155,8 +157,9 @@
                             new google.charts.Bar(elem).draw(
                                 google.visualization.arrayToDataTable(chartData),
                                 google.charts.Bar.convertOptions({
-                                    height: 480,
-                                    colors: ['#1A237E'],
+                                    height: chartHeight,
+                                    colors: ['#1565C0'],
+                                    hAxis: {title: ''},
                                     legend: {position: 'none'},
                             }));
                         });
@@ -165,7 +168,7 @@
                     // Fill out deaths-related data
                     (function() {
                         // Early exit: hide the deaths part altogether if we don't have a chart
-                        if (!chartEntry.Deaths || !latest.Deaths) {
+                        if ((history.Deaths || {}).length < minLength) {
                             $('#report-deaths').hide();
                             return;
                         }
@@ -177,8 +180,7 @@
 
                             // Put the data in array format
                             const columns = ['Date', 'Deaths']
-                            const chartData = [columns].concat(
-                                history.slice(-14)
+                            const chartData = [columns].concat(history.slice(-windowSize)
                                 .map(row => columns.slice(0).map(col => row[col])));
 
                             // Prepare and display chart
@@ -186,8 +188,9 @@
                             new google.charts.Bar(elem).draw(
                                 google.visualization.arrayToDataTable(chartData),
                                 google.charts.Bar.convertOptions({
-                                    height: 480,
+                                    height: chartHeight,
                                     colors: ['#B71C1C'],
+                                    hAxis: {title: ''},
                                     legend: {position: 'none'},
                             }));
                     })();
@@ -195,7 +198,7 @@
                     // Fill out prediction-related data
                     (function() {
                         // Early exit: hide the forecast part altogether if we don't have a chart
-                        if (!chartEntry.Forecast) {
+                        if ((forecast || {}).length < minLength) {
                             $('#report-forecast').hide();
                             return;
                         }
@@ -222,7 +225,7 @@
                             // Put the data in array format
                             const styleColumn = {role: 'style'};
                             const columns = ['Date', 'Confirmed', styleColumn, 'Estimated']
-                            const chartData = [columns].concat(forecast.slice(-14)
+                            const chartData = [columns].concat(forecast.slice(-windowSize)
                                 .map(row => Object.assign({}, row, row.Confirmed ?
                                     {[styleColumn]: ''} :
                                     {Confirmed: row.Estimated, [styleColumn]: 'opacity: 0.3'}))
@@ -233,16 +236,16 @@
                             new google.visualization.ComboChart(elem).draw(
                                 google.visualization.arrayToDataTable(chartData),
                                 google.charts.Bar.convertOptions({
-                                    height: 400,
-                                    colors: ['#1A237E', '#FF9800'],
-                                    legend: {position: 'top'},
+                                    height: chartHeight,
+                                    colors: ['#1565C0', '#FF9800'],
+                                    legend: {position: 'in'},
                                     hAxis: {
                                         slantedText: false,
                                     },
                                     chartArea: {
-                                        top: 48,
-                                        left: 48,
-                                        width: '80%',
+                                        top: 24,
+                                        left: 64,
+                                        width: '90%',
                                         height: '80%',
                                     },
                                     seriesType: 'bars',
@@ -270,14 +273,15 @@
                                 const elem = document.getElementById('mobility-chart');
                                 new google.visualization.AreaChart(elem).draw(
                                     google.visualization.arrayToDataTable(mobilityData), {
-                                        height: 400,
-                                        legend: 'top',
+                                        height: chartHeight,
+                                        legend: {position: 'in'},
                                         hAxis: {
                                             slantedText: false,
                                         },
                                         chartArea: {
-                                            top: 48,
-                                            width: '80%',
+                                            top: 24,
+                                            left: 32,
+                                            width: '90%',
                                             height: '80%',
                                         }
                                 });
