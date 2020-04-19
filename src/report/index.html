@@ -4,27 +4,34 @@
     <!-- HTML page head -->
     <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
-    <!-- D3.js library -->
-    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
-
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <!-- <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','packages':['corechart', 'bar']}]}"></script> -->
 
     <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart', 'bar']});
 
-      let chartLoaded = false;
-      const pendingCallbacks = [];
-      window.chart = function(callback) {
-          if (chartLoaded) callback();
-          else pendingCallbacks.push(callback);
-      }
+        function retryCallback(callback) {
+            let counter = 0;
+            const timer = setInterval(() => {
+                try {
+                    callback();
+                    clearInterval(timer);
+                } catch {
+                    console.error(`Callback failed: ${++counter}`)
+                }
+            }, 250)
+        }
 
-      google.charts.setOnLoadCallback(() => {
-          chartLoaded = true;
-          pendingCallbacks.forEach(callback => callback());
-      })
+        let chartLoaded = false;
+        const pendingCallbacks = [];
+        window.chart = function(callback) {
+            if (chartLoaded) retryCallback(callback());
+            else pendingCallbacks.push(callback);
+        }
+
+        google.charts.load('current', {'packages':['corechart', 'bar'], 'callback': () => {
+            chartLoaded = true;
+            pendingCallbacks.forEach(callback => retryCallback(callback));
+        }});
     </script>
 
     <body class="single-column">
