@@ -35,14 +35,10 @@
     <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io";</script>
 
 
-    <!-- D3.js library -->
-    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
-
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <!-- <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','packages':['corechart', 'bar']}]}"></script> -->
 
-    <script type="text/javascript">google.charts.load("current",{packages:["corechart","bar"]});let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?a():pendingCallbacks.push(a)},google.charts.setOnLoadCallback(()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>a())});</script>
+    <script type="text/javascript">function retryCallback(a){let c=0;const l=setInterval(()=>{try{a(),clearInterval(l)}catch{console.error(`Callback failed: ${++c}`)}},250)}let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a()):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
 
     </head><body class="single-column">
 
