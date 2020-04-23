@@ -11,12 +11,14 @@
 
         function retryCallback(callback) {
             let counter = 0;
+            const maxRetries = 32;
             const timer = setInterval(() => {
                 try {
                     callback();
                     clearInterval(timer);
-                } catch {
-                    console.error(`Callback failed: ${++counter}`)
+                } catch (exc) {
+                    console.error(`Callback failed: ${++counter}`, exc);
+                    if (counter >= maxRetries) clearInterval(timer);
                 }
             }, 250)
         }
@@ -24,7 +26,7 @@
         let chartLoaded = false;
         const pendingCallbacks = [];
         window.chart = function(callback) {
-            if (chartLoaded) retryCallback(callback());
+            if (chartLoaded) retryCallback(callback);
             else pendingCallbacks.push(callback);
         }
 
@@ -185,6 +187,9 @@
                         sub('deaths_diff',
                             history[history.length - 1].Deaths - history[history.length - 2].Deaths);
 
+                        // Load the section chart asynchronously
+                        chart(() => {
+
                             // Put the data in array format
                             const columns = ['Date', 'Deaths']
                             const chartData = [columns].concat(history.slice(-windowSize)
@@ -200,6 +205,7 @@
                                     hAxis: {title: ''},
                                     legend: {position: 'none'},
                             }));
+                        });
                     })();
 
                     // Fill out prediction-related data
