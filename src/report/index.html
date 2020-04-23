@@ -177,7 +177,7 @@
                     // Fill out deaths-related data
                     (function() {
                         // Early exit: hide the deaths part altogether if we don't have a chart
-                        if ((history.Deaths || {}).length < minLength) {
+                        if ((history.filter(row => row.Deaths) || {}).length < minLength) {
                             $('#report-deaths').hide();
                             return;
                         }
