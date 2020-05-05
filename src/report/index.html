@@ -143,6 +143,7 @@
                     (function() {
                         // Early exit: hide the section part altogether if we don't have data
                         if ((history.Confirmed || {}).length < minLength) {
+                            console.log('Confirmed report not available');
                             $('#report-confirmed').hide();
                             return;
                         }
@@ -178,6 +179,7 @@
                     (function() {
                         // Early exit: hide the deaths part altogether if we don't have a chart
                         if ((history.filter(row => row.Deaths) || {}).length < minLength) {
+                            console.log('Deaths report not available');
                             $('#report-deaths').hide();
                             return;
                         }
@@ -212,6 +214,7 @@
                     (function() {
                         // Early exit: hide the forecast part altogether if we don't have a chart
                         if ((forecast || {}).length < minLength) {
+                            console.log('Forecast report not available');
                             $('#report-forecast').hide();
                             return;
                         }
@@ -238,7 +241,7 @@
                             // Put the data in array format
                             const styleColumn = {role: 'style'};
                             const columns = ['Date', 'Confirmed', styleColumn, 'Estimated']
-                            const chartData = [columns].concat(forecast.slice(-windowSize)
+                            const chartData = [columns].concat(forecast.slice(-windowSize - 7)
                                 .map(row => Object.assign({}, row, row.Confirmed ?
                                     {[styleColumn]: ''} :
                                     {Confirmed: row.Estimated, [styleColumn]: 'opacity: 0.3'}))
@@ -254,6 +257,9 @@
                                     legend: {position: 'in'},
                                     hAxis: {
                                         slantedText: false,
+                                    },
+                                    vAxis: {
+                                        viewWindow: {min: 0},
                                     },
                                     chartArea: {
                                         top: 24,
