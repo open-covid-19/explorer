@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<!-- HTML page head -->
+<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+
+    let chartLoaded = false;
+    const pendingCallbacks = [];
+    window.chart = function (callback) {
+        if (chartLoaded) retryCallback(callback);
+        else pendingCallbacks.push(callback);
+    }
+
+    google.charts.load('current', {
+        'packages': ['corechart', 'bar', 'sankey'], 'callback': () => {
+            chartLoaded = true;
+            pendingCallbacks.forEach(callback => retryCallback(callback));
+        }
+    });
+</script>
+
+<body class="single-column">
+
+    <!-- Header with links -->
+    <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+    <main>
+        <!-- Title of the report -->
+        <h1 id="health-title" class="centered">COVID-19 Data Health Dashboard</h1>
+
+        <!-- Create a selector with each data table -->
+        <div id="health-table">
+            <p class="justify">
+                See below for a list of tables. Refer to the
+                <a href="https://github.com/open-covid-19/data">documentation</a> for details about
+                each field.
+            </p>
+            <select id="table-list"></select>
+            <br />
+            <br />
+            <table id="table-metadata" class="fullwidth"></table>
+            <div id="admin-level-chart" class="fullwidth" style="height: 500px;"></div>
+            <div id="null-analysis-chart" class="fullwidth" style="height: 500px;"></div>
+        </div>
+
+        <!-- Load all the data -->
+        <script>
+            window.data = {};
+
+            $('#table-list').html([
+                `<option selected disabled>Select Data Table</option>`
+            ].concat(Object.keys(OPEN_COVID_19_TABLES).map(tableName => {
+                const name = OPEN_COVID_19_TABLES[tableName];
+                return `<option id="list-option-${tableName}" value="${tableName}" disabled>${name}</option>`;
+            })));
+            $('#table-list').on('change', event => {
+                const tableName = $('#table-list option:selected')[0].value;
+                const table = window.data[tableName];
+
+                // Create the metadata table
+                $('#table-metadata').html([
+                    `<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>`
+                ].concat(table.columns.map((column, idx) => {
+                    const nonnull = table.data.filter(row => row[idx]);
+                    if (nonnull.length > 0) {
+                        const lastValue = nonnull[nonnull.length - 1][idx];
+                        let valueType = typeof lastValue;
+                        if (Number.isInteger(lastValue)) {
+                            valueType = 'int';
+                        } else if (valueType === 'number') {
+                            valueType = 'double';
+                        }
+                        return `<tr><td>${column}</td><td>${valueType}</td><td>${lastValue}</td>`;
+                    } else {
+                        return `<tr><td>${column}</td><td>null</td><td>null</td></tr>`;
+                    }
+                })));
+
+                // Visualize the admin level of the data
+                chart(() => {
+                    const keyIdx = table.columns.indexOf('key');
+
+                    // Early exit: we have no key
+                    if (keyIdx < 0) {
+                        console.error(`Index not present in table ${tableName} with columns ${table.columns}`);
+                        return;
+                    }
+                    const adminLevel = table.data.map(row => row[keyIdx].split('_').length - 1);
+                    const adminLevelCounts = adminLevel.reduce((counts, level) => {
+                        counts[level] += 1;
+                        return counts;
+                    }, { 0: 0, 1: 0, 2: 0 });
+                    const adminLevelTable = google.visualization.arrayToDataTable([
+                        ['Admin Level', 'Record Count'],
+                        ['Country', adminLevelCounts[0]],
+                        ['State/Province', adminLevelCounts[1]],
+                        ['County/Municipality', adminLevelCounts[2]],
+                    ]);
+
+                    const elem = document.getElementById('admin-level-chart');
+                    new google.visualization.PieChart(elem).draw(adminLevelTable, { pieHole: 0.3 });
+                });
+
+                // Visualize the null vs non-null elements
+                chart(() => {
+                    const nndata = new google.visualization.DataTable();
+                    nndata.addColumn('string', 'Columns');
+                    nndata.addColumn('string', 'Values');
+                    nndata.addColumn('number', 'Count');
+
+                    const nrows = [];
+                    table.columns.forEach((column, idx) => {
+                        const ncount = table.data.filter(row => row[idx] == null).length;
+                        nrows.push([column, 'null', ncount]);
+                        nrows.push([column, 'non-null', table.data.length - ncount]);
+                    })
+                    nndata.addRows(nrows);
+
+                    const elem = document.getElementById('null-analysis-chart');
+                    new google.visualization.Sankey(elem).draw(nndata, {});
+                });
+
+            });
+
+        </script>
+
+        <script async>
+            // Load data in the background
+            loadDataV2((key, table) => {
+                window.data[key] = table;
+                $(`#list-option-${key}`).prop('disabled', false);
+                console.log(`${key} table loaded successfully`);
+            });
+        </script>
+    </main>
+
+    <!-- Load analytics at the end of the page -->
+    <script src="../templates/analytics.tpl.html" data-include></script>
+</body>
+
+</html>

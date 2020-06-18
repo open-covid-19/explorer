@@ -1,338 +1,327 @@
 <!DOCTYPE html>
 <html>
 
-    <!-- HTML page head -->
-    <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+<!-- HTML page head -->
+<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
-    <!-- Google Charts -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        function retryCallback(callback) {
-            let counter = 0;
-            const maxRetries = 32;
-            const timer = setInterval(() => {
-                try {
-                    callback();
-                    clearInterval(timer);
-                } catch (exc) {
-                    console.error(`Callback failed: ${++counter}`, exc);
-                    if (counter >= maxRetries) clearInterval(timer);
-                }
-            }, 250)
-        }
+    let chartLoaded = false;
+    const pendingCallbacks = [];
+    window.chart = function (callback) {
+        if (chartLoaded) retryCallback(callback);
+        else pendingCallbacks.push(callback);
+    }
 
-        let chartLoaded = false;
-        const pendingCallbacks = [];
-        window.chart = function(callback) {
-            if (chartLoaded) retryCallback(callback);
-            else pendingCallbacks.push(callback);
-        }
-
-        google.charts.load('current', {'packages':['corechart', 'bar'], 'callback': () => {
+    google.charts.load('current', {
+        'packages': ['corechart', 'bar'], 'callback': () => {
             chartLoaded = true;
             pendingCallbacks.forEach(callback => retryCallback(callback));
-        }});
-    </script>
+        }
+    });
+</script>
 
-    <body class="single-column">
+<body class="single-column">
 
-        <!-- Header with links -->
-        <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+    <!-- Header with links -->
+    <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
-        <main>
-            <!-- Title of the report -->
-            <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
+    <main>
+        <!-- Title of the report -->
+        <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
 
-            <h3 class="centered">Total Confirmed Cases</h3>
-            <div id="report-confirmed">
-                <div id="confirmed-chart" class="fullwidth"></div>
-                <!-- <img id="confirmed-chart" class="fullwidth" src="../static/transparent.png" /> -->
-                <p class="justify">
-                    The last reported number of confirmed cases is
-                    <b><span class="_confirmed_curr"></span></b>, which is a difference of
-                    <b>+<span class="_confirmed_diff"></span></b> from yesterday. The first case was
-                    reported on <b><span class="_confirmed_first"></span></b>.
-                </p>
-                </div>
+        <h3 class="centered">Total Confirmed Cases</h3>
+        <div id="report-confirmed">
+            <div id="confirmed-chart" class="fullwidth"></div>
+            <!-- <img id="confirmed-chart" class="fullwidth" src="../static/transparent.png" /> -->
+            <p class="justify">
+                The last reported number of confirmed cases is
+                <b><span class="_confirmed_curr"></span></b>, which is a difference of
+                <b>+<span class="_confirmed_diff"></span></b> from yesterday. The first case was
+                reported on <b><span class="_confirmed_first"></span></b>.
+            </p>
+        </div>
 
-            <div id="report-deaths">
-                <h3 class="centered">Total Deaths</h3>
-                <div id="deaths-chart" class="fullwidth"></div>
-                <p class="justify">
-                    The latest reports claim a death toll related to COVID-19 of
-                    <b><span class="_deaths_curr"></span></b>, which is an increase of
-                    <b>+<span class="_deaths_diff"></span></b> since yesterday. The first death was
-                    reported on <b><span class="_deaths_first"></span></b>.
-                </p>
-            </div>
+        <div id="report-deaths">
+            <h3 class="centered">Total Deaths</h3>
+            <div id="deaths-chart" class="fullwidth"></div>
+            <p class="justify">
+                The latest reports claim a death toll related to COVID-19 of
+                <b><span class="_deaths_curr"></span></b>, which is an increase of
+                <b>+<span class="_deaths_diff"></span></b> since yesterday. The first death was
+                reported on <b><span class="_deaths_first"></span></b>.
+            </p>
+        </div>
 
-            <div id="report-forecast">
-                <h3 class="centered">Confirmed Cases Forecast</h3>
-                <div id="forecast-chart" class="fullwidth"></div>
+        <div id="report-forecast">
+            <h3 class="centered">Confirmed Cases Forecast</h3>
+            <div id="forecast-chart" class="fullwidth"></div>
 
-                <!-- Summary of the report: more cases expected -->
-                <p id="forecast-more" class="justify" style="display: none;">
-                    The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
-                    of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
-                    </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
-                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+            <!-- Summary of the report: more cases expected -->
+            <p id="forecast-more" class="justify" style="display: none;">
+                The forecast shows an expected increase in number of confirmed COVID-19 cases to a total
+                of <b><span class="_confirmed_pred"></span> (+<span class="_pred_percent"></span>%)
+                </b> over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
                     Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-                </p>
-
-                <!-- Summary of the report: same cases expected -->
-                <p id="forecast-same" class="justify" style="display: none;">
-                    The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
-                    over the next <span class="_pred_days"></span> days. Forecasting is done by
-                    fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
-                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
-                </p>
-            </div>
-
-            <div id="report-mobility" style="display: none;">
-                <h3 class="centered">Mobility Report</h3>
-                <p class="justify">
-                    The following chart is a condensed view of
-                    <a href="https://www.google.com/covid19/mobility/" target="_blank">Google's
-                    Mobility Report</a> for <span class="_name"></span>. It represents the change
-                    in movement aggregated across Google Maps users for certain categories compared
-                    to the average.
-                </p>
-                <div id="mobility-chart" class="fullwidth"></div>
-            </div>
-
-            <div id="report-region" style="display: none;">
-                <h3 class="centered">Regional Data</h3>
-                <p class="justify">
-                    Please see below for a list of regions for which data is individually reported.
-                </p>
-                <select id="region-list"></select>
-            </div>
-
-            <!-- Footnote of the report -->
-            <p id="forecast-footnote" class="justify" style="font-size: small; padding-top: 3em">
-                NOTE: The dates in the data reflects the reported date, which is at least one day
-                behind the live data. Please see the <a href="../about/">about page</a> for more
-                information.
             </p>
 
-            <!-- Setup report data -->
-            <script>
+            <!-- Summary of the report: same cases expected -->
+            <p id="forecast-same" class="justify" style="display: none;">
+                The forecast shows less than 1% increase of new cases of confirmed COVID-19 cases
+                over the next <span class="_pred_days"></span> days. Forecasting is done by
+                fitting the data to a <a href="https://en.wikipedia.org/wiki/Gompertz_function" target="_blank">
+                    Gompertz curve</a>, see the <a href="../about">about page</a> for more details.
+            </p>
+        </div>
 
-                loadData(data => {
-                    window.data = data
-                    const key = URLSearchParameters().key || URLSearchParameters().code;
-                    const dataFilter = row => row.Key === key;
-                    const latest = data.latest.filter(dataFilter)[0];
-                    const history = data.history.filter(dataFilter);
-                    const forecast = data.forecast.filter(dataFilter);
-                    const mobility = data.mobility.filter(dataFilter);
+        <div id="report-mobility" style="display: none;">
+            <h3 class="centered">Mobility Report</h3>
+            <p class="justify">
+                The following chart is a condensed view of
+                <a href="https://www.google.com/covid19/mobility/" target="_blank">Google's
+                    Mobility Report</a> for <span class="_name"></span>. It represents the change
+                in movement aggregated across Google Maps users for certain categories compared
+                to the average.
+            </p>
+            <div id="mobility-chart" class="fullwidth"></div>
+        </div>
 
-                    const minLength = 7;
-                    const windowSize = 21;
-                    const width = document.querySelector('main').getBoundingClientRect().width
-                    const chartHeight = Math.min(480, Math.max(224, Math.round(width * 2 / 3)));
+        <div id="report-region" style="display: none;">
+            <h3 class="centered">Regional Data</h3>
+            <p class="justify">
+                Please see below for a list of regions for which data is individually reported.
+            </p>
+            <select id="region-list"></select>
+        </div>
+
+        <!-- Footnote of the report -->
+        <p id="forecast-footnote" class="justify" style="font-size: small; padding-top: 3em">
+            NOTE: The dates in the data reflects the reported date, which is at least one day
+            behind the live data. Please see the <a href="../about/">about page</a> for more
+            information.
+        </p>
+
+        <!-- Setup report data -->
+        <script>
+
+            loadData(data => {
+                window.data = data
+                const key = URLSearchParameters().key || URLSearchParameters().code;
+                const dataFilter = row => row.Key === key;
+                const latest = data.latest.filter(dataFilter)[0];
+                const history = data.history.filter(dataFilter);
+                const forecast = data.forecast.filter(dataFilter);
+                const mobility = data.mobility.filter(dataFilter);
+
+                const minLength = 7;
+                const windowSize = 21;
+                const width = document.querySelector('main').getBoundingClientRect().width
+                const chartHeight = Math.min(480, Math.max(224, Math.round(width * 2 / 3)));
 
 
-                    const sub = (klass, text) =>
-                        $(`._${klass}`).each(function() { $(this).text(text) });
+                const sub = (klass, text) =>
+                    $(`._${klass}`).each(function () { $(this).text(text) });
 
 
-                    // Fill out confirmed-related data
-                    (function() {
-                        // Early exit: hide the section part altogether if we don't have data
-                        if ((history.Confirmed || {}).length < minLength) {
-                            console.log('Confirmed report not available');
-                            $('#report-confirmed').hide();
-                            return;
-                        }
+                // Fill out confirmed-related data
+                (function () {
+                    // Early exit: hide the section part altogether if we don't have data
+                    if ((history.Confirmed || {}).length < minLength) {
+                        console.log('Confirmed report not available');
+                        $('#report-confirmed').hide();
+                        return;
+                    }
 
-                        sub('name', latest.RegionName || latest.CountryName)
-                        sub('confirmed_curr', latest.Confirmed);
-                        sub('confirmed_first', history.filter(row => row.Confirmed)[0].Date);
-                        sub('confirmed_diff',
-                            history[history.length - 1].Confirmed - history[history.length - 2].Confirmed);
+                    sub('name', latest.RegionName || latest.CountryName)
+                    sub('confirmed_curr', latest.Confirmed);
+                    sub('confirmed_first', history.filter(row => row.Confirmed)[0].Date);
+                    sub('confirmed_diff',
+                        history[history.length - 1].Confirmed - history[history.length - 2].Confirmed);
+
+                    // Load the section chart asynchronously
+                    chart(() => {
+
+                        // Put the data in array format
+                        const columns = ['Date', 'Confirmed']
+                        const chartData = [columns].concat(history.slice(-windowSize)
+                            .map(row => columns.slice(0).map(col => row[col])));
+
+                        // Prepare and display chart
+                        const elem = document.getElementById('confirmed-chart');
+                        new google.charts.Bar(elem).draw(
+                            google.visualization.arrayToDataTable(chartData),
+                            google.charts.Bar.convertOptions({
+                                height: chartHeight,
+                                colors: ['#1565C0'],
+                                hAxis: { title: '' },
+                                legend: { position: 'none' },
+                            }));
+                    });
+                })();
+
+                // Fill out deaths-related data
+                (function () {
+                    // Early exit: hide the deaths part altogether if we don't have a chart
+                    if ((history.filter(row => row.Deaths) || {}).length < minLength) {
+                        console.log('Deaths report not available');
+                        $('#report-deaths').hide();
+                        return;
+                    }
+
+                    sub('deaths_curr', latest.Deaths);
+                    sub('deaths_first', history.filter(row => row.Deaths)[0].Date);
+                    sub('deaths_diff',
+                        history[history.length - 1].Deaths - history[history.length - 2].Deaths);
+
+                    // Load the section chart asynchronously
+                    chart(() => {
+
+                        // Put the data in array format
+                        const columns = ['Date', 'Deaths']
+                        const chartData = [columns].concat(history.slice(-windowSize)
+                            .map(row => columns.slice(0).map(col => row[col])));
+
+                        // Prepare and display chart
+                        const elem = document.getElementById('deaths-chart');
+                        new google.charts.Bar(elem).draw(
+                            google.visualization.arrayToDataTable(chartData),
+                            google.charts.Bar.convertOptions({
+                                height: chartHeight,
+                                colors: ['#B71C1C'],
+                                hAxis: { title: '' },
+                                legend: { position: 'none' },
+                            }));
+                    });
+                })();
+
+                // Fill out prediction-related data
+                (function () {
+                    // Early exit: hide the forecast part altogether if we don't have a chart
+                    if ((forecast || {}).length < minLength) {
+                        console.log('Forecast report not available');
+                        $('#report-forecast').hide();
+                        return;
+                    }
+
+                    const recordedLast = latest.Confirmed;
+                    const estimatedLast = forecast[forecast.length - 1].Estimated;
+                    const totalIncrease = estimatedLast - recordedLast;
+                    const percentIncrease = 100 * (totalIncrease / recordedLast);
+                    const estimatedDays = forecast.filter(row => row.Confirmed === null).length;
+
+                    sub('pred_days', estimatedDays)
+                    sub('pred_percent', percentIncrease.toFixed(2))
+                    sub('confirmed_pred', estimatedLast.toFixed(0))
+
+                    if (percentIncrease < 1) {
+                        $('#forecast-same').show();
+                    } else {
+                        $('#forecast-more').show();
+                    }
+
+                    // Load the section chart asynchronously
+                    chart(() => {
+
+                        // Put the data in array format
+                        const styleColumn = { role: 'style' };
+                        const columns = ['Date', 'Confirmed', styleColumn, 'Estimated']
+                        const chartData = [columns].concat(forecast.slice(-windowSize - 7)
+                            .map(row => Object.assign({}, row, row.Confirmed ?
+                                { [styleColumn]: '' } :
+                                { Confirmed: row.Estimated, [styleColumn]: 'opacity: 0.3' }))
+                            .map(row => columns.slice(0).map(col => row[col])));
+
+                        // Prepare and display chart
+                        const elem = document.getElementById('forecast-chart');
+                        new google.visualization.ComboChart(elem).draw(
+                            google.visualization.arrayToDataTable(chartData),
+                            google.charts.Bar.convertOptions({
+                                height: chartHeight,
+                                colors: ['#1565C0', '#FF9800'],
+                                legend: { position: 'in' },
+                                hAxis: {
+                                    slantedText: false,
+                                },
+                                vAxis: {
+                                    viewWindow: { min: 0 },
+                                },
+                                chartArea: {
+                                    top: 24,
+                                    left: 64,
+                                    width: '90%',
+                                    height: '80%',
+                                },
+                                seriesType: 'bars',
+                                series: { 1: { type: 'line' } },
+                            }));
+                    });
+
+                })();
+
+                // Fill out mobility data
+                (function () {
+                    if (mobility.length > 4) {
+                        // Show the section if there is mobility data
+                        $('#report-mobility').show();
 
                         // Load the section chart asynchronously
                         chart(() => {
 
                             // Put the data in array format
-                            const columns = ['Date', 'Confirmed']
-                            const chartData = [columns].concat(history.slice(-windowSize)
-                                .map(row => columns.slice(0).map(col => row[col])));
+                            const columns = ['Date'].concat(Object.keys(data.mobility[0]).slice(2))
+                            const mobilityData = [columns].concat(
+                                mobility.map(row => columns.slice(0).map(col => row[col])));
 
                             // Prepare and display chart
-                            const elem = document.getElementById('confirmed-chart');
-                            new google.charts.Bar(elem).draw(
-                                google.visualization.arrayToDataTable(chartData),
-                                google.charts.Bar.convertOptions({
-                                    height: chartHeight,
-                                    colors: ['#1565C0'],
-                                    hAxis: {title: ''},
-                                    legend: {position: 'none'},
-                            }));
-                        });
-                    })();
-
-                    // Fill out deaths-related data
-                    (function() {
-                        // Early exit: hide the deaths part altogether if we don't have a chart
-                        if ((history.filter(row => row.Deaths) || {}).length < minLength) {
-                            console.log('Deaths report not available');
-                            $('#report-deaths').hide();
-                            return;
-                        }
-
-                        sub('deaths_curr', latest.Deaths);
-                        sub('deaths_first', history.filter(row => row.Deaths)[0].Date);
-                        sub('deaths_diff',
-                            history[history.length - 1].Deaths - history[history.length - 2].Deaths);
-
-                        // Load the section chart asynchronously
-                        chart(() => {
-
-                            // Put the data in array format
-                            const columns = ['Date', 'Deaths']
-                            const chartData = [columns].concat(history.slice(-windowSize)
-                                .map(row => columns.slice(0).map(col => row[col])));
-
-                            // Prepare and display chart
-                            const elem = document.getElementById('deaths-chart');
-                            new google.charts.Bar(elem).draw(
-                                google.visualization.arrayToDataTable(chartData),
-                                google.charts.Bar.convertOptions({
-                                    height: chartHeight,
-                                    colors: ['#B71C1C'],
-                                    hAxis: {title: ''},
-                                    legend: {position: 'none'},
-                            }));
-                        });
-                    })();
-
-                    // Fill out prediction-related data
-                    (function() {
-                        // Early exit: hide the forecast part altogether if we don't have a chart
-                        if ((forecast || {}).length < minLength) {
-                            console.log('Forecast report not available');
-                            $('#report-forecast').hide();
-                            return;
-                        }
-
-                        const recordedLast = latest.Confirmed;
-                        const estimatedLast = forecast[forecast.length - 1].Estimated;
-                        const totalIncrease = estimatedLast - recordedLast;
-                        const percentIncrease = 100 * (totalIncrease / recordedLast);
-                        const estimatedDays = forecast.filter(row => row.Confirmed === null).length;
-
-                        sub('pred_days', estimatedDays)
-                        sub('pred_percent', percentIncrease.toFixed(2))
-                        sub('confirmed_pred', estimatedLast.toFixed(0))
-
-                        if (percentIncrease < 1) {
-                            $('#forecast-same').show();
-                        } else {
-                            $('#forecast-more').show();
-                        }
-
-                        // Load the section chart asynchronously
-                        chart(() => {
-
-                            // Put the data in array format
-                            const styleColumn = {role: 'style'};
-                            const columns = ['Date', 'Confirmed', styleColumn, 'Estimated']
-                            const chartData = [columns].concat(forecast.slice(-windowSize - 7)
-                                .map(row => Object.assign({}, row, row.Confirmed ?
-                                    {[styleColumn]: ''} :
-                                    {Confirmed: row.Estimated, [styleColumn]: 'opacity: 0.3'}))
-                                .map(row => columns.slice(0).map(col => row[col])));
-
-                            // Prepare and display chart
-                            const elem = document.getElementById('forecast-chart');
-                            new google.visualization.ComboChart(elem).draw(
-                                google.visualization.arrayToDataTable(chartData),
-                                google.charts.Bar.convertOptions({
-                                    height: chartHeight,
-                                    colors: ['#1565C0', '#FF9800'],
-                                    legend: {position: 'in'},
-                                    hAxis: {
-                                        slantedText: false,
-                                    },
-                                    vAxis: {
-                                        viewWindow: {min: 0},
-                                    },
-                                    chartArea: {
-                                        top: 24,
-                                        left: 64,
-                                        width: '90%',
-                                        height: '80%',
-                                    },
-                                    seriesType: 'bars',
-                                    series: {1: {type: 'line'}},
-                            }));
-                        });
-
-                    })();
-
-                    // Fill out mobility data
-                    (function() {
-                        if (mobility.length > 4) {
-                            // Show the section if there is mobility data
-                            $('#report-mobility').show();
-
-                            // Load the section chart asynchronously
-                            chart(() => {
-
-                                // Put the data in array format
-                                const columns = ['Date'].concat(Object.keys(data.mobility[0]).slice(2))
-                                const mobilityData = [columns].concat(
-                                    mobility.map(row => columns.slice(0).map(col => row[col])));
-
-                                // Prepare and display chart
-                                const elem = document.getElementById('mobility-chart');
-                                new google.visualization.AreaChart(elem).draw(
-                                    google.visualization.arrayToDataTable(mobilityData), {
-                                        height: chartHeight,
-                                        legend: {position: 'in'},
-                                        hAxis: {
-                                            slantedText: false,
-                                        },
-                                        chartArea: {
-                                            top: 24,
-                                            left: 32,
-                                            width: '90%',
-                                            height: '80%',
-                                        }
-                                });
+                            const elem = document.getElementById('mobility-chart');
+                            new google.visualization.AreaChart(elem).draw(
+                                google.visualization.arrayToDataTable(mobilityData), {
+                                height: chartHeight,
+                                legend: { position: 'in' },
+                                hAxis: {
+                                    slantedText: false,
+                                },
+                                chartArea: {
+                                    top: 24,
+                                    left: 32,
+                                    width: '90%',
+                                    height: '80%',
+                                }
                             });
-                        }
-                    })();
+                        });
+                    }
+                })();
 
-                    // Fill out other regions data
-                    (function() {
-                        const otherRegions = data.latest
-                            .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
-                            .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
-                        if (otherRegions.length > 1) {
-                            $('#report-region').show();
-                            $('#region-list').html([
-                                `<option value="">Select Region</li>`
-                            ].concat(otherRegions.map(row => {
-                                const key = row.Key;
-                                const text = row.RegionName;
-                                return `<option value="?key=${key}">${text}</li>`;
-                            })));
-                            $('#region-list').on('change', event => {
-                                const href = $('#region-list option:selected')[0].value;
-                                if (href) window.goto(href);
-                            });
-                        }
-                    })();
-               });
-            </script>
-        </main>
+                // Fill out other regions data
+                (function () {
+                    const otherRegions = data.latest
+                        .filter(row => row.CountryCode == latest.CountryCode && row.RegionCode)
+                        .sort((a, b) => a.RegionName.localeCompare(b.RegionName));
+                    if (otherRegions.length > 1) {
+                        $('#report-region').show();
+                        $('#region-list').html([
+                            `<option value="">Select Region</option>`
+                        ].concat(otherRegions.map(row => {
+                            const key = row.Key;
+                            const text = row.RegionName;
+                            return `<option value="?key=${key}">${text}</option>`;
+                        })));
+                        $('#region-list').on('change', event => {
+                            const href = $('#region-list option:selected')[0].value;
+                            if (href) window.goto(href);
+                        });
+                    }
+                })();
+            });
+        </script>
+    </main>
 
-        <!-- Load analytics at the end of the page -->
-        <script src="../templates/analytics.tpl.html" data-include></script>
-    </body>
+    <!-- Load analytics at the end of the page -->
+    <script src="../templates/analytics.tpl.html" data-include></script>
+</body>
+
 </html>
