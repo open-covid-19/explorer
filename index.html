@@ -32,29 +32,30 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="./static/polyfills.min.js"></script>
     <script type="text/javascript" src="./static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io";</script>
+    <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
 
 
-    </head><body>
+</head><body>
 
-        <!-- Map section -->
-        <div id="vmap"></div>
+    <!-- Map section -->
+    <div id="vmap"></div>
 
-        <!-- Map legend -->
-        <img id="vmap-legend" src="static/infection_scale.png">
+    <!-- Map legend -->
+    <img id="vmap-legend" src="static/infection_scale.png">
 
-        <!-- Setup map data -->
-        <script>loadData(o=>{const e=o.latest.filter(o=>!o.RegionCode),t=e.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{}),a=e.reduce((o,e)=>{const t=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),a=Math.log10(t||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=a||0,o},{null:1});$("#vmap").vectorMap({map:"world_en",values:a,selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(e,a,r)=>{a=a.toUpperCase();const n=t[a];(o.history[a]||{}).length>7?alert(`No report available for ${n||a}`):"ontouchstart"in window&&!confirm(`See data for ${n}?`)||(window.location=`report/?key=${a}`)}})});</script>
+    <!-- Setup map data -->
+    <script>loadData(o=>{const e=o.latest.filter(o=>!o.RegionCode),t=e.reduce((o,e)=>(o[e.CountryCode]=e.CountryName,o),{});window.countriesOnly=e;const n=e.reduce((o,e)=>{const t=Math.max(1,Math.min(1e6,parseFloat(e.Confirmed))),n=Math.log10(t||0)/Math.log10(1e6);return o[e.CountryCode.toLowerCase()]=n||0,o},{null:1});window.infectionRate=n,$("#vmap").vectorMap({map:"world_en",values:n,selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FF0000"],normalizeFunction:null,onRegionSelect:(e,n,a)=>{n=n.toUpperCase();const r=t[n];(o.history[n]||{}).length>7?alert(`No report available for ${r||n}`):"ontouchstart"in window&&!confirm(`See data for ${r}?`)||(window.location=`report/?key=${n}`)}})});</script>
 
-        <!-- Information button -->
-        <a id="vmap-help" href="about">?</a>
+    <!-- Information button -->
+    <a id="vmap-help" href="about">?</a>
 
-        <!-- Title -->
-        <a id="vmap-title" href="about">Open COVID-19</a>
+    <!-- Title -->
+    <a id="vmap-title" href="about">Open COVID-19</a>
 
-        <!-- Load analytics at the end of the page -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
+    <!-- Load analytics at the end of the page -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
 <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-53249564-6");</script>
 
-    
+
+
 </body></html>

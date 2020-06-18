@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><!-- HTML page head --><head>
+    <!-- HTML metadata -->
+    <meta charset="UTF-8">
+    <title>Open COVID-19</title>
+    <meta name="description" content="Interactive map for the Open COVID-19 Dataset">
+    <link rel="icon" type="image/png" href="../static/logo-64.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Open COVID-19">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="64x64" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="../static/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="../static/icon-512x512.png">
+
+    <!-- Capabilities-related metadata -->
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+    <!-- JQuery and plugins -->
+    <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="../third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../third_party/jqvmap/dist/jqvmap.min.css">
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="https://unpkg.com/picnic">
+    <link rel="stylesheet" href="../static/styles.min.css">
+
+    <!-- Polyfills, custom functions and constants -->
+    <script type="text/javascript" src="../static/polyfills.min.js"></script>
+    <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
+    <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
+
+
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
+
+</head><body class="single-column">
+
+    <!-- Header with links -->
+    <header>
+    <a class="centered uppercase" href="..">World Map</a>
+    <a class="centered uppercase" href="../about">About</a>
+    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
+    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
+</header>
+
+    <main>
+        <!-- Title of the report -->
+        <h1 id="health-title" class="centered">COVID-19 Data Health Dashboard</h1>
+
+        <!-- Create a selector with each data table -->
+        <div id="health-table">
+            <p class="justify">
+                See below for a list of tables. Refer to the
+                <a href="https://github.com/open-covid-19/data">documentation</a> for details about
+                each field.
+            </p>
+            <select id="table-list"></select>
+            <br>
+            <br>
+            <table id="table-metadata" class="fullwidth"></table>
+            <div id="admin-level-chart" class="fullwidth" style="height: 500px;"></div>
+            <div id="null-analysis-chart" class="fullwidth" style="height: 500px;"></div>
+        </div>
+
+        <!-- Load all the data -->
+        <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_19_TABLES).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_19_TABLES[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Columns"),t.addColumn("string","Values"),t.addColumn("number","Count");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");new google.visualization.Sankey(l).draw(t,{})})});</script>
+
+        <script async>loadDataV2((l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
+    </main>
+
+    <!-- Load analytics at the end of the page -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
+<script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-53249564-6");</script>
+
+
+
+</body></html>
