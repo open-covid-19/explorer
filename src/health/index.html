@@ -131,7 +131,7 @@
 
         <script async>
             // Load data in the background
-            loadDataV2((key, table) => {
+            loadDataV2(null, (key, table) => {
                 window.data[key] = table;
                 $(`#list-option-${key}`).prop('disabled', false);
                 console.log(`${key} table loaded successfully`);

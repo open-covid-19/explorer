@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "jquery": "^3.4.1",
+    "jquery-ui-dist": "^1.12.1",
     "jqvmap": "^1.5.1"
   }
 }

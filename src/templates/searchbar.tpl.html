@@ -1,0 +1,32 @@
+<div class="centered fullwidth">
+    <input disabled id="location-selector" type="search" placeholder="Search other locations" results="0" />
+</div>
+<script>
+    loadDataV2(['index'], (name, table) => {
+        const records = tableToRecords(table);
+        const locationLabelMap = records.map(row => {
+            let label = '';
+            switch (row.aggregation_level) {
+                case 0:
+                    label = `${row.country_name} [${row.key}]`
+                    return { value: row.key, label: label };
+                case 1:
+                    label = `${row.subregion1_name}, ${row.country_code} [${row.key}]`;
+                    return { value: row.key, label: label };
+                case 2:
+                    label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
+                    return { value: row.key, label: label };
+            }
+        });
+        $("#location-selector").autocomplete({
+            source: locationLabelMap,
+            select: function (event, ui) {
+                const key = ui.item.value;
+                if (locationLabelMap.map(row => row.value).indexOf(key) !== -1) {
+                    window.goto(`?key=${key}`);
+                }
+            }
+        });
+        $('#location-selector').attr('disabled', false);
+    });
+</script>

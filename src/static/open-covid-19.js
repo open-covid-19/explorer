@@ -18,16 +18,31 @@ function loadData(callback) {
     loadJSON('mobility', 'mobility.json');
 }
 
-function loadDataV2(callback) {
+function loadDataV2(tableNames, callback) {
     function loadJSON(key, path) {
-        $.getJSON(`${OPEN_COVID_19_URL}/data/v2/${path}`, json => {
+        $.getJSON(`${OPEN_COVID_19_URL}/data/v2/${path}?cache=${Date.now()}`, json => {
             callback(key, json);
         });
     }
-    Object.keys(OPEN_COVID_19_TABLES).forEach(
-        key => loadJSON(key, `${key}.json`));
+    tableNames = tableNames || Object.keys(OPEN_COVID_19_TABLES);
+    tableNames.forEach(key => loadJSON(key, `${key}.json`));
 }
 
+function tableToRecords(table) {
+    return table.data.map(row =>
+        table.columns.reduce((acc, col, idx) => Object.assign(acc, { [col]: row[idx] }), {}));
+}
+
+function removeEmptyColumns(table) {
+    const nnColumns = [];
+    table.forEach(row => {
+        Object.keys(row).forEach(col => {
+            if (row[col]) nnColumns.push(col);
+        });
+    });
+    return table.map(row => nnColumns.reduce((acc, col) =>
+        Object.assign(acc, { [col]: row[col] }), {}));
+}
 
 function retryCallback(callback) {
     let counter = 0;
