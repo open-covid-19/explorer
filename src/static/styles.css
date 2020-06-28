@@ -56,8 +56,8 @@ b, h1, h2, h3 {
     width: 256px;
 }
 
-.mh192 {
-    min-height: 192px;
+.mh64 {
+    min-height: 64px;
 }
 
 

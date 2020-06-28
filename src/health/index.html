@@ -17,7 +17,7 @@
     }
 
     google.charts.load('current', {
-        'packages': ['corechart', 'bar', 'sankey'], 'callback': () => {
+        'packages': ['corechart', 'bar', 'sankey', 'table'], 'callback': () => {
             chartLoaded = true;
             pendingCallbacks.forEach(callback => retryCallback(callback));
         }
@@ -44,8 +44,8 @@
             <br />
             <br />
             <table id="table-metadata" class="fullwidth"></table>
-            <div id="admin-level-chart" class="fullwidth" style="height: 500px;"></div>
-            <div id="null-analysis-chart" class="fullwidth" style="height: 500px;"></div>
+            <div id="admin-level-chart" class="fullwidth"></div>
+            <div id="null-analysis-chart" class="fullwidth" style="padding-bottom: 2em;"></div>
         </div>
 
         <!-- Load all the data -->
@@ -103,15 +103,18 @@
                     ]);
 
                     const elem = document.getElementById('admin-level-chart');
-                    new google.visualization.PieChart(elem).draw(adminLevelTable, { pieHole: 0.3 });
+                    new google.visualization.PieChart(elem).draw(adminLevelTable, {
+                        height: 500,
+                        pieHole: 0.3,
+                    });
                 });
 
                 // Visualize the null vs non-null elements
                 chart(() => {
                     const nndata = new google.visualization.DataTable();
-                    nndata.addColumn('string', 'Columns');
-                    nndata.addColumn('string', 'Values');
-                    nndata.addColumn('number', 'Count');
+                    nndata.addColumn('string', 'Column');
+                    nndata.addColumn('string', 'Value');
+                    nndata.addColumn('number', 'Records');
 
                     const nrows = [];
                     table.columns.forEach((column, idx) => {
@@ -122,7 +125,15 @@
                     nndata.addRows(nrows);
 
                     const elem = document.getElementById('null-analysis-chart');
-                    new google.visualization.Sankey(elem).draw(nndata, {});
+                    if (nrows.length > 20) {
+                        new google.visualization.Table(elem).draw(nndata, {
+                            width: '100%',
+                            height: '100%',
+                            cssClassNames: { headerRow: 'google-charts-column-header' },
+                        });
+                    } else {
+                        new google.visualization.Sankey(elem).draw(nndata, { height: '500' });
+                    }
                 });
 
             });

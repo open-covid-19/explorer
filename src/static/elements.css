@@ -61,6 +61,7 @@ header {
     padding: 0.5em 0.2em;
     margin-top: 1em;
     line-height: 1em;
+    min-height: fit-content;
 }
 
 header * {
@@ -73,4 +74,14 @@ header * {
     width: 90%;
     margin: 0 auto;
     max-width: 1080px;
+}
+
+input#location-selector {
+    font-size: large;
+    padding-top: .2em;
+    padding-bottom: .2em;
+}
+
+.google-charts-column-header {
+    background-color: #6A6A6A;
 }
