@@ -1,5 +1,5 @@
 <div class="centered fullwidth">
-    <input disabled id="location-selector" type="search" placeholder="Search other locations" results="0" />
+    <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0" />
 </div>
 <script>
     loadDataV2(['index'], (name, table) => {
@@ -23,7 +23,7 @@
             select: function (event, ui) {
                 const key = ui.item.value;
                 if (locationLabelMap.map(row => row.value).indexOf(key) !== -1) {
-                    window.goto(`?key=${key}`);
+                    window.goto(`{{url-prefix}}?key=${key}`);
                 }
             }
         });

@@ -9,8 +9,10 @@
     <!-- Map section -->
     <div id="vmap"></div>
 
-    <!-- Map legend -->
-    <img id="vmap-legend" src="static/infection_scale.png" />
+    <!-- Search bar -->
+    <div style="position: absolute; top: 0; width: 100%; padding: 2em 4em;">
+        <script src="templates/searchbar.tpl.html" data-include data-vars='{"url-prefix": "report/"}'></script>
+    </div>
 
     <!-- Setup map data -->
     <script>

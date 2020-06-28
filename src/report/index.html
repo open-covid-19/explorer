@@ -31,7 +31,7 @@
     <div class="spacer"></div>
 
     <!-- Location search bar -->
-    <script src="../templates/searchbar.tpl.html" data-include data-vars='{"root": ".."}'></script>
+    <script src="../templates/searchbar.tpl.html" data-include data-vars='{"url-prefix": ""}'></script>
 
     <main>
 
@@ -53,9 +53,9 @@
             <div id="confirmed-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px" />
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-rolling-confirmed">
             <h3 class="centered"><span class="_rolling_window"></span>-Day Cumulative Cases</h3>
@@ -71,9 +71,9 @@
             <div id="rolling-confirmed-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px" />
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-deaths">
             <h3 class="centered">New Fatalities</h3>
@@ -90,9 +90,9 @@
             <div id="deaths-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px" />
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-mobility" style="display: none;">
             <h3 class="centered">Mobility Report</h3>
@@ -104,15 +104,15 @@
                 to the average.
             </p>
             <div id="mobility-chart" class="fullwidth"></div>
+            <div class="spacer"></div>
         </div>
-        <div class="spacer"></div>
 
         <div id="report-demographics" style="display: none;">
             <h3 class="centered">Demographics</h3>
             <table id="table-demographics" style="margin: auto;"></table>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <!-- Setup report data -->
         <script>
@@ -181,7 +181,8 @@
 
                 } else {
                     // Fill out confirmed-related data
-                    const latest = epi[epi.length - 1];
+                    const latest = epi
+                        .filter(row => row.total_confirmed && row.new_confirmed).slice(-1)[0];
                     sub('confirmed_curr', latest.total_confirmed.toLocaleString());
                     sub('confirmed_diff', latest.new_confirmed.toLocaleString());
                     sub('confirmed_records', confirmedRecordCount.toLocaleString());
@@ -192,7 +193,7 @@
                     $('#no-new-confirmed').show();
                     $('#confirmed-chart').hide();
                     $('#confirmed-summary').hide();
-                    $('#rolling-confirmed-chart').hide();
+                    $('#report-rolling-confirmed').hide();
 
                 } else {
 
@@ -263,7 +264,8 @@
 
                 } else {
                     // Fill out deceased-related data
-                    const latest = epi[epi.length - 1];
+                    const latest = epi
+                        .filter(row => row.total_deceased && row.new_deceased).slice(-1)[0];
                     sub('deaths_curr', latest.total_deceased.toLocaleString());
                     sub('deaths_diff', latest.new_deceased.toLocaleString());
                     sub('deaths_records', deceasedRecordCount.toLocaleString());
