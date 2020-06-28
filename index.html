@@ -43,8 +43,13 @@
     <!-- Map section -->
     <div id="vmap"></div>
 
-    <!-- Map legend -->
-    <img id="vmap-legend" src="static/infection_scale.png">
+    <!-- Search bar -->
+    <div style="position: absolute; top: 0; width: 100%; padding: 2em 4em;">
+        <div class="centered fullwidth">
+    <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0">
+</div>
+<script>loadDataV2(["index"],(e,a)=>{const o=tableToRecords(a).map(e=>{let a="";switch(e.aggregation_level){case 0:return a=`${e.country_name} [${e.key}]`,{value:e.key,label:a};case 1:return a=`${e.subregion1_name}, ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a}}});$("#location-selector").autocomplete({source:o,select:function(e,a){const t=a.item.value;-1!==o.map(e=>e.value).indexOf(t)&&window.goto(`report/?key=${t}`)}}),$("#location-selector").attr("disabled",!1)});</script>
+    </div>
 
     <!-- Setup map data -->
     <script>$("#vmap").vectorMap({map:"world_en",selectedColor:null,backgroundColor:"#424242",scaleColors:["#FFFFFF","#FFFFFF"],normalizeFunction:null,onRegionSelect:(o,e,n)=>{e=e.toUpperCase(),"ontouchstart"in window&&!confirm(`See data for ${e}?`)||(window.location=`report/?key=${e}`)}});</script>

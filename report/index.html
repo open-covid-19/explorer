@@ -56,7 +56,7 @@
 
     <!-- Location search bar -->
     <div class="centered fullwidth">
-    <input disabled id="location-selector" type="search" placeholder="Search other locations" results="0">
+    <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0">
 </div>
 <script>loadDataV2(["index"],(e,a)=>{const o=tableToRecords(a).map(e=>{let a="";switch(e.aggregation_level){case 0:return a=`${e.country_name} [${e.key}]`,{value:e.key,label:a};case 1:return a=`${e.subregion1_name}, ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a}}});$("#location-selector").autocomplete({source:o,select:function(e,a){const t=a.item.value;-1!==o.map(e=>e.value).indexOf(t)&&window.goto(`?key=${t}`)}}),$("#location-selector").attr("disabled",!1)});</script>
 
@@ -80,9 +80,9 @@
             <div id="confirmed-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px">
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-rolling-confirmed">
             <h3 class="centered"><span class="_rolling_window"></span>-Day Cumulative Cases</h3>
@@ -98,9 +98,9 @@
             <div id="rolling-confirmed-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px">
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-deaths">
             <h3 class="centered">New Fatalities</h3>
@@ -117,9 +117,9 @@
             <div id="deaths-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px">
             </div>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <div id="report-mobility" style="display: none;">
             <h3 class="centered">Mobility Report</h3>
@@ -131,18 +131,18 @@
                 to the average.
             </p>
             <div id="mobility-chart" class="fullwidth"></div>
+            <div class="spacer"></div>
         </div>
-        <div class="spacer"></div>
 
         <div id="report-demographics" style="display: none;">
             <h3 class="centered">Demographics</h3>
             <table id="table-demographics" style="margin: auto;"></table>
+            <div class="spacer"></div>
         </div>
 
-        <div class="spacer"></div>
 
         <!-- Setup report data -->
-        <script>const key=URLSearchParameters().key,dataFilter=e=>e.key===key,sub=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)}),minLength=7,windowSize=21,clientWidth=document.querySelector("main").getBoundingClientRect().width,chartHeight=Math.min(480,Math.max(224,Math.round(2*clientWidth/3)));function onIndexLoaded(e){switch(e.aggregation_level){case 0:sub("name",e.country_name);break;case 1:sub("name",e.subregion1_name);break;case 2:sub("name",e.subregion2_name)}}function onEpidemiologyLoaded(e){const t=e.map(e=>e.new_confirmed).filter(e=>null!==e).length;if(t<minLength)console.log("Confirmed report not available"),$("#report-confirmed").hide();else{const o=e[e.length-1];sub("confirmed_curr",o.total_confirmed.toLocaleString()),sub("confirmed_diff",o.new_confirmed.toLocaleString()),sub("confirmed_records",t.toLocaleString())}if(0===e.slice(-windowSize).reduce((e,t)=>e+parseInt(t.new_confirmed)||0,0))$("#no-new-confirmed").show(),$("#confirmed-chart").hide(),$("#confirmed-summary").hide(),$("#rolling-confirmed-chart").hide();else{chart(()=>{const t=["date","new_confirmed"],o=[t].concat(e.slice(-windowSize).map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("confirmed-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(o),google.charts.Bar.convertOptions({height:chartHeight,colors:["#1565C0"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))});const t=14;sub("rolling_window",t);const o=e.map((o,i)=>{const n=Math.max(0,i-t),a=e.slice(n,i).reduce((e,t)=>e+t.new_confirmed,0);return{date:o.date,rolling_confirmed:a}});chart(()=>{const e=["date","rolling_confirmed"],t=[e].concat(o.slice(-windowSize).map(t=>e.slice(0).map(e=>t[e]))),i=document.getElementById("rolling-confirmed-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:chartHeight,colors:["#FF9800"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))})}const o=e.map(e=>e.new_deceased).filter(e=>null!==e).length;if(o<minLength)console.log("Fatalities report not available"),$("#report-deaths").hide();else{const t=e[e.length-1];sub("deaths_curr",t.total_deceased.toLocaleString()),sub("deaths_diff",t.new_deceased.toLocaleString()),sub("deaths_records",o.toLocaleString())}0===e.slice(-windowSize).reduce((e,t)=>e+t.new_deceased,0)?($("#no-new-deaths").show(),$("#deaths-chart").hide(),$("#deaths-summary").hide()):chart(()=>{const t=["date","new_deceased"],o=[t].concat(e.slice(-windowSize).map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("deaths-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(o),google.charts.Bar.convertOptions({height:chartHeight,colors:["#B71C1C"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))})}function onMobilityLoaded(e){if(e.length>4){e[e.length-1];$("#report-mobility").show(),e=removeEmptyColumns(e),chart(()=>{const t=["date"].concat(Object.keys(e[0]).slice(2)),o=[t.map(e=>e.replace("mobility_",""))].concat(e.map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("mobility-chart");new google.visualization.AreaChart(i).draw(google.visualization.arrayToDataTable(o),{height:chartHeight,legend:{position:"in"},hAxis:{slantedText:!1},chartArea:{top:24,left:32,width:"90%",height:"80%"}})})}}function onDemographicsLoaded(e){$("#report-demographics").show(),$("#table-demographics").html(Object.keys(e).map((t,o)=>`<tr><td><b>${t}</b></td><td>${e[t].toLocaleString()}</td>`))}sub("window_size",windowSize),loadDataV2([`${key}/master`],(e,t)=>{const o=tableToRecords(t);console.log(o),onIndexLoaded(o[0]),onEpidemiologyLoaded(o),onMobilityLoaded(o.map(e=>Object.assign({},Object.keys(e).reduce((t,o)=>-1===o.indexOf("mobility")?t:Object.assign(t,{[o]:e[o]}),{date:e.date}))).filter(e=>Object.keys(e).reduce((t,o)=>"date"===o?t:t||e[o],!1))),loadDataV2(["latest/demographics"],(e,t)=>{const i=o[0];onDemographicsLoaded(Object.keys(tableToRecords(t)[0]).reduce((e,t)=>"key"===t||null===i[t]?e:Object.assign(e,{[t]:i[t]}),{}))})});</script>
+        <script>const key=URLSearchParameters().key,dataFilter=e=>e.key===key,sub=(e,t)=>$(`._${e}`).each(function(){$(this).text(t)}),minLength=7,windowSize=21,clientWidth=document.querySelector("main").getBoundingClientRect().width,chartHeight=Math.min(480,Math.max(224,Math.round(2*clientWidth/3)));function onIndexLoaded(e){switch(e.aggregation_level){case 0:sub("name",e.country_name);break;case 1:sub("name",e.subregion1_name);break;case 2:sub("name",e.subregion2_name)}}function onEpidemiologyLoaded(e){const t=e.map(e=>e.new_confirmed).filter(e=>null!==e).length;if(t<minLength)console.log("Confirmed report not available"),$("#report-confirmed").hide();else{const o=e.filter(e=>e.total_confirmed&&e.new_confirmed).slice(-1)[0];sub("confirmed_curr",o.total_confirmed.toLocaleString()),sub("confirmed_diff",o.new_confirmed.toLocaleString()),sub("confirmed_records",t.toLocaleString())}if(0===e.slice(-windowSize).reduce((e,t)=>e+parseInt(t.new_confirmed)||0,0))$("#no-new-confirmed").show(),$("#confirmed-chart").hide(),$("#confirmed-summary").hide(),$("#report-rolling-confirmed").hide();else{chart(()=>{const t=["date","new_confirmed"],o=[t].concat(e.slice(-windowSize).map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("confirmed-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(o),google.charts.Bar.convertOptions({height:chartHeight,colors:["#1565C0"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))});const t=14;sub("rolling_window",t);const o=e.map((o,i)=>{const a=Math.max(0,i-t),n=e.slice(a,i).reduce((e,t)=>e+t.new_confirmed,0);return{date:o.date,rolling_confirmed:n}});chart(()=>{const e=["date","rolling_confirmed"],t=[e].concat(o.slice(-windowSize).map(t=>e.slice(0).map(e=>t[e]))),i=document.getElementById("rolling-confirmed-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(t),google.charts.Bar.convertOptions({height:chartHeight,colors:["#FF9800"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))})}const o=e.map(e=>e.new_deceased).filter(e=>null!==e).length;if(o<minLength)console.log("Fatalities report not available"),$("#report-deaths").hide();else{const t=e.filter(e=>e.total_deceased&&e.new_deceased).slice(-1)[0];sub("deaths_curr",t.total_deceased.toLocaleString()),sub("deaths_diff",t.new_deceased.toLocaleString()),sub("deaths_records",o.toLocaleString())}0===e.slice(-windowSize).reduce((e,t)=>e+t.new_deceased,0)?($("#no-new-deaths").show(),$("#deaths-chart").hide(),$("#deaths-summary").hide()):chart(()=>{const t=["date","new_deceased"],o=[t].concat(e.slice(-windowSize).map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("deaths-chart");new google.charts.Bar(i).draw(google.visualization.arrayToDataTable(o),google.charts.Bar.convertOptions({height:chartHeight,colors:["#B71C1C"],hAxis:{title:""},vAxis:{viewWindow:{min:0}},legend:{position:"none"}}))})}function onMobilityLoaded(e){if(e.length>4){e[e.length-1];$("#report-mobility").show(),e=removeEmptyColumns(e),chart(()=>{const t=["date"].concat(Object.keys(e[0]).slice(2)),o=[t.map(e=>e.replace("mobility_",""))].concat(e.map(e=>t.slice(0).map(t=>e[t]))),i=document.getElementById("mobility-chart");new google.visualization.AreaChart(i).draw(google.visualization.arrayToDataTable(o),{height:chartHeight,legend:{position:"in"},hAxis:{slantedText:!1},chartArea:{top:24,left:32,width:"90%",height:"80%"}})})}}function onDemographicsLoaded(e){$("#report-demographics").show(),$("#table-demographics").html(Object.keys(e).map((t,o)=>`<tr><td><b>${t}</b></td><td>${e[t].toLocaleString()}</td>`))}sub("window_size",windowSize),loadDataV2([`${key}/master`],(e,t)=>{const o=tableToRecords(t);console.log(o),onIndexLoaded(o[0]),onEpidemiologyLoaded(o),onMobilityLoaded(o.map(e=>Object.assign({},Object.keys(e).reduce((t,o)=>-1===o.indexOf("mobility")?t:Object.assign(t,{[o]:e[o]}),{date:e.date}))).filter(e=>Object.keys(e).reduce((t,o)=>"date"===o?t:t||e[o],!1))),loadDataV2(["latest/demographics"],(e,t)=>{const i=o[0];onDemographicsLoaded(Object.keys(tableToRecords(t)[0]).reduce((e,t)=>"key"===t||null===i[t]?e:Object.assign(e,{[t]:i[t]}),{}))})});</script>
     </main>
 
     <!-- Load analytics at the end of the page -->
