@@ -41,7 +41,7 @@
 <!-- Google Charts -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-<script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
+<script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey","table"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
 
 </head><body class="single-column">
 
@@ -68,12 +68,12 @@
             <br>
             <br>
             <table id="table-metadata" class="fullwidth"></table>
-            <div id="admin-level-chart" class="fullwidth" style="height: 500px;"></div>
-            <div id="null-analysis-chart" class="fullwidth" style="height: 500px;"></div>
+            <div id="admin-level-chart" class="fullwidth"></div>
+            <div id="null-analysis-chart" class="fullwidth" style="padding-bottom: 2em;"></div>
         </div>
 
         <!-- Load all the data -->
-        <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_19_TABLES).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_19_TABLES[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Columns"),t.addColumn("string","Values"),t.addColumn("number","Count");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");new google.visualization.Sankey(l).draw(t,{})})});</script>
+        <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_19_TABLES).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_19_TABLES[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{height:500,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");e.length>20?new google.visualization.Table(l).draw(t,{width:"100%",height:"100%",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(l).draw(t,{height:"500"})})});</script>
 
         <script async>loadDataV2(null,(l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
     </main>
