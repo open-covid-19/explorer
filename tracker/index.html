@@ -47,13 +47,13 @@
     <div id="vmap"></div>
 
     <!-- Setup map data -->
-    <script>const query=URLSearchParameters().q;query||(window.location="?q=subregions"),loadDataV2(["latest/master"],(e,o)=>{const t=moment().subtract(14,"days").format("YYYY-MM-DD"),r=tableToRecords(o),a=r.filter(e=>0===e.aggregation_level).reduce((e,o)=>{const a=o.country_code,l=r.filter(e=>e.country_code===a&&1===e.aggregation_level&&e.date>t);return r.filter(e=>e.country_code===a&&2===e.aggregation_level&&e.date>t).length>0?e[a.toLowerCase()]=2:l.length>0?e[a.toLowerCase()]=1:e[a.toLowerCase()]=0,e},{});console.log(a),$("#vmap").vectorMap({map:"world_en",values:a,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})});</script>
+    <script>const query=URLSearchParameters().q;query||(window.location="?q=subregions"),loadDataV2(["latest/master"],(e,o)=>{const t=moment().subtract(14,"days").format("YYYY-MM-DD"),r=tableToRecords(o),a=r.filter(e=>0===e.aggregation_level).reduce((e,o)=>{const a=o.country_code,l=r.filter(e=>e.country_code===a&&1===e.aggregation_level&&e.date>t);return r.filter(e=>e.country_code===a&&2===e.aggregation_level&&e.date>t).length>0?e[a.toLowerCase()]=2:l.length>0?e[a.toLowerCase()]=1:e[a.toLowerCase()]=0,e},{});$("#vmap").vectorMap({map:"world_en",values:a,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})});</script>
 
     <!-- Information button -->
-    <a id="vmap-help" href="about">?</a>
+    <a id="vmap-help" href="../about">?</a>
 
     <!-- Title -->
-    <a id="vmap-title" href="about">Open COVID-19</a>
+    <a id="vmap-title" href="../about">Open COVID-19</a>
 
     <!-- Load analytics at the end of the page -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
