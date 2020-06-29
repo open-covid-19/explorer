@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<!-- HTML page head -->
+<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+<!-- Dependencies for this page -->
+<script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
+
+<body>
+
+    <!-- Map section -->
+    <div id="vmap"></div>
+
+    <!-- Setup map data -->
+    <script>
+        const query = URLSearchParameters().q;
+        if (!query) window.location = '?q=subregions';
+
+        loadDataV2([`latest/master`], (name, table) => {
+            const cutoff = moment().subtract(14, 'days').format('YYYY-MM-DD');
+
+            const records = tableToRecords(table);
+            const subregions = records
+                .filter(row => row.aggregation_level === 0)
+                .reduce((acc, row) => {
+                    const code = row.country_code;
+                    const l1 = records.filter(rec =>
+                        rec.country_code === code && rec.aggregation_level === 1 && rec.date > cutoff);
+                    const l2 = records.filter(rec =>
+                        rec.country_code === code && rec.aggregation_level === 2 && rec.date > cutoff);
+                    if (l2.length > 0) {
+                        acc[code.toLowerCase()] = 2;
+                    } else if (l1.length > 0) {
+                        acc[code.toLowerCase()] = 1;
+                    } else {
+                        acc[code.toLowerCase()] = 0;
+                    }
+                    return acc;
+                }, {});
+            console.log(subregions);
+
+
+            $('#vmap').vectorMap({
+                map: 'world_en',
+                values: subregions,
+                selectedColor: null,
+                backgroundColor: '#626262',
+                scaleColors: ['#000000', '#4287f5'],
+            });
+        });
+    </script>
+
+    <!-- Information button -->
+    <a id="vmap-help" href="about">?</a>
+
+    <!-- Title -->
+    <a id="vmap-title" href="about">{{name}}</a>
+
+    <!-- Load analytics at the end of the page -->
+    <script src="../templates/analytics.tpl.html" data-include></script>
+</body>
+
+</html>
