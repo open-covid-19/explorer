@@ -29,16 +29,19 @@
     <link rel="stylesheet" href="{{root}}/third_party/jqvmap/dist/jqvmap.min.css" />
     <link rel="stylesheet" href="{{root}}/third_party/jquery-ui-dist/jquery-ui.min.css">
 
+    <!-- MomentJS -->
+    <script type="text/javascript" src="{{root}}/third_party/moment/min/moment.min.js"></script>
+
     <!-- Custom styles -->
-    <link rel="stylesheet" href="https://unpkg.com/picnic" />
+    <link rel="stylesheet" href="{{root}}/third_party/picnic/picnic.min.css" />
     <link rel="stylesheet" href="{{root}}/static/styles.min.css" />
 
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="{{root}}/static/polyfills.min.js"></script>
     <script type="text/javascript" src="{{root}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
-        const OPEN_COVID_19_URL = 'https://open-covid-19.github.io'
-        // const OPEN_COVID_19_URL = 'http://localhost:8080';
+        const OPEN_COVID_DATA_URL = 'https://storage.googleapis.com/covid19-open-data'
+        // const OPEN_COVID_DATA_URL = 'http://localhost:8080';
         const OPEN_COVID_19_TABLES = {
             'index': 'Index',
             'demographics': 'Demographics',

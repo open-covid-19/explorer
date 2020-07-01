@@ -1,26 +1,9 @@
-/** Wait until all data is loaded, then perform callback */
-function loadData(callback) {
-    const data = {
-        'latest': null,
-        'forecast': null,
-        'history': null,
-        'mobility': null
-    };
+function loadData(tableNames, callback) {
     function loadJSON(key, path) {
-        $.getJSON(`${OPEN_COVID_19_URL}/data/${path}`, json => {
-            data[key] = json;
-            Object.keys(data).every(key => data[key]) && callback(data);
-        });
-    }
-    loadJSON('latest', 'data_latest.json');
-    loadJSON('forecast', 'data_forecast.json');
-    loadJSON('history', 'data.json');
-    loadJSON('mobility', 'mobility.json');
-}
-
-function loadDataV2(tableNames, callback) {
-    function loadJSON(key, path) {
-        $.getJSON(`${OPEN_COVID_19_URL}/data/v2/${path}?cache=${Date.now()}`, json => {
+        const oneMinuteCache = Math.round(Date.now() / 1000 / 60);
+        console.log(`Loading ${OPEN_COVID_DATA_URL}/v2/${path}?cache=${oneMinuteCache}`);
+        $.getJSON(`${OPEN_COVID_DATA_URL}/v2/${path}?cache=${oneMinuteCache}`, json => {
+            console.log(`Loaded ${key}`);
             callback(key, json);
         });
     }

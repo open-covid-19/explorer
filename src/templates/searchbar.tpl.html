@@ -2,7 +2,7 @@
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0" />
 </div>
 <script>
-    loadDataV2(['index'], (name, table) => {
+    loadData(['index'], (name, table) => {
         const records = tableToRecords(table);
         const locationLabelMap = records.map(row => {
             let label = '';

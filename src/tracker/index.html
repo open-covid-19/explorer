@@ -4,9 +4,6 @@
 <!-- HTML page head -->
 <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
 
-<!-- Dependencies for this page -->
-<script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
-
 <body>
 
     <!-- Map section -->
@@ -14,20 +11,32 @@
 
     <!-- Setup map data -->
     <script>
-        const query = URLSearchParameters().q;
-        if (!query) window.location = '?q=subregions';
+        const params = new URLSearchParams(window.location.search);
 
-        loadDataV2([`latest/master`], (name, table) => {
+        const prevParams = params.toString();
+        if (!params.get('q')) params.set('q', 'subregions');
+        if (!params.get('s')) params.set('s', 'total_confirmed');
+
+        const currParams = params.toString();
+        if (prevParams !== currParams) {
+            window.location = "?" + currParams;
+        }
+
+        loadData([`latest/main`], (name, table) => {
             const cutoff = moment().subtract(14, 'days').format('YYYY-MM-DD');
 
             const records = tableToRecords(table);
+            const nullCheckColumns = params.get('s').split(',');
+            const recordsWithEpi = records.filter(row =>
+                nullCheckColumns.some(col => row[col] !== null));
+
             const subregions = records
                 .filter(row => row.aggregation_level === 0)
                 .reduce((acc, row) => {
                     const code = row.country_code;
-                    const l1 = records.filter(rec =>
+                    const l1 = recordsWithEpi.filter(rec =>
                         rec.country_code === code && rec.aggregation_level === 1 && rec.date > cutoff);
-                    const l2 = records.filter(rec =>
+                    const l2 = recordsWithEpi.filter(rec =>
                         rec.country_code === code && rec.aggregation_level === 2 && rec.date > cutoff);
                     if (l2.length > 0) {
                         acc[code.toLowerCase()] = 2;

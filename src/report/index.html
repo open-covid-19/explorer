@@ -43,12 +43,14 @@
             <p id="no-new-confirmed" class="justify" style="display: none;">
                 There are no new confirmed COVID-19 cases reported in the last
                 <b><span class="_window_size"></span></b> days. The total number of
-                confirmed cases <b><span class="_confirmed_curr"></span></b>.
+                confirmed cases <b><span class="_confirmed_curr"></span></b>. The first
+                reported case was on <b><span class="_confirmed_first"></span></b>.
             </p>
             <p id="confirmed-summary" class="justify">
                 The last reported number of confirmed COVID-19 cases is
                 <b><span class="_confirmed_curr"></span></b>, which is a difference of
-                <b>+<span class="_confirmed_diff"></span></b> from the previous day.
+                <b>+<span class="_confirmed_diff"></span></b> from the previous day. The first
+                reported case was on <b><span class="_confirmed_first"></span></b>.
             </p>
             <div id="confirmed-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px" />
@@ -80,12 +82,14 @@
             <p id="no-new-deaths" class="justify" style="display: none;">
                 There are no new fatalities associated with COVID-19 reported in the last
                 <b><span class="_window_size"></span></b> days. The total number of fatalities
-                is <b><span class="_deaths_curr"></span></b>.
+                is <b><span class="_deaths_curr"></span></b>. The first
+                reported fatality was on <b><span class="_deceased_first"></span></b>.
             </p>
             <p id="deaths-summary" class="justify">
                 The latest reports claim a death toll related to COVID-19 of
                 <b><span class="_deaths_curr"></span></b>, which is an increase of
-                <b>+<span class="_deaths_diff"></span></b> since the previous day.
+                <b>+<span class="_deaths_diff"></span></b> since the previous day. The first
+                reported fatality was on <b><span class="_deceased_first"></span></b>.
             </p>
             <div id="deaths-chart" class="fullwidth">
                 <img src="../static/transparent.png" height="500px" />
@@ -128,7 +132,7 @@
 
             sub('window_size', windowSize);
 
-            loadDataV2([`${key}/master`], (name, table) => {
+            loadData([`${key}/main`], (name, table) => {
                 const records = tableToRecords(table);
                 console.log(records)
 
@@ -144,7 +148,7 @@
                 );
 
                 // Load the demographics table to get all the columns that belong there
-                loadDataV2(['latest/demographics'], (name, table) => {
+                loadData(['latest/demographics'], (name, table) => {
                     const sample = records[0];
                     const demographicsColumns = Object.keys(tableToRecords(table)[0]);
                     onDemographicsLoaded(demographicsColumns.reduce((acc, col) =>
@@ -181,11 +185,13 @@
 
                 } else {
                     // Fill out confirmed-related data
+                    const first = epi.filter(row => row.total_confirmed > 0)[0];
                     const latest = epi
                         .filter(row => row.total_confirmed && row.new_confirmed).slice(-1)[0];
                     sub('confirmed_curr', latest.total_confirmed.toLocaleString());
                     sub('confirmed_diff', latest.new_confirmed.toLocaleString());
                     sub('confirmed_records', confirmedRecordCount.toLocaleString());
+                    sub('confirmed_first', moment(first.date).format('LL'));
                 }
 
                 // Hide chart if no new cases in the last window shown
@@ -264,11 +270,13 @@
 
                 } else {
                     // Fill out deceased-related data
+                    const first = epi.filter(row => row.total_deceased > 0)[0];
                     const latest = epi
                         .filter(row => row.total_deceased && row.new_deceased).slice(-1)[0];
                     sub('deaths_curr', latest.total_deceased.toLocaleString());
                     sub('deaths_diff', latest.new_deceased.toLocaleString());
                     sub('deaths_records', deceasedRecordCount.toLocaleString());
+                    sub('deceased_first', moment(first.date).format('LL'));
                 }
 
                 // Hide chart if no new cases in the last window shown
