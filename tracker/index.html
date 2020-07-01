@@ -28,18 +28,18 @@
     <link rel="stylesheet" href="../third_party/jqvmap/dist/jqvmap.min.css">
     <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
+    <!-- MomentJS -->
+    <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
+
     <!-- Custom styles -->
-    <link rel="stylesheet" href="https://unpkg.com/picnic">
+    <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
     <link rel="stylesheet" href="../static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
+    <script type="text/javascript">const OPEN_COVID_DATA_URL="https://storage.googleapis.com/covid19-open-data",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
 
-
-<!-- Dependencies for this page -->
-<script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
 
 </head><body>
 
@@ -47,7 +47,7 @@
     <div id="vmap"></div>
 
     <!-- Setup map data -->
-    <script>const query=URLSearchParameters().q;query||(window.location="?q=subregions"),loadDataV2(["latest/master"],(e,o)=>{const t=moment().subtract(14,"days").format("YYYY-MM-DD"),r=tableToRecords(o),a=r.filter(e=>0===e.aggregation_level).reduce((e,o)=>{const a=o.country_code,l=r.filter(e=>e.country_code===a&&1===e.aggregation_level&&e.date>t);return r.filter(e=>e.country_code===a&&2===e.aggregation_level&&e.date>t).length>0?e[a.toLowerCase()]=2:l.length>0?e[a.toLowerCase()]=1:e[a.toLowerCase()]=0,e},{});$("#vmap").vectorMap({map:"world_en",values:a,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})});</script>
+    <script>const params=new URLSearchParams(window.location.search),prevParams=params.toString();params.get("q")||params.set("q","subregions"),params.get("s")||params.set("s","total_confirmed");const currParams=params.toString();prevParams!==currParams&&(window.location="?"+currParams),loadData(["latest/main"],(a,e)=>{const r=moment().subtract(14,"days").format("YYYY-MM-DD"),t=tableToRecords(e),o=params.get("s").split(","),s=t.filter(a=>o.some(e=>null!==a[e])),l=t.filter(a=>0===a.aggregation_level).reduce((a,e)=>{const t=e.country_code,o=s.filter(a=>a.country_code===t&&1===a.aggregation_level&&a.date>r);return s.filter(a=>a.country_code===t&&2===a.aggregation_level&&a.date>r).length>0?a[t.toLowerCase()]=2:o.length>0?a[t.toLowerCase()]=1:a[t.toLowerCase()]=0,a},{});$("#vmap").vectorMap({map:"world_en",values:l,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})});</script>
 
     <!-- Information button -->
     <a id="vmap-help" href="../about">?</a>

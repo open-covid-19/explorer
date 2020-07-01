@@ -28,14 +28,17 @@
     <link rel="stylesheet" href="../third_party/jqvmap/dist/jqvmap.min.css">
     <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
+    <!-- MomentJS -->
+    <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
+
     <!-- Custom styles -->
-    <link rel="stylesheet" href="https://unpkg.com/picnic">
+    <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
     <link rel="stylesheet" href="../static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const OPEN_COVID_19_URL="https://open-covid-19.github.io",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
+    <script type="text/javascript">const OPEN_COVID_DATA_URL="https://storage.googleapis.com/covid19-open-data",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
 
 
 <!-- Google Charts -->
@@ -75,7 +78,7 @@
         <!-- Load all the data -->
         <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_19_TABLES).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_19_TABLES[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{height:500,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");e.length>20?new google.visualization.Table(l).draw(t,{width:"100%",height:"100%",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(l).draw(t,{height:"500"})})});</script>
 
-        <script async>loadDataV2(null,(l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
+        <script async>loadData(null,(l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
     </main>
 
     <!-- Load analytics at the end of the page -->
