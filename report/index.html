@@ -61,7 +61,7 @@
     <div class="centered fullwidth">
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0">
 </div>
-<script>loadData(["index"],(e,a)=>{const o=tableToRecords(a).map(e=>{let a="";switch(e.aggregation_level){case 0:return a=`${e.country_name} [${e.key}]`,{value:e.key,label:a};case 1:return a=`${e.subregion1_name}, ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a}}});$("#location-selector").autocomplete({source:o,select:function(e,a){const t=a.item.value;-1!==o.map(e=>e.value).indexOf(t)&&window.goto(`?key=${t}`)}}),$("#location-selector").attr("disabled",!1)});</script>
+<script>loadData(["index"],(e,a)=>{const o=tableToRecords(a).map(e=>{let a="";switch(e.aggregation_level){case 0:return a=`${e.country_name} [${e.key}]`,{value:e.key,label:a};case 1:return a=`${e.subregion1_name}, ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a}}});$("#location-selector").autocomplete({minLength:2,source:o,select:function(e,a){const t=a.item.value;-1!==o.map(e=>e.value).indexOf(t)&&window.goto(`?key=${t}`)}}),$("#location-selector").attr("disabled",!1)});</script>
 
     <main>
 
