@@ -19,6 +19,7 @@
             }
         });
         $("#location-selector").autocomplete({
+            minLength: 2,
             source: locationLabelMap,
             select: function (event, ui) {
                 const key = ui.item.value;
