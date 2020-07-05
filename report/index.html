@@ -38,7 +38,8 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const OPEN_COVID_DATA_URL="https://storage.googleapis.com/covid19-open-data",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
+    <script type="text/javascript">const DEBUG_KEYS=["data_url","branch"],DEBUG_DICT=DEBUG_KEYS.reduce((a,o)=>Object.assign(a,{[o]:sessionStorage.getItem(o)}),{}),dataUrl=DEBUG_DICT.data_url,dataBranch=DEBUG_DICT.branch;let dataEndpoint="https://storage.googleapis.com/covid19-open-data";dataBranch&&(dataEndpoint+=`/staging/${dataBranch}`),dataUrl&&(dataEndpoint=dataUrl);const OPEN_COVID_CONFIG={data_url:dataEndpoint,tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}};</script>
+
 
 
 <!-- Google Charts -->
@@ -48,12 +49,24 @@
 </head><body class="single-column">
 
     <!-- Header with links -->
-    <header>
+    <header id="debug-header" style="border: 4px solid red; display: none;">
+    <a id="debug-clear-button" class="centered uppercase" href="#">Using custom endpoint, click here to reset</a>
+</header>
+
+<a id="debug-button" href="../debug">
+    <img src="../static/bug.png" height="auto" width="100%">
+</a>
+
+<script>$(window).on("scroll",o=>{const e=$("#debug-button");$(window).scrollTop()+$(window).height()==$(document).height()?e.show():e.hide()}),DEBUG_KEYS.some(o=>DEBUG_DICT[o])&&($("#debug-header").css("display","flex"),$("#debug-clear-button").on("click",o=>{DEBUG_KEYS.forEach(o=>sessionStorage.removeItem(o)),window.location.reload()}));</script>
+
+
+<header>
     <a class="centered uppercase" href="..">World Map</a>
     <a class="centered uppercase" href="../about">About</a>
     <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
     <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
 </header>
+
 
     <div class="spacer"></div>
 

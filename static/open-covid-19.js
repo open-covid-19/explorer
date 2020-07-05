@@ -1,13 +1,10 @@
 function loadData(tableNames, callback) {
     function loadJSON(key, path) {
         const oneMinuteCache = Math.round(Date.now() / 1000 / 60);
-        console.log(`Loading ${OPEN_COVID_DATA_URL}/v2/${path}?cache=${oneMinuteCache}`);
-        $.getJSON(`${OPEN_COVID_DATA_URL}/v2/${path}?cache=${oneMinuteCache}`, json => {
-            console.log(`Loaded ${key}`);
-            callback(key, json);
-        });
+        const tableUrl = `${OPEN_COVID_CONFIG['data_url']}/v2/${path}`;
+        $.getJSON(`${tableUrl}?cache=${oneMinuteCache}`, json => callback(key, json));
     }
-    tableNames = tableNames || Object.keys(OPEN_COVID_19_TABLES);
+    tableNames = tableNames || Object.keys(OPEN_COVID_CONFIG['tables']);
     tableNames.forEach(key => loadJSON(key, `${key}.json`));
 }
 

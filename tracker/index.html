@@ -38,7 +38,8 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const OPEN_COVID_DATA_URL="https://storage.googleapis.com/covid19-open-data",OPEN_COVID_19_TABLES={index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"};</script>
+    <script type="text/javascript">const DEBUG_KEYS=["data_url","branch"],DEBUG_DICT=DEBUG_KEYS.reduce((a,o)=>Object.assign(a,{[o]:sessionStorage.getItem(o)}),{}),dataUrl=DEBUG_DICT.data_url,dataBranch=DEBUG_DICT.branch;let dataEndpoint="https://storage.googleapis.com/covid19-open-data";dataBranch&&(dataEndpoint+=`/staging/${dataBranch}`),dataUrl&&(dataEndpoint=dataUrl);const OPEN_COVID_CONFIG={data_url:dataEndpoint,tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}};</script>
+
 
 
 </head><body>

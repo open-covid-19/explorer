@@ -42,11 +42,6 @@
 
 
 
-<!-- Google Charts -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-<script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey","table"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
-
 </head><body class="single-column">
 
     <!-- Header with links -->
@@ -70,28 +65,22 @@
 
 
     <main>
-        <!-- Title of the report -->
-        <h1 id="health-title" class="centered">COVID-19 Data Health Dashboard</h1>
+        <!-- Title of the page -->
+        <h1 id="health-title" class="centered">COVID-19 Data Debug Options</h1>
 
-        <!-- Create a selector with each data table -->
-        <div id="health-table">
+        <div id="report-confirmed">
+            <h3 class="centered">Select Branch</h3>
             <p class="justify">
-                See below for a list of tables. Refer to the
-                <a href="https://github.com/open-covid-19/data">documentation</a> for details about
-                each field.
+                Select the branch where data will be pulled from. This won't work with a branch
+                unless the data pipelines are run and the outputs uploaded for the specific branch
+                selected. Only the <b>main</b> and <b>development</b> branches are being
+                automatically updated.
             </p>
-            <select id="table-list"></select>
-            <br>
-            <br>
-            <table id="table-metadata" class="fullwidth"></table>
-            <div id="admin-level-chart" class="fullwidth"></div>
-            <div id="null-analysis-chart" class="fullwidth" style="padding-bottom: 2em;"></div>
+            <select id="branch-list"></select>
+            <div class="spacer"></div>
         </div>
 
-        <!-- Load all the data -->
-        <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_CONFIG.tables).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_CONFIG.tables[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{height:500,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");e.length>20?new google.visualization.Table(l).draw(t,{width:"100%",height:"100%",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(l).draw(t,{height:"500"})})});</script>
-
-        <script async>loadData(null,(l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
+        <script>const allBranches=["main","development"];$("#branch-list").html(['<option value="">Select Branch</option>'].concat(allBranches.map(e=>{return`<option value="${e}" ${DEBUG_DICT.branch===e?"selected=1":""}>${e}</option>`}))),$("#branch-list").on("change",e=>{const n=$("#branch-list option:selected")[0].value;"main"===n?sessionStorage.removeItem("branch"):sessionStorage.setItem("branch",n),window.location.reload()});</script>
     </main>
 
     <!-- Load analytics at the end of the page -->
