@@ -85,3 +85,13 @@ input#location-selector {
 .google-charts-column-header {
     background-color: #6A6A6A;
 }
+
+#debug-button {
+    position: fixed;
+    display: none;
+    bottom: 1em;
+    right: 1em;
+    width: 2em;
+    height: 2em;
+    z-index: 1;
+}

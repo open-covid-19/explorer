@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<!-- HTML page head -->
+<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+<body class="single-column">
+
+    <!-- Header with links -->
+    <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+
+    <main>
+        <!-- Title of the page -->
+        <h1 id="health-title" class="centered">COVID-19 Data Debug Options</h1>
+
+        <div id="report-confirmed">
+            <h3 class="centered">Select Branch</h3>
+            <p class="justify">
+                Select the branch where data will be pulled from. This won't work with a branch
+                unless the data pipelines are run and the outputs uploaded for the specific branch
+                selected. Only the <b>main</b> and <b>development</b> branches are being
+                automatically updated.
+            </p>
+            <select id="branch-list"></select>
+            <div class="spacer"></div>
+        </div>
+
+        <script>
+            // TODO: read branches using GitHub's API
+            const allBranches = ['main', 'development'];
+
+            $('#branch-list').html([
+                `<option value="">Select Branch</option>`
+            ].concat(allBranches.map(branch => {
+                const selected = DEBUG_DICT['branch'] === branch ? 'selected=1' : '';
+                return `<option value="${branch}" ${selected}>${branch}</option>`;
+            })));
+            $('#branch-list').on('change', event => {
+                const branch = $('#branch-list option:selected')[0].value;
+                // Save the selected branch into the session storage
+                if (branch === 'main') {
+                    sessionStorage.removeItem('branch');
+                } else {
+                    sessionStorage.setItem('branch', branch);
+                }
+                window.location.reload();
+            });
+        </script>
+    </main>
+
+    <!-- Load analytics at the end of the page -->
+    <script src="../templates/analytics.tpl.html" data-include></script>
+</body>
+
+</html>

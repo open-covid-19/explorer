@@ -1,0 +1,27 @@
+<header id="debug-header" style="border: 4px solid red; display: none;">
+    <a id="debug-clear-button" class="centered uppercase" href="#">Using custom endpoint, click here to reset</a>
+</header>
+
+<a id="debug-button" href="{{root}}/debug">
+    <img src="{{root}}/static/bug.png" height="auto" width="100%" />
+</a>
+
+<script>
+
+    // Show the debug button when user reaches the bottom of the page
+    $(window).on('scroll', event => {
+        const elem = $('#debug-button');
+        const isAtBottom = $(window).scrollTop() + $(window).height() == $(document).height();
+        isAtBottom ? elem.show() : elem.hide();
+    });
+
+    // Handle the button to clear all debug options
+    if (DEBUG_KEYS.some(key => DEBUG_DICT[key])) {
+        $('#debug-header').css('display', 'flex');
+        $('#debug-clear-button').on('click', event => {
+            DEBUG_KEYS.forEach(key => sessionStorage.removeItem(key));
+            window.location.reload();
+        })
+    }
+
+</script>

@@ -54,8 +54,8 @@
 
             $('#table-list').html([
                 `<option selected disabled>Select Data Table</option>`
-            ].concat(Object.keys(OPEN_COVID_19_TABLES).map(tableName => {
-                const name = OPEN_COVID_19_TABLES[tableName];
+            ].concat(Object.keys(OPEN_COVID_CONFIG['tables']).map(tableName => {
+                const name = OPEN_COVID_CONFIG['tables'][tableName];
                 return `<option id="list-option-${tableName}" value="${tableName}" disabled>${name}</option>`;
             })));
             $('#table-list').on('change', event => {
