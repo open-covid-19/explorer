@@ -195,7 +195,7 @@
                 }
 
                 // Hide chart if no new cases in the last window shown
-                if (epi.slice(-windowSize).reduce((acc, row) => acc + parseInt(row.new_confirmed) || 0, 0) === 0) {
+                if (epi.slice(-windowSize).reduce((acc, row) => acc + row.new_confirmed, 0) === 0) {
                     $('#no-new-confirmed').show();
                     $('#confirmed-chart').hide();
                     $('#confirmed-summary').hide();
