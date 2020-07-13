@@ -36,7 +36,7 @@
     <main>
 
         <!-- Title of the report -->
-        <h1 id="report-title" class="centered"><span class="_name"></span> COVID-19 Data</h1>
+        <h1 id="report-title" class="centered"><span class="_name">COVID-19 Data</span></h1>
 
         <div id="report-confirmed">
             <h3 class="centered">New Confirmed Cases</h3>
@@ -162,13 +162,16 @@
             function onIndexLoaded(index) {
                 switch (index.aggregation_level) {
                     case 0:
-                        sub('name', index.country_name);
+                        sub('name', `${index.country_name}`);
                         break;
                     case 1:
-                        sub('name', index.subregion1_name);
+                        sub('name', `${index.subregion1_name}, ${index.country_code}`);
                         break;
                     case 2:
-                        sub('name', index.subregion2_name);
+                        sub('name', `${index.subregion2_name}, ${index.subregion1_code} ${index.country_code}`);
+                        break;
+                    case 3:
+                        sub('name', `${index.locality_name}, ${index.subregion1_code} ${index.country_code}`);
                         break;
                 }
             }
@@ -208,8 +211,11 @@
 
                         // Put the data in array format
                         const columns = ['date', 'new_confirmed']
-                        const chartData = [columns].concat(epi.slice(-windowSize)
-                            .map(row => columns.slice(0).map(col => row[col])));
+                        const chartData = [columns].concat(epi
+                            .filter(row => columns.every(col => row[col] !== null))
+                            .map(row => columns.slice(0).map(col => row[col]))
+                            .slice(-windowSize)
+                        );
 
                         // Prepare and display chart
                         const elem = document.getElementById('confirmed-chart');
@@ -241,8 +247,11 @@
 
                         // Put the data in array format
                         const columns = ['date', 'rolling_confirmed']
-                        const chartData = [columns].concat(confirmedRolling.slice(-windowSize)
-                            .map(row => columns.slice(0).map(col => row[col])));
+                        const chartData = [columns].concat(confirmedRolling
+                            .filter(row => columns.every(col => row[col] !== null))
+                            .map(row => columns.slice(0).map(col => row[col]))
+                            .slice(-windowSize)
+                        );
 
                         // Prepare and display chart
                         const elem = document.getElementById('rolling-confirmed-chart');
@@ -291,8 +300,11 @@
 
                         // Put the data in array format
                         const columns = ['date', 'new_deceased']
-                        const chartData = [columns].concat(epi.slice(-windowSize)
-                            .map(row => columns.slice(0).map(col => row[col])));
+                        const chartData = [columns].concat(epi
+                            .filter(row => columns.every(col => row[col] !== null))
+                            .map(row => columns.slice(0).map(col => row[col]))
+                            .slice(-windowSize)
+                        );
 
                         // Prepare and display chart
                         const elem = document.getElementById('deaths-chart');
