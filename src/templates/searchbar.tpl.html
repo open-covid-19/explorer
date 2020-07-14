@@ -16,6 +16,9 @@
                 case 2:
                     label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
                     return { value: row.key, label: label };
+                case 3:
+                    label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
+                    return { value: row.key, label: label };
             }
         });
         $("#location-selector").autocomplete({
