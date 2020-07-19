@@ -47,7 +47,7 @@
                 reported case was on <b><span class="_confirmed_first"></span></b>.
             </p>
             <p id="confirmed-summary" class="justify">
-                The last reported number of confirmed COVID-19 cases is
+                The last reported number of cumulative confirmed COVID-19 cases is
                 <b><span class="_confirmed_curr"></span></b>, which is a difference of
                 <b>+<span class="_confirmed_diff"></span></b> from the previous day. The first
                 reported case was on <b><span class="_confirmed_first"></span></b>.
@@ -86,7 +86,7 @@
                 reported fatality was on <b><span class="_deceased_first"></span></b>.
             </p>
             <p id="deaths-summary" class="justify">
-                The latest reports claim a death toll related to COVID-19 of
+                The latest reports claim a cumulative death toll related to COVID-19 of
                 <b><span class="_deaths_curr"></span></b>, which is an increase of
                 <b>+<span class="_deaths_diff"></span></b> since the previous day. The first
                 reported fatality was on <b><span class="_deceased_first"></span></b>.
@@ -125,11 +125,12 @@
             const sub = (klass, text) =>
                 $(`._${klass}`).each(function () { $(this).text(text) });
 
+            const prettyPrintNumber = (num) => num ? num.toLocaleString() : "n/a";
+
             const minLength = 7;
             const windowSize = 21;
             const clientWidth = document.querySelector('main').getBoundingClientRect().width;
             const chartHeight = Math.min(480, Math.max(224, Math.round(clientWidth * 2 / 3)));
-
             sub('window_size', windowSize);
 
             loadData([`${key}/main`], (name, table) => {
@@ -156,7 +157,7 @@
                             ? acc
                             : Object.assign(acc, { [col]: sample[col] }), {})
                     );
-                })
+                });
             });
 
             function onIndexLoaded(index) {
@@ -178,33 +179,39 @@
 
             function onEpidemiologyLoaded(epi) {
 
+                // Extract all the new confirmed cases for this data
+                const confirmedRecords = epi
+                    .filter(row => row.new_confirmed !== null);
+
                 // Hide the section part altogether if we don't have data
-                const confirmedRecordCount = epi
-                    .map(row => row.new_confirmed)
-                    .filter(val => val !== null).length;
+                const confirmedRecordCount = confirmedRecords.length;
                 if (confirmedRecordCount < minLength) {
                     console.log('Confirmed report not available');
                     $('#report-confirmed').hide();
 
                 } else {
                     // Fill out confirmed-related data
-                    const first = epi.filter(row => row.total_confirmed > 0)[0];
-                    const latest = epi
-                        .filter(row => row.total_confirmed && row.new_confirmed).slice(-1)[0];
-                    sub('confirmed_curr', latest.total_confirmed.toLocaleString());
-                    sub('confirmed_diff', latest.new_confirmed.toLocaleString());
-                    sub('confirmed_records', confirmedRecordCount.toLocaleString());
+                    const first = epi.filter(
+                        row => row.new_confirmed > 0 || row.total_confirmed > 0)[0] || {};
+                    const latest = epi.filter(
+                        row => row.total_confirmed || row.new_confirmed).slice(-1)[0] || {};
+                    sub('confirmed_curr', prettyPrintNumber(latest.total_confirmed));
+                    sub('confirmed_diff', prettyPrintNumber(latest.new_confirmed));
+                    sub('confirmed_records', prettyPrintNumber(confirmedRecordCount));
                     sub('confirmed_first', moment(first.date).format('LL'));
                 }
 
                 // Hide chart if no new cases in the last window shown
-                if (epi.slice(-windowSize).reduce((acc, row) => acc + row.new_confirmed, 0) === 0) {
+                if (confirmedRecords.slice(-windowSize).reduce((acc, row) => acc + row.new_confirmed, 0) === 0) {
                     $('#no-new-confirmed').show();
                     $('#confirmed-chart').hide();
                     $('#confirmed-summary').hide();
                     $('#report-rolling-confirmed').hide();
 
                 } else {
+
+                    // Latest data for new confirmed case
+                    const latest = confirmedRecords.slice(-1)[0] || {};
 
                     // Load the section chart asynchronously
                     chart(() => {
@@ -235,9 +242,9 @@
                     // Compute a rolling sum of the new cases in the last N days
                     const rollingWindowSize = 14;
                     sub('rolling_window', rollingWindowSize);
-                    const confirmedRolling = epi.map((row, idx) => {
+                    const confirmedRolling = confirmedRecords.map((row, idx) => {
                         const start = Math.max(0, idx - rollingWindowSize);
-                        const rollingSum = epi.slice(start, idx)
+                        const rollingSum = confirmedRecords.slice(start, idx)
                             .reduce((total, row) => total + row.new_confirmed, 0);
                         return { date: row.date, rolling_confirmed: rollingSum };
                     })
@@ -279,12 +286,13 @@
 
                 } else {
                     // Fill out deceased-related data
-                    const first = epi.filter(row => row.total_deceased > 0)[0];
-                    const latest = epi
-                        .filter(row => row.total_deceased && row.new_deceased).slice(-1)[0];
-                    sub('deaths_curr', latest.total_deceased.toLocaleString());
-                    sub('deaths_diff', latest.new_deceased.toLocaleString());
-                    sub('deaths_records', deceasedRecordCount.toLocaleString());
+                    const first = epi.filter(
+                        row => row.new_deceased > 0 || row.total_deceased > 0)[0] || {};
+                    const latest = epi.filter(
+                        row => row.total_deceased || row.new_deceased).slice(-1)[0] || {};
+                    sub('deaths_curr', prettyPrintNumber(latest.total_deceased));
+                    sub('deaths_diff', prettyPrintNumber(latest.new_deceased));
+                    sub('deaths_records', prettyPrintNumber(deceasedRecordCount));
                     sub('deceased_first', moment(first.date).format('LL'));
                 }
 
@@ -365,13 +373,15 @@
 
             function onDemographicsLoaded(demographics) {
 
-                // Show the section if there is mobility data
-                $('#report-demographics').show();
+                // Show the section if there is demographics data
+                if (Object.keys(demographics).some(column => demographics[column] != null)) {
+                    $('#report-demographics').show();
 
-                // Create the table
-                $('#table-demographics').html(Object.keys(demographics).map((column, idx) => {
-                    return `<tr><td><b>${column}</b></td><td>${demographics[column].toLocaleString()}</td>`;
-                }));
+                    // Create the table
+                    $('#table-demographics').html(Object.keys(demographics).map((column, idx) => {
+                        return `<tr><td><b>${column}</b></td><td>${prettyPrintNumber(demographics[column])}</td >`;
+                    }));
+                }
 
             }
         </script>
