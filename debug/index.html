@@ -38,8 +38,7 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const DEBUG_KEYS=["data_url","branch"],DEBUG_DICT=DEBUG_KEYS.reduce((a,o)=>Object.assign(a,{[o]:sessionStorage.getItem(o)}),{}),dataUrl=DEBUG_DICT.data_url,dataBranch=DEBUG_DICT.branch;let dataEndpoint="https://storage.googleapis.com/covid19-open-data";dataBranch&&(dataEndpoint+=`/staging/${dataBranch}`),dataUrl&&(dataEndpoint=dataUrl);const OPEN_COVID_CONFIG={data_url:dataEndpoint,tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}};</script>
-
+    <script type="text/javascript">const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size":21,"chart-style":"bar","epi-reporting":"daily"},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,o)=>Object.assign(e,{[o]:sessionStorage.getItem(o)||DEFAULT_OPTIONS[o]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}},CURRENT_OPTIONS);console.log(OPEN_COVID_CONFIG);</script>
 
 
 </head><body class="single-column">
@@ -53,7 +52,7 @@
     <img src="../static/bug.png" height="auto" width="100%">
 </a>
 
-<script>$(window).on("scroll",o=>{const e=$("#debug-button");$(window).scrollTop()+$(window).height()==$(document).height()?e.show():e.hide()}),DEBUG_KEYS.some(o=>DEBUG_DICT[o])&&($("#debug-header").css("display","flex"),$("#debug-clear-button").on("click",o=>{DEBUG_KEYS.forEach(o=>sessionStorage.removeItem(o)),window.location.reload()}));</script>
+<script>$(window).on("scroll",o=>{const n=$("#debug-button");$(window).scrollTop()+$(window).height()==$(document).height()?n.show():n.hide()});</script>
 
 
 <header>
@@ -68,7 +67,7 @@
         <!-- Title of the page -->
         <h1 id="health-title" class="centered">COVID-19 Data Debug Options</h1>
 
-        <div id="report-confirmed">
+        <section id="section-select-branch">
             <h3 class="centered">Select Branch</h3>
             <p class="justify">
                 Select the branch where data will be pulled from. This won't work with a branch
@@ -76,11 +75,39 @@
                 selected. Only the <b>main</b> and <b>development</b> branches are being
                 automatically updated.
             </p>
-            <select id="branch-list"></select>
+            <select id="repo-branch-option"></select>
             <div class="spacer"></div>
-        </div>
+        </section>
 
-        <script>const allBranches=["main","development"];$("#branch-list").html(['<option value="">Select Branch</option>'].concat(allBranches.map(e=>{return`<option value="${e}" ${DEBUG_DICT.branch===e?"selected=1":""}>${e}</option>`}))),$("#branch-list").on("change",e=>{const n=$("#branch-list option:selected")[0].value;"main"===n?sessionStorage.removeItem("branch"):sessionStorage.setItem("branch",n),window.location.reload()});</script>
+        <section id="section-history-size">
+            <h3 class="centered">Historical View</h3>
+            <p class="justify">
+                Select the number of days to display historical data in the charts. Set to zero to
+                display the full history.
+            </p>
+            <input id="history-size-option" type="number" min="0">
+            <div class="spacer"></div>
+        </section>
+
+        <section id="section-epi-reporting">
+            <h3 class="centered">Epidemiology Reporting</h3>
+            <p class="justify">
+                Choose whether epidemiological data is reported as daily or cumulative values.
+            </p>
+            <select id="epi-reporting-option"></select>
+            <div class="spacer"></div>
+        </section>
+
+        <section id="section-chart-style">
+            <h3 class="centered">Chart Style</h3>
+            <p class="justify">
+                Choose the style of the charts that display the epidemiological data.
+            </p>
+            <select id="chart-style-option"></select>
+            <div class="spacer"></div>
+        </section>
+
+        <script>const allBranches=["main","development"];$("#repo-branch-option").html(['<option value="" disabled=1>Select Branch</option>'].concat(allBranches.map(t=>{return`<option value="${t}" ${-1!==OPEN_COVID_CONFIG["data-url"].indexOf(`/staging/${t}`)?"selected=1":""}>${t}</option>`}))),$("#repo-branch-option").on("change",t=>{const o=$("#repo-branch-option option:selected")[0].value;"main"===o?sessionStorage.removeItem("data-url"):sessionStorage.setItem("data-url",`${DEFAULT_OPTIONS["data-url"]}/staging/${o}`)}),$("#history-size-option").val(OPEN_COVID_CONFIG["history-size"]),$("#history-size-option").on("change",t=>{const o=$("#history-size-option").val();sessionStorage.setItem("history-size",o)});const allEpiReporting=["daily","cumulative"];$("#epi-reporting-option").html(['<option value="" disabled=1>Epidemiology Reporting</option>'].concat(allEpiReporting.map(t=>{return`<option value="${t}" ${OPEN_COVID_CONFIG["epi-reporting"]===t?"selected=1":""}>${t}</option>`}))),$("#epi-reporting-option").on("change",t=>{$("#epi-reporting-option option:selected")[0].value;const o=$("#epi-reporting-option").val();sessionStorage.setItem("epi-reporting",o)});const allChartStyles=["bar","line"];$("#chart-style-option").html(['<option value="" disabled=1>Chart Style</option>'].concat(allChartStyles.map(t=>{return`<option value="${t}" ${OPEN_COVID_CONFIG["chart-style"]===t?"selected=1":""}>${t}</option>`}))),$("#chart-style-option").on("change",t=>{const o=$("#chart-style-option option:selected")[0].value;sessionStorage.setItem("chart-style",o)});</script>
     </main>
 
     <!-- Load analytics at the end of the page -->
