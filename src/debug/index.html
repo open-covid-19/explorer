@@ -13,7 +13,7 @@
         <!-- Title of the page -->
         <h1 id="health-title" class="centered">COVID-19 Data Debug Options</h1>
 
-        <div id="report-confirmed">
+        <section id="section-select-branch">
             <h3 class="centered">Select Branch</h3>
             <p class="justify">
                 Select the branch where data will be pulled from. This won't work with a branch
@@ -21,30 +21,91 @@
                 selected. Only the <b>main</b> and <b>development</b> branches are being
                 automatically updated.
             </p>
-            <select id="branch-list"></select>
+            <select id="repo-branch-option"></select>
             <div class="spacer"></div>
-        </div>
+        </section>
+
+        <section id="section-history-size">
+            <h3 class="centered">Historical View</h3>
+            <p class="justify">
+                Select the number of days to display historical data in the charts. Set to zero to
+                display the full history.
+            </p>
+            <input id="history-size-option" type="number" min="0" />
+            <div class="spacer"></div>
+        </section>
+
+        <section id="section-epi-reporting">
+            <h3 class="centered">Epidemiology Reporting</h3>
+            <p class="justify">
+                Choose whether epidemiological data is reported as daily or cumulative values.
+            </p>
+            <select id="epi-reporting-option"></select>
+            <div class="spacer"></div>
+        </section>
+
+        <section id="section-chart-style">
+            <h3 class="centered">Chart Style</h3>
+            <p class="justify">
+                Choose the style of the charts that display the epidemiological data.
+            </p>
+            <select id="chart-style-option"></select>
+            <div class="spacer"></div>
+        </section>
 
         <script>
             // TODO: read branches using GitHub's API
             const allBranches = ['main', 'development'];
-
-            $('#branch-list').html([
-                `<option value="">Select Branch</option>`
+            $('#repo-branch-option').html([
+                `<option value="" disabled=1>Select Branch</option>`
             ].concat(allBranches.map(branch => {
-                const selected = DEBUG_DICT['branch'] === branch ? 'selected=1' : '';
-                return `<option value="${branch}" ${selected}>${branch}</option>`;
+                const selected = OPEN_COVID_CONFIG['data-url'].indexOf(`/staging/${branch}`) !== -1;
+                return `<option value="${branch}" ${selected ? 'selected=1' : ''}>${branch}</option>`;
             })));
-            $('#branch-list').on('change', event => {
-                const branch = $('#branch-list option:selected')[0].value;
+            $('#repo-branch-option').on('change', event => {
+                const branch = $('#repo-branch-option option:selected')[0].value;
                 // Save the selected branch into the session storage
                 if (branch === 'main') {
-                    sessionStorage.removeItem('branch');
+                    sessionStorage.removeItem('data-url');
                 } else {
-                    sessionStorage.setItem('branch', branch);
+                    sessionStorage.setItem('data-url', `${DEFAULT_OPTIONS['data-url']}/staging/${branch}`);
                 }
-                window.location.reload();
             });
+
+            // Options for the history window size
+            $('#history-size-option').val(OPEN_COVID_CONFIG['history-size'])
+            $('#history-size-option').on('change', event => {
+                const optionValue = $('#history-size-option').val();
+                sessionStorage.setItem('history-size', optionValue);
+            });
+
+            // Options for the epi reporting
+            const allEpiReporting = ['daily', 'cumulative'];
+            $('#epi-reporting-option').html([
+                `<option value="" disabled=1>Epidemiology Reporting</option>`
+            ].concat(allEpiReporting.map(optionValue => {
+                const selected = OPEN_COVID_CONFIG['epi-reporting'] === optionValue ? 'selected=1' : '';
+                return `<option value="${optionValue}" ${selected}>${optionValue}</option>`;
+            })));
+            $('#epi-reporting-option').on('change', event => {
+                const chartStyle = $('#epi-reporting-option option:selected')[0].value;
+                const optionValue = $('#epi-reporting-option').val();
+                sessionStorage.setItem('epi-reporting', optionValue);
+            });
+
+            // Options for the chart style
+            const allChartStyles = ['bar', 'line'];
+            $('#chart-style-option').html([
+                `<option value="" disabled=1>Chart Style</option>`
+            ].concat(allChartStyles.map(optionValue => {
+                const selected = OPEN_COVID_CONFIG['chart-style'] === optionValue ? 'selected=1' : '';
+                return `<option value="${optionValue}" ${selected}>${optionValue}</option>`;
+            })));
+            $('#chart-style-option').on('change', event => {
+                const optionValue = $('#chart-style-option option:selected')[0].value;
+                sessionStorage.setItem('chart-style', optionValue);
+            });
+
         </script>
     </main>
 

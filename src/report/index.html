@@ -16,7 +16,7 @@
     }
 
     google.charts.load('current', {
-        'packages': ['corechart', 'bar'], 'callback': () => {
+        'packages': ['corechart', 'bar', 'line'], 'callback': () => {
             chartLoaded = true;
             pendingCallbacks.forEach(callback => retryCallback(callback));
         }
@@ -39,7 +39,7 @@
         <h1 id="report-title" class="centered"><span class="_name">COVID-19 Data</span></h1>
 
         <div id="report-confirmed">
-            <h3 class="centered">New Confirmed Cases</h3>
+            <h3 class="centered"><span class="_epi_reporting"></span> Confirmed Cases</h3>
             <p id="no-new-confirmed" class="justify" style="display: none;">
                 There are no new confirmed COVID-19 cases reported in the last
                 <b><span class="_window_size"></span></b> days. The total number of
@@ -78,7 +78,7 @@
 
 
         <div id="report-deaths">
-            <h3 class="centered">New Fatalities</h3>
+            <h3 class="centered"><span class="_epi_reporting"></span> Fatalities</h3>
             <p id="no-new-deaths" class="justify" style="display: none;">
                 There are no new fatalities associated with COVID-19 reported in the last
                 <b><span class="_window_size"></span></b> days. The total number of fatalities
@@ -128,10 +128,8 @@
             const prettyPrintNumber = (num) => num ? num.toLocaleString() : "n/a";
 
             const minLength = 7;
-            const windowSize = 21;
             const clientWidth = document.querySelector('main').getBoundingClientRect().width;
             const chartHeight = Math.min(480, Math.max(224, Math.round(clientWidth * 2 / 3)));
-            sub('window_size', windowSize);
 
             loadData([`${key}/main`], (name, table) => {
                 const records = tableToRecords(table);
@@ -160,6 +158,38 @@
                 });
             });
 
+            function drawEpiChart(elem, data, color) {
+                let chartObject;
+                let chartOptionConverter;
+                switch (OPEN_COVID_CONFIG['chart-style']) {
+                    case 'bar':
+                        chartObject = new google.charts.Bar(elem);
+                        chartOptionConverter = google.charts.Bar.convertOptions;
+                        break;
+                    case 'line':
+                        chartObject = new google.charts.Line(elem);
+                        chartOptionConverter = google.charts.Line.convertOptions;
+                        break;
+                    default:
+                        // Default to a bar chart
+                        chartObject = new google.charts.Bar(elem);
+                        chartOptionConverter = google.charts.Bar.convertOptions;
+                        break;
+                }
+
+                chartObject.draw(
+                    google.visualization.arrayToDataTable(data),
+                    google.charts.Bar.convertOptions({
+                        height: chartHeight,
+                        colors: [color],
+                        hAxis: { title: '' },
+                        vAxis: {
+                            viewWindow: { min: 0 },
+                        },
+                        legend: { position: 'none' },
+                    }));
+            }
+
             function onIndexLoaded(index) {
                 switch (index.aggregation_level) {
                     case 0:
@@ -178,6 +208,15 @@
             }
 
             function onEpidemiologyLoaded(epi) {
+
+                // Get the desired window size from config
+                const historySize = OPEN_COVID_CONFIG['history-size'];
+                const windowSize = historySize > 0 ? historySize : epi.length;
+                sub('window_size', windowSize);
+
+                // Get whether we report daily or cumulative values from config
+                const reportingConfig = OPEN_COVID_CONFIG['epi-reporting'];
+                sub('epi_reporting', reportingConfig.charAt(0).toUpperCase() + reportingConfig.slice(1));
 
                 // Extract all the new confirmed cases for this data
                 const confirmedRecords = epi
@@ -217,7 +256,9 @@
                     chart(() => {
 
                         // Put the data in array format
-                        const columns = ['date', 'new_confirmed']
+                        const confirmedVariable =
+                            reportingConfig === 'cumulative' ? 'total_confirmed' : 'new_confirmed';
+                        const columns = ['date', confirmedVariable];
                         const chartData = [columns].concat(epi
                             .filter(row => columns.every(col => row[col] !== null))
                             .map(row => columns.slice(0).map(col => row[col]))
@@ -226,17 +267,7 @@
 
                         // Prepare and display chart
                         const elem = document.getElementById('confirmed-chart');
-                        new google.charts.Bar(elem).draw(
-                            google.visualization.arrayToDataTable(chartData),
-                            google.charts.Bar.convertOptions({
-                                height: chartHeight,
-                                colors: ['#1565C0'],
-                                hAxis: { title: '' },
-                                vAxis: {
-                                    viewWindow: { min: 0 },
-                                },
-                                legend: { position: 'none' },
-                            }));
+                        drawEpiChart(elem, chartData, '#1565C0')
                     });
 
                     // Compute a rolling sum of the new cases in the last N days
@@ -262,17 +293,7 @@
 
                         // Prepare and display chart
                         const elem = document.getElementById('rolling-confirmed-chart');
-                        new google.charts.Bar(elem).draw(
-                            google.visualization.arrayToDataTable(chartData),
-                            google.charts.Bar.convertOptions({
-                                height: chartHeight,
-                                colors: ['#FF9800'],
-                                hAxis: { title: '' },
-                                vAxis: {
-                                    viewWindow: { min: 0 },
-                                },
-                                legend: { position: 'none' },
-                            }));
+                        drawEpiChart(elem, chartData, '#FF9800')
                     });
                 }
 
@@ -307,7 +328,9 @@
                     chart(() => {
 
                         // Put the data in array format
-                        const columns = ['date', 'new_deceased']
+                        const deceasedVariable =
+                            reportingConfig === 'cumulative' ? 'total_deceased' : 'new_deceased';
+                        const columns = ['date', deceasedVariable];
                         const chartData = [columns].concat(epi
                             .filter(row => columns.every(col => row[col] !== null))
                             .map(row => columns.slice(0).map(col => row[col]))
@@ -316,17 +339,7 @@
 
                         // Prepare and display chart
                         const elem = document.getElementById('deaths-chart');
-                        new google.charts.Bar(elem).draw(
-                            google.visualization.arrayToDataTable(chartData),
-                            google.charts.Bar.convertOptions({
-                                height: chartHeight,
-                                colors: ['#B71C1C'],
-                                hAxis: { title: '' },
-                                vAxis: {
-                                    viewWindow: { min: 0 },
-                                },
-                                legend: { position: 'none' },
-                            }));
+                        drawEpiChart(elem, chartData, '#B71C1C');
                     });
                 }
             }

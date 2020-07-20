@@ -15,13 +15,13 @@
         isAtBottom ? elem.show() : elem.hide();
     });
 
-    // Handle the button to clear all debug options
-    if (DEBUG_KEYS.some(key => DEBUG_DICT[key])) {
-        $('#debug-header').css('display', 'flex');
-        $('#debug-clear-button').on('click', event => {
-            DEBUG_KEYS.forEach(key => sessionStorage.removeItem(key));
-            window.location.reload();
-        })
-    }
+    // // Handle the button to clear all debug options
+    // if (DEBUG_KEYS.some(key => DEBUG_DICT[key])) {
+    //     $('#debug-header').css('display', 'flex');
+    //     $('#debug-clear-button').on('click', event => {
+    //         DEBUG_KEYS.forEach(key => sessionStorage.removeItem(key));
+    //         window.location.reload();
+    //     })
+    // }
 
 </script>

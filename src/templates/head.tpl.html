@@ -41,37 +41,39 @@
     <script type="text/javascript" src="{{root}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
 
+        // Define constants and default options
+        const DEFAULT_OPTIONS = {
+            'data-url': 'https://storage.googleapis.com/covid19-open-data',
+            'history-size': 21,
+            'chart-style': 'bar',
+            'epi-reporting': 'daily',
+        }
+
         // Read debugging options from session storage
-        const DEBUG_KEYS = ['data_url', 'branch'];
-        const DEBUG_DICT = DEBUG_KEYS.reduce((acc, key) =>
-            Object.assign(acc, { [key]: sessionStorage.getItem(key) }), {});
-
-        const dataUrl = DEBUG_DICT['data_url'];
-        const dataBranch = DEBUG_DICT['branch'];
-
-        // Determine which endpoint to read data from based on local settings
-        let dataEndpoint = 'https://storage.googleapis.com/covid19-open-data';
-        if (dataBranch) dataEndpoint += `/staging/${dataBranch}`;
-        if (dataUrl) dataEndpoint = dataUrl;
+        const CURRENT_OPTIONS = Object.keys(DEFAULT_OPTIONS).reduce((acc, key) =>
+            Object.assign(acc, { [key]: sessionStorage.getItem(key) || DEFAULT_OPTIONS[key] }), {});
 
         // Set the constants that will be read throughout the rest of the app
-        const OPEN_COVID_CONFIG = {
-            'data_url': dataEndpoint,
-            'tables': {
-                'index': 'Index',
-                'demographics': 'Demographics',
-                'economy': 'Economy',
-                'epidemiology': 'Epidemiology',
-                'geography': 'Geography',
-                'health': 'Health',
-                'hospitalizations': 'Hospitalizations',
-                'mobility': 'Mobility',
-                'oxford-government-response': 'Oxford Government Response',
-                'weather': 'Weather',
-                'worldbank': 'Worldbank',
-                'by-age': 'Breakdown by Age',
-                'by-sex': 'Breakdown by Sex',
-            }
-        }
+        const OPEN_COVID_CONFIG = Object.assign(
+            {
+                'tables': {
+                    'index': 'Index',
+                    'demographics': 'Demographics',
+                    'economy': 'Economy',
+                    'epidemiology': 'Epidemiology',
+                    'geography': 'Geography',
+                    'health': 'Health',
+                    'hospitalizations': 'Hospitalizations',
+                    'mobility': 'Mobility',
+                    'oxford-government-response': 'Oxford Government Response',
+                    'weather': 'Weather',
+                    'worldbank': 'Worldbank',
+                    'by-age': 'Breakdown by Age',
+                    'by-sex': 'Breakdown by Sex',
+                },
+            },
+            CURRENT_OPTIONS,
+        );
+        console.log(OPEN_COVID_CONFIG)
     </script>
 </head>
