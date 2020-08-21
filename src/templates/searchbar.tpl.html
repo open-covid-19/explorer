@@ -11,7 +11,7 @@
                     label = `${row.country_name} [${row.key}]`
                     return { value: row.key, label: label };
                 case 1:
-                    label = `${row.subregion1_name}, ${row.country_code} [${row.key}]`;
+                    label = `${row.subregion1_name}, ${row.country_name} [${row.key}]`;
                     return { value: row.key, label: label };
                 case 2:
                     label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
@@ -19,8 +19,11 @@
                 case 3:
                     label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
                     return { value: row.key, label: label };
+                default:
+                    console.error(`Unknown aggregation level for record:`);
+                    console.error(row);
             }
-        });
+        }).filter(row => row && row.value && row.label);
         $("#location-selector").autocomplete({
             minLength: 2,
             source: locationLabelMap,
