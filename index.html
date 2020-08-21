@@ -51,7 +51,7 @@
         <div class="centered fullwidth">
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0">
 </div>
-<script>loadData(["index"],(e,a)=>{const o=tableToRecords(a).map(e=>{let a="";switch(e.aggregation_level){case 0:return a=`${e.country_name} [${e.key}]`,{value:e.key,label:a};case 1:return a=`${e.subregion1_name}, ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a};case 3:return a=`${e.locality_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:a}}});$("#location-selector").autocomplete({minLength:2,source:o,select:function(e,a){const n=a.item.value;-1!==o.map(e=>e.value).indexOf(n)&&window.goto(`report/?key=${n}`)}}),$("#location-selector").attr("disabled",!1)});</script>
+<script>loadData(["index"],(e,o)=>{const a=tableToRecords(o).map(e=>{let o="";switch(e.aggregation_level){case 0:return o=`${e.country_name} [${e.key}]`,{value:e.key,label:o};case 1:return o=`${e.subregion1_name}, ${e.country_name} [${e.key}]`,{value:e.key,label:o};case 2:return o=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:o};case 3:return o=`${e.locality_name}, ${e.subregion1_name} ${e.country_code} [${e.key}]`,{value:e.key,label:o};default:console.error("Unknown aggregation level for record:"),console.error(e)}}).filter(e=>e&&e.value&&e.label);$("#location-selector").autocomplete({minLength:2,source:a,select:function(e,o){const l=o.item.value;-1!==a.map(e=>e.value).indexOf(l)&&window.goto(`report/?key=${l}`)}}),$("#location-selector").attr("disabled",!1)});</script>
     </div>
 
     <!-- Setup map data -->
