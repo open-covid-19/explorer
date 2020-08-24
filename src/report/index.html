@@ -35,8 +35,25 @@
 
     <main>
 
-        <!-- Title of the report -->
-        <h1 id="report-title" class="centered"><span class="_name">COVID-19 Data</span></h1>
+        <!-- Report subheader -->
+        <div id="title-wrapper" style="position: relative;">
+            <!-- Related links -->
+            <div style="position: absolute; right: 0; top: 0; padding-top: 20px;">
+                <a id="wikidata" target="_blank" href="#" style="display: none;">
+                    <img src="{{root}}/static/wikipedia.svg" height="32" width="32" />
+                </a>
+                <a id="datacommons" target="_blank" href="#" style="display: none;">
+                    <img src="{{root}}/static/datacommons.png" height="32" width="32" />
+                </a>
+                <a id="open_street_maps" target="_blank" href="#" style="display: none;">
+                    <img src="{{root}}/static/openstreetmap.svg" height="32" width="32" />
+                </a>
+            </div>
+            <!-- Title of the report -->
+            <h1 id="report-title" class="centered" style="padding-right: 64px; padding-left: 64px">
+                <span class="_name">COVID-19 Data</span>
+            </h1>
+        </div>
 
         <div id="report-confirmed">
             <h3 class="centered"><span class="_epi_reporting"></span> Confirmed Cases</h3>
@@ -191,6 +208,8 @@
             }
 
             function onIndexLoaded(index) {
+
+                // Update name in report subheader
                 switch (index.aggregation_level) {
                     case 0:
                         sub('name', `${index.country_name}`);
@@ -199,12 +218,28 @@
                         sub('name', `${index.subregion1_name}, ${index.country_code}`);
                         break;
                     case 2:
-                        sub('name', `${index.subregion2_name}, ${index.subregion1_code} ${index.country_code}`);
+                        sub('name', `${index.subregion2_name}, ${index.subregion1_name} ${index.country_code}`);
                         break;
                     case 3:
-                        sub('name', `${index.locality_name}, ${index.subregion1_code} ${index.country_code}`);
+                        sub('name', `${index.locality_name}, ${index.subregion1_name} ${index.country_code}`);
                         break;
                 }
+
+                // Update links to knowledge graph entities
+                const linkMap = {
+                    'wikidata': `https://www.wikidata.org/wiki/${index.wikidata}`,
+                    'datacommons': `https://datacommons.org/place?dcid=${index.datacommons}`,
+                    'open_street_maps': `https://www.openstreetmap.org/relation/${index.open_street_maps}`,
+                };
+                Object.keys(linkMap).forEach(name => {
+                    const elem = $(`#${name}`);
+                    if (index[name]) {
+                        elem.show();
+                        elem.attr('href', linkMap[name]);
+                    } else {
+                        elem.hide();
+                    }
+                });
             }
 
             function onEpidemiologyLoaded(epi) {
