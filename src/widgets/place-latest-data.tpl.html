@@ -1,0 +1,46 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            // NOTE: Using `some` since we want to display this table with a subset of data too
+            if (locationData.length < 1) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Create a new element to hold the data and add it to the page
+            const details = attachElement('details', {}, root = rootElement, prepend = true);
+            const summary = attachElement('summary', { innerHTML: 'Show the latest data for this place' }, details);
+            const table = attachElement('table', { className: 'fullwidth' }, details);
+            table.style.tableLayout = 'fixed';
+
+            // Fill the elements with data
+            const metadata = locationData.slice(-1)[0];
+            let tableData = `<tr><th colspan=2><span class="centered">Latest Place Data</span></th></tr>`;
+            Object.keys(metadata).forEach(col => {
+                const latestRecord = locationData.filter(row => row[col] && row[col] !== '').slice(-1)[0];
+                if (latestRecord[col]) tableData += `<tr><td>${col}</td><td>${latestRecord[col]}</td></tr>`;
+            });
+
+            // Update table HTML content
+            table.innerHTML = tableData;
+
+            // Unhide element
+            details.parentElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>

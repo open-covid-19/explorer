@@ -1,0 +1,57 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 1;
+            const columns = ['population_age_00_09', 'population_age_80_and_older'];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            const metadata = locationData[0];
+            const usecols = Object.keys(locationData[0]).filter(col => col.startsWith('population_age_'));
+
+            // Put the population breakdowns from the location data into a table and draw it in the chart
+            const data = usecols.map(col => {
+                return {
+                    'Age Group': col
+                        .replace('population_age_', '')
+                        .replace('_and_older', '+')
+                        .replace('_', '-'),
+                    'Population': parseInt(metadata[col]),
+                }
+            });
+
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.ColumnChart(elem);
+            const chartConfig = Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Age-stratified demographics`,
+                colors: ['#4E342E'],  // material brown 800
+                vAxis: { textPosition: 'out', viewWindow: { min: 0 } },
+                hAxis: { textPosition: 'bottom', slantedText: false, slantedTextAngle: 0 },
+            });
+            chartConfig.chartArea = Object.assign({}, chartConfig.chartArea, { bottom: 32 });
+            chartObject.draw(recordsToDataTable(data), chartConfig);
+
+            // Unhide element
+            elem.parentElement.style.visibility = 'visible';
+
+        })();
+    </script>
+</div>

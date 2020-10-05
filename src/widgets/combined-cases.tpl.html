@@ -1,0 +1,65 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = ['new_confirmed', 'new_deceased'];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Use only the last 100 datapoints if this is a touchscreen device
+            if ('ontouchstart' in document.documentElement) {
+                const mobileSubsetSize = 100;
+                locationData = locationData.slice(-mobileSubsetSize);
+            }
+
+            // Get rid of irrelevant data prior to the first non-null data point
+            const firstDataPointIndex = locationData
+                .map((row, idx) => columns.some(col => row[col] && row[col] !== '') ? idx : null)
+                .filter(idx => idx)[0];
+            locationData = locationData.slice(firstDataPointIndex);
+
+            // Put the confirmed cases from the state data into a table and draw it in the chart
+            const rollingWindowSize = 14;
+            const data = locationData.map((row, idx) => {
+                const start = Math.max(0, idx - rollingWindowSize);
+                const rollingSum = locationData.slice(start, idx)
+                    .reduce((total, row) => total + (parseInt(row.new_confirmed) || 0), 0);
+                return {
+                    'Date': row.date,
+                    'Confirmed Cases': parseInt(row.new_confirmed),
+                    'Deceased Persons': parseInt(row.new_deceased),
+                    'Estimated Active Cases': rollingSum,
+                };
+            })
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Confirmed, estimated and deceased cases`,
+                // colors: ['#FFA726'],  // material orange 400
+                colors: undefined,
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>

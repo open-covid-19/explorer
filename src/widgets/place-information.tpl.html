@@ -1,0 +1,116 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 1;
+            const columns = [
+                'wikidata_id',
+                'datacommons_id',
+                'openstreetmap_id',
+            ];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            // NOTE: Using `some` since we want to display this table with a subset of data too
+            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Create a new element to hold the data and add it to the page
+            const elem = attachElement('table', { className: 'fullwidth' }, rootElement, prepend = true);
+            elem.style.tableLayout = 'fixed';
+
+            // Fill the elements with data
+            const metadata = locationData[0];
+            let tableData = `<tr><th colspan=2><span class="centered">Place Information</span></th></tr>`;
+
+            // Located in
+            const keyTokenCount = locationKey.split('_').length;
+            const locatedInLabel = lvl => {
+                if (lvl === '0') return `World`;
+                else if (lvl === '1') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === '2') return `<a href="{{root}}/report/index.html?key=${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === '3' && keyTokenCount === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === '3' && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === '3' && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
+                else return `Unknown`;
+            }
+            tableData += `<tr><td>Located in</td><td>${locatedInLabel(metadata.aggregation_level)}</td></tr>`;
+
+            // Index aggregation level
+            const aggregationLevelLabel = lvl => {
+                if (lvl === '0') return `Country`;
+                else if (lvl === '1') return `Admin Level 1`;
+                else if (lvl === '2') return `Admin Level 2`;
+                else if (lvl === '3') return `Locality`;
+                else return `Unknown`;
+            }
+            tableData += `<tr><td>Aggregation Level</td><td>${aggregationLevelLabel(metadata.aggregation_level)}</td></tr>`;
+
+            // Total case count
+            const lastConfirmedCase = locationData
+                .filter(row => row.cumulative_confirmed && row.cumulative_confirmed !== '')
+                .slice(-1);
+            if (lastConfirmedCase.length > 0) {
+                tableData += `<tr><td>Total Confirmed Cases</td><td>${lastConfirmedCase[0].cumulative_confirmed}</td></tr>`;
+            }
+
+            // First case information
+            notNull = (row, col) => parseInt(row[col]) || null;
+            const firstConfirmedCase = locationData
+                .filter(row => ['new_confirmed', 'cumulative_confirmed'].some(col => notNull(row, col)))
+                .slice(0, 1);
+            if (firstConfirmedCase.length > 0) {
+                tableData += `<tr><td>First Confirmed Case</td><td>${firstConfirmedCase[0].date}</td></tr>`;
+            }
+
+            // First deceased information
+            const firstDeceasedCase = locationData
+                .filter(row => ['new_deceased', 'cumulative_deceased'].some(col => notNull(row, col)))
+                .slice(0, 1);
+            if (firstDeceasedCase.length > 0) {
+                tableData += `<tr><td>First Deceased Person</td><td>${firstDeceasedCase[0].date}</td></tr>`;
+            }
+
+            // Knowledge graph information
+            let knowledgeGraph = '';
+            if (metadata.wikidata_id) {
+                knowledgeGraph +=
+                    `<a href="https://www.wikidata.org/wiki/${metadata.wikidata_id}" target="_blank">
+                        <img src="{{root}}/static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`
+            }
+            if (metadata.datacommons_id) {
+                knowledgeGraph +=
+                    `<a href="https://datacommons.org/place?dcid=${metadata.datacommons_id}" target="_blank">
+                        <img src="{{root}}/static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`
+            }
+            if (metadata.openstreetmap_id) {
+                knowledgeGraph +=
+                    `<a href="https://www.openstreetmap.org/relation/${metadata.openstreetmap_id}" target="_blank">
+                        <img src="{{root}}/static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`
+            }
+            tableData += `<tr><td>Related Links</td><td>${knowledgeGraph}</td></tr>`;
+
+            // Update table HTML content
+            elem.innerHTML = tableData;
+
+            // Unhide element
+            elem.parentElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>

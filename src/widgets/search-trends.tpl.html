@@ -1,0 +1,77 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Data from <a href="{{covid-19-open-data-url}}/blob/main/docs/table-search-trends.md" target="_blank">
+            Google's Search Trends
+        </a>
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = [
+                'search_trends_fever',
+                'search_trends_cough',
+                'search_trends_common_cold',
+                'search_trends_pneumonia',
+            ];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            // NOTE: Using `some` since we want to display this table with a subset of data too
+            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.log(locationData)
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Use only the last 100 datapoints if this is a touchscreen device
+            if ('ontouchstart' in document.documentElement) {
+                const mobileSubsetSize = 100;
+                locationData = locationData.slice(-mobileSubsetSize);
+            }
+
+            // Get rid of irrelevant data prior to the first confirmed case
+            const firstDataPointIndex = locationData
+                .map((row, idx) => !row.new_deceased || row.new_deceased === '' ? null : idx)
+                .filter(idx => idx)[0];
+            locationData = locationData.slice(firstDataPointIndex);
+
+            // Human-friendly label for a symptom
+            const symptomLabel = column => column.split('_').slice(2).join(' ');
+
+            // Put the symptom search trends data into a table and draw it in the chart
+            const data = locationData
+                .filter(row => columns.some(col => row[col] !== ""))
+                .map(row => {
+                    const record = { 'Date': row.date };
+                    columns.forEach(col => record[symptomLabel(col)] = parseFloat(row[col]));
+                    return record;
+                });
+
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Google Search Trends`,
+                curveType: 'function',
+                legend: { position: 'in' },
+                colors: undefined,  // automatic from material theme
+            }));
+
+            // Unhide element
+            elem.parentElement.style.visibility = 'visible';
+
+        })();
+    </script>
+</div>

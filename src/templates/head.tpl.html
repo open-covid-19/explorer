@@ -29,8 +29,14 @@
     <link rel="stylesheet" href="{{root}}/third_party/jqvmap/dist/jqvmap.min.css" />
     <link rel="stylesheet" href="{{root}}/third_party/jquery-ui-dist/jquery-ui.min.css">
 
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
     <!-- MomentJS -->
     <script type="text/javascript" src="{{root}}/third_party/moment/min/moment.min.js"></script>
+
+    <!-- CSV Parsing -->
+    <script type="text/javascript" src="{{root}}/third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{root}}/third_party/picnic/picnic.min.css" />
@@ -41,9 +47,13 @@
     <script type="text/javascript" src="{{root}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
 
+        // Global object used to cache objects and data
+        CACHE = window.CACHE || { 'CSV': {}, 'gcharts': {} };
+
         // Define constants and default options
         const DEFAULT_OPTIONS = {
             'data-url': 'https://storage.googleapis.com/covid19-open-data',
+            'cod-data-url': 'https://storage.googleapis.com/covid19-open-data/v3',
             'history-size': 21,
             'chart-style': 'bar',
             'epi-reporting': 'daily',
@@ -74,6 +84,32 @@
             },
             CURRENT_OPTIONS,
         );
-        console.log(OPEN_COVID_CONFIG)
+
+        // Create a default configuration for Google Charts
+        GOOGLE_CHARTS_CONFIG = window.GOOGLE_CHARTS_CONFIG || {
+            theme: 'material',
+            colors: ['{{theme-primary}}'],
+            legend: {
+                position: CURRENT_OPTIONS.chart_legend_position || 'none'
+            },
+            chartArea: {
+                width: '100%',
+                height: '100%',
+                left: parseInt(CURRENT_OPTIONS.chart_padding_left || 64),
+                bottom: parseInt(CURRENT_OPTIONS.chart_padding_bottom || 48),
+                top: parseInt(CURRENT_OPTIONS.chart_padding_top || 24),
+            },
+            titlePosition: 'in',
+            axisTitlesPosition: 'in',
+            hAxis: {
+                textPosition: 'bottom'
+            },
+            vAxis: {
+                textPosition: 'out',
+                viewWindow: { min: 0 }
+            },
+            height: parseInt(CURRENT_OPTIONS.chart_height || 300),
+        }
+
     </script>
 </head>

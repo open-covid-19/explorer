@@ -3,7 +3,8 @@
 </div>
 <script>
     loadData(['index'], (name, table) => {
-        const records = tableToRecords(table);
+        const records = tableToRecords(table)
+            .sort((a, b) => (b.population || 0) - (a.population || 0));
         const locationLabelMap = records.map(row => {
             let label = '';
             switch (row.aggregation_level) {

@@ -1,0 +1,88 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Data from <a href="{{covid-19-open-data-url}}/blob/main/docs/table-mobility.md" target="_blank">
+            Google's Mobility Reports
+        </a>
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = [
+                'mobility_residential',
+                'mobility_parks',
+                'mobility_grocery_and_pharmacy',
+                'mobility_transit_stations',
+                'mobility_workplaces',
+                'mobility_retail_and_recreation',
+            ];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Use only the last 100 datapoints if this is a touchscreen device
+            if ('ontouchstart' in document.documentElement) {
+                const mobileSubsetSize = 100;
+                locationData = locationData.slice(-mobileSubsetSize);
+            }
+
+            // Get rid of irrelevant data prior to the first confirmed case
+            const firstDataPointIndex = locationData
+                .map((row, idx) => !row.new_deceased || row.new_deceased === '' ? null : idx)
+                .filter(idx => idx)[0];
+            locationData = locationData.slice(firstDataPointIndex);
+
+            // Human-friendly label for a location
+            const locationLabel = column => column.split('_').slice(1).join(' ');
+
+            // Use pre-defined colors for each column
+            const colorMap = {
+                'mobility_residential': '#D56E0C',
+                'mobility_parks': '#188038',
+                'mobility_grocery_and_pharmacy': '#129EAF',
+                'mobility_transit_stations': '#D01884',
+                'mobility_workplaces': '#8430CE',
+                'mobility_retail_and_recreation': '#1967D2',
+            }
+
+            // Put the symptom search trends data into a table and draw it in the chart
+            const data = locationData
+                .filter(row => columns.some(col => row[col] !== ""))
+                .map(row => {
+                    const record = { 'Date': row.date };
+                    columns.forEach(col => record[locationLabel(col)] = parseFloat(row[col]));
+                    return record;
+                });
+
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.AreaChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Google Mobility Reports`,
+                curveType: 'function',
+                legend: { position: 'in' },
+                vAxis: { textPosition: 'out' },
+                colors: columns.map(col => colorMap[col]),
+            }));
+
+            // Unhide element
+            elem.parentElement.style.visibility = 'visible';
+
+        })();
+    </script>
+</div>

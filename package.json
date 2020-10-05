@@ -1,9 +1,10 @@
 {
-  "displayName": "Open COVID-19",
-  "description": "Interactive map for the Open COVID-19 Dataset",
+  "displayName": "COVID-19 Open Data Explorer",
+  "description": "Interactive map for the COVID-19 Open Data Project",
   "vars": {
     "analytics": "UA-103644138-1",
-    "email": "oscar@wahltinez.org",
+    "email": "owahltinez@google.com",
+    "covid-19-open-data-url": "https://github.com/GoogleCloudPlatform/covid-19-open-data",
     "theme": {
       "primary": "#BF360C",
       "accent": "#F9683A",
@@ -61,6 +62,7 @@
     "jquery-ui-dist": "^1.12.1",
     "jqvmap": "^1.5.1",
     "moment": "^2.27.0",
+    "papaparse": "^5.3.0",
     "picnic": "^6.5.2"
   }
 }
