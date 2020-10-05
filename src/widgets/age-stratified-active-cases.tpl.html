@@ -1,0 +1,83 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = [
+                'new_confirmed_age_00',
+                'new_confirmed_age_01',
+                'new_confirmed_age_02',
+                'new_confirmed_age_03',
+                'new_confirmed_age_04',
+                'new_confirmed_age_05',
+                'new_confirmed_age_06',
+                'new_confirmed_age_07',
+                'new_confirmed_age_08',
+                'new_confirmed_age_09',
+            ];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            // NOTE: Using `some` since we want to display this table with a subset of data too
+            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Use only the last 100 datapoints if this is a touchscreen device
+            if ('ontouchstart' in document.documentElement) {
+                const mobileSubsetSize = 100;
+                locationData = locationData.slice(-mobileSubsetSize);
+            }
+
+            // Get rid of irrelevant data prior to the first non-null data point
+            const firstDataPointIndex = locationData
+                .map((row, idx) => columns.some(col => row[col] && row[col] !== '') ? idx : null)
+                .filter(idx => idx)[0];
+            locationData = locationData.slice(firstDataPointIndex);
+
+            const ageBinMap = (row, col) => row[`age_bin_${col.split('_').slice(-1)[0]}`];
+
+            // Compute a rolling sum to estimate active cases
+            const rollingWindowSize = 14;
+            const data = locationData.map((row, idx) => {
+                const record = { 'Date': row.date };
+                const start = Math.max(0, idx - rollingWindowSize);
+                columns.forEach(col => {
+                    const ageBin = ageBinMap(row, col);
+                    if (ageBin) {
+                        const rollingSum = locationData.slice(start, idx)
+                            .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
+                        record[ageBin] = rollingSum;
+                    }
+                })
+                return record;
+            })
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.AreaChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Estimated Active Cases by Age`,
+                isStacked: true,
+                curveType: 'function',
+                legend: { position: 'in' },
+                colors: undefined,  // automatic from material theme
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>
