@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>Documentation - Picnic CSS</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="keywords" content="css, library, picnic, picnicss, light"><meta name="description" content="A lightweight CSS library"><link rel="stylesheet" href="web/style/style.min.css"><link rel="icon" href="web/img/basket.png" type="image/png"><link rel="stylesheet" media="bogus"><style>aside a.top{font-size:0;position:fixed;bottom:0;font-weight:700;width:180px;padding:.6em 0;margin-bottom:0;border-radius:.3em .3em 0 0;transition:all .3s ease}aside a.top.visible{font-size:1em}aside .links a.button{text-align:left}@media all and (max-width:1000px){aside a.pseudo.top{background:rgba(255,255,255,.8);width:100%;left:0;text-align:center;z-index:100}}.documentation article>h2{margin:-2em 0 .6em;padding:3em 0 0;line-height:1}.documentation article>h3{margin-bottom:.6em}.documentation aside h2{margin-top:0;padding:1.25em 0;line-height:1}.documentation aside a.pseudo{color:#0074d9;margin:0}.documentation>section{background:#fff;text-align:left;width:90%;max-width:960px;margin:0 auto;padding:80px 0 0}.documentation article>h1{margin:0;padding:.6em 0;font-size:2em;line-height:1.5}.documentation aside a.button{display:block}.documentation pre[class*=language-]{margin-top:10px;margin-bottom:40px}.documentation .index pre{margin:0;font-size:.9em}</style></head><body><nav><a href="/" class="brand"><span>Picnic CSS</span></a><input id="bmenu" type="checkbox" class="show"><label for="bmenu" class="burger toggle pseudo button">menu</label><div class="menu"><a href="/tests" class="pseudo button icon-help-circled">Test</a><a href="https://github.com/franciscop/picnic" target="_blank" class="pseudo button icon-g">GitHub</a><a href="/documentation" class="button icon-file-code">Documentation</a></div></nav><main id="home" class="documentation"><section class="flex five"><aside class="full fifth-1000"><h2>Contents</h2><div class="links flex two three-500 five-800 one-1000"></div><a href="#home" tabindex="-1" class="top pseudo button">▲ Up you go ▲</a></aside><article class="full four-fifth-1000"><h1 id="picnic-css">Picnic CSS</h1>
+<!DOCTYPE html><html lang="en"><head><title>Documentation - Picnic CSS</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="keywords" content="css, library, picnic, picnicss, light"><meta name="description" content="A lightweight CSS library"><link rel="stylesheet" href="/style.min.css"><link rel="icon" href="/img/basket.png" type="image/png"><link rel="stylesheet" media="bogus"><style>aside a.top{font-size:0;position:fixed;bottom:0;font-weight:700;width:180px;padding:.6em 0;margin-bottom:0;border-radius:.3em .3em 0 0;transition:all .3s ease}aside a.top.visible{font-size:1em}aside .links a.button{text-align:left}@media all and (max-width:1000px){aside a.pseudo.top{background:rgba(255,255,255,.8);width:100%;left:0;text-align:center;z-index:100}}.documentation article>h2{margin:-2em 0 .6em;padding:3em 0 0;line-height:1}.documentation article>h3{margin-bottom:.6em}.documentation aside h2{margin-top:0;padding:1.25em 0;line-height:1}.documentation aside a.pseudo{color:#0074d9;margin:0}.documentation>section{background:#fff;text-align:left;width:90%;max-width:960px;margin:0 auto;padding:80px 0 0}.documentation article>h1{margin:0;padding:.6em 0;font-size:2em;line-height:1.5}.documentation aside a.button{display:block}.documentation pre[class*=language-]{margin-top:10px;margin-bottom:40px}.documentation .index pre{margin:0;font-size:.9em}</style></head><body><nav><a href="/" class="brand"><span>Picnic CSS</span></a><input id="bmenu" type="checkbox" class="show"><label for="bmenu" class="burger toggle pseudo button">menu</label><div class="menu"><a href="/tests" class="pseudo button icon-help-circled">Test</a><a href="https://github.com/franciscop/picnic" target="_blank" class="pseudo button icon-g">GitHub</a><a href="/documentation" class="button icon-file-code">Documentation</a></div></nav><main id="home" class="documentation"><section class="flex five"><aside class="full fifth-1000"><h2>Contents</h2><div class="links flex two three-500 five-800 one-1000"></div><a href="#home" tabindex="-1" class="top pseudo button">▲ Up you go ▲</a></aside><article class="full four-fifth-1000"><h1 id="picnic-css">Picnic CSS</h1>
 <p>Picnic CSS is a lightweight and beautiful CSS library</p>
 <h2 id="buttons">Buttons</h2>
 <p>They can be of different colors and types:</p>
@@ -82,7 +82,7 @@
 <pre><code class="lang-html">&lt;div class=&quot;flex two&quot;&gt;
   &lt;div&gt;
     &lt;article class=&quot;card&quot;&gt;
-      &lt;img src=&quot;/web/img/forest.jpg&quot;&gt;
+      &lt;img src=&quot;/img/forest.jpg&quot;&gt;
       &lt;footer&gt;
         &lt;h3&gt;Misty Forest&lt;/h3&gt;
         &lt;button&gt;Like&lt;/button&gt;
@@ -91,7 +91,7 @@
   &lt;/div&gt;
   &lt;div&gt;
     &lt;article class=&quot;card&quot;&gt;
-      &lt;img src=&quot;/web/img/forest.jpg&quot;&gt;
+      &lt;img src=&quot;/img/forest.jpg&quot;&gt;
       &lt;footer&gt;
         &lt;h3&gt;Misty Forest&lt;/h3&gt;
         &lt;button&gt;Like&lt;/button&gt;
@@ -450,6 +450,11 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
   }
 }
 </code></pre>
+<h5 id="toggling-the-modal-with-javascript">Toggling the modal with javascript</h5>
+<p>If you want to be able to toggle the modal with javascript, you can use the following:</p>
+<pre><code class="lang-js">document.getElementById(&#39;modal_1&#39;).checked = true; // open modal
+document.getElementById(&#39;modal_1&#39;).checked = false; // close modal
+</code></pre>
 <h2 id="nav">Nav</h2>
 <style>nav.demo{position:relative;z-index:9;padding:0 .6em}</style>
 
@@ -461,7 +466,7 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
 
 &lt;nav class=&quot;demo&quot;&gt;
   &lt;a href=&quot;#&quot; class=&quot;brand&quot;&gt;
-    &lt;img class=&quot;logo&quot; src=&quot;/web/img/basket.png&quot; /&gt;
+    &lt;img class=&quot;logo&quot; src=&quot;/img/basket.png&quot; /&gt;
     &lt;span&gt;Picnic CSS&lt;/span&gt;
   &lt;/a&gt;
 
@@ -496,7 +501,7 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
 </code></pre>
 <pre><code class="lang-html">&lt;nav class=&quot;demo imponent&quot;&gt;
   &lt;a href=&quot;#&quot; class=&quot;brand&quot;&gt;
-    &lt;img class=&quot;logo&quot; src=&quot;/web/img/basket.png&quot; /&gt;
+    &lt;img class=&quot;logo&quot; src=&quot;/img/basket.png&quot; /&gt;
     &lt;span&gt;Picnic CSS&lt;/span&gt;
   &lt;/a&gt;
 &lt;/nav&gt;
@@ -622,7 +627,7 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
 </code></pre>
 <p>Stack different kind of elements</p>
 <pre><code class="lang-html">&lt;div class=&quot;third&quot;&gt;
-  &lt;img class=&quot;stack&quot; src=&quot;/web/img/forest.jpg&quot;&gt;
+  &lt;img class=&quot;stack&quot; src=&quot;/img/forest.jpg&quot;&gt;
   &lt;a class=&quot;button stack&quot;&gt;Full size&lt;/a&gt;
 &lt;/div&gt;
 </code></pre>
@@ -697,15 +702,15 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
   &lt;label class=&quot;pseudo button toggle&quot; for=&quot;tab-3&quot;&gt;Balloon&lt;/label&gt;
   &lt;div class=&quot;row&quot;&gt;
     &lt;div&gt;
-      &lt;img src=&quot;web/img/forest.jpg&quot;&gt;
+      &lt;img src=&quot;img/forest.jpg&quot;&gt;
     &lt;/div&gt;
 
     &lt;div&gt;
-      &lt;img src=&quot;web/img/lake.jpg&quot;&gt;
+      &lt;img src=&quot;img/lake.jpg&quot;&gt;
     &lt;/div&gt;
 
     &lt;div&gt;
-      &lt;img src=&quot;web/img/balloon.jpg&quot;&gt;
+      &lt;img src=&quot;img/balloon.jpg&quot;&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
@@ -719,22 +724,22 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
   &lt;input id=&quot;tabC-4&quot; type=&#39;radio&#39; name=&#39;tabGroupC&#39;&gt;
   &lt;div class=&#39;row&#39;&gt;
     &lt;div&gt;
-      &lt;img src=&quot;web/img/forest.jpg&quot;&gt;
+      &lt;img src=&quot;img/forest.jpg&quot;&gt;
     &lt;/div&gt;
     &lt;div&gt;
-      &lt;img src=&quot;web/img/lake.jpg&quot;&gt;
+      &lt;img src=&quot;img/lake.jpg&quot;&gt;
     &lt;/div&gt;
     &lt;div&gt;
-      &lt;img src=&quot;web/img/halong.jpg&quot;&gt;
+      &lt;img src=&quot;img/halong.jpg&quot;&gt;
     &lt;/div&gt;
     &lt;div&gt;
-      &lt;img src=&quot;web/img/balloon.jpg&quot;&gt;
+      &lt;img src=&quot;img/balloon.jpg&quot;&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-  &lt;label for=&quot;tabC-1&quot;&gt;&lt;img src=&quot;web/img/forest.jpg&quot;&gt;&lt;/label&gt;
-  &lt;label for=&quot;tabC-2&quot;&gt;&lt;img src=&quot;web/img/lake.jpg&quot;&gt;&lt;/label&gt;
-  &lt;label for=&quot;tabC-3&quot;&gt;&lt;img src=&quot;web/img/halong.jpg&quot;&gt;&lt;/label&gt;
-  &lt;label for=&quot;tabC-4&quot;&gt;&lt;img src=&quot;web/img/balloon.jpg&quot;&gt;&lt;/label&gt;
+  &lt;label for=&quot;tabC-1&quot;&gt;&lt;img src=&quot;img/forest.jpg&quot;&gt;&lt;/label&gt;
+  &lt;label for=&quot;tabC-2&quot;&gt;&lt;img src=&quot;img/lake.jpg&quot;&gt;&lt;/label&gt;
+  &lt;label for=&quot;tabC-3&quot;&gt;&lt;img src=&quot;img/halong.jpg&quot;&gt;&lt;/label&gt;
+  &lt;label for=&quot;tabC-4&quot;&gt;&lt;img src=&quot;img/balloon.jpg&quot;&gt;&lt;/label&gt;
 &lt;/div&gt;
 </code></pre>
 <h2 id="tooltip">Tooltip</h2>
@@ -757,4 +762,4 @@ $(&quot;form&quot;).on(&#39;submit&#39;, function(e){
   Right
 &lt;/button&gt;
 </code></pre>
-</article></section></main><script src="https://cdn.jsdelivr.net/umbrella/2.6/umbrella.min.js"></script><script src="web/prism.js"></script><script>u("h2[id]").each(function(t){u(t).attr("id",u(t).attr("id").replace(/-/g,""))}),u("aside .links").append(function(t){return u("<div>").append(u("<a>").addClass("pseudo button").attr("href","#"+t.id).html(t.innerHTML))},u("article h2")),u("pre .lang-html").each(function(t){u(t).parent().before(u("<div>").html(u(t).parent().text()))}),u("pre .lang-css").each(function(t){u(t).parent().before(u("<style>").html(u(t).parent().text()))}),u("aside a").on("click",function(t){try{var e=u(t.currentTarget).attr("href");u(e).first().scrollIntoView({behavior:"smooth"}),t.preventDefault(),history.replaceState(null,"",e)}catch(t){}}),u([window]).on("scroll",function(){var t=this.scrollY||document.documentElement.scrollTop;u(".top").toggleClass("visible",t>1e3)}).trigger("scroll");</script><script>window.onload=function(){[].forEach.call(document.querySelectorAll(".dropimage"),function(e){e.onchange=function(e){var n=this,o=new FileReader;o.onloadend=function(){n.style["background-image"]="url("+o.result+")"},o.readAsDataURL(e.target.files[0])}})};</script><script src="/web/tracking.js" defer async></script></body></html>
+</article></section></main><script src="https://cdn.jsdelivr.net/umbrella/2.6/umbrella.min.js"></script><script src="prism.js"></script><script>u("h2[id]").each(function(t){u(t).attr("id",u(t).attr("id").replace(/-/g,""))}),u("aside .links").append(function(t){return u("<div>").append(u("<a>").addClass("pseudo button").attr("href","#"+t.id).html(t.innerHTML))},u("article h2")),u("pre .lang-html").each(function(t){u(t).parent().before(u("<div>").html(u(t).parent().text()))}),u("pre .lang-css").each(function(t){u(t).parent().before(u("<style>").html(u(t).parent().text()))}),u("aside a").on("click",function(t){try{var e=u(t.currentTarget).attr("href");u(e).first().scrollIntoView({behavior:"smooth"}),t.preventDefault(),history.replaceState(null,"",e)}catch(t){}}),u([window]).on("scroll",function(){var t=this.scrollY||document.documentElement.scrollTop;u(".top").toggleClass("visible",t>1e3)}).trigger("scroll");</script><script>window.onload=function(){[].forEach.call(document.querySelectorAll(".dropimage"),function(e){e.onchange=function(e){var n=this,o=new FileReader;o.onloadend=function(){n.style["background-image"]="url("+o.result+")"},o.readAsDataURL(e.target.files[0])}})};</script><script src="/tracking.js" defer async></script></body></html>

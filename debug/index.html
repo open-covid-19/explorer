@@ -1,14 +1,14 @@
 <!DOCTYPE html><html><!-- HTML page head --><head>
     <!-- HTML metadata -->
     <meta charset="UTF-8">
-    <title>Open COVID-19</title>
-    <meta name="description" content="Interactive map for the Open COVID-19 Dataset">
+    <title>COVID-19 Open Data Explorer</title>
+    <meta name="description" content="Interactive map for the COVID-19 Open Data Project">
     <link rel="icon" type="image/png" href="../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Open COVID-19">
+    <meta name="apple-mobile-web-app-title" content="COVID-19 Open Data Explorer">
 
     <!-- Homescreen icons -->
     <link rel="apple-touch-icon" href="../static/icon-64x64.png">
@@ -28,8 +28,14 @@
     <link rel="stylesheet" href="../third_party/jqvmap/dist/jqvmap.min.css">
     <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
     <!-- MomentJS -->
     <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
+
+    <!-- CSV Parsing -->
+    <script type="text/javascript" src="../third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
@@ -38,7 +44,7 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size":21,"chart-style":"bar","epi-reporting":"daily"},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,o)=>Object.assign(e,{[o]:sessionStorage.getItem(o)||DEFAULT_OPTIONS[o]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}},CURRENT_OPTIONS);console.log(OPEN_COVID_CONFIG);</script>
+    <script type="text/javascript">CACHE=window.CACHE||{CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","cod-data-url":"https://storage.googleapis.com/covid19-open-data/v3","history-size":21,"chart-style":"bar","epi-reporting":"daily"},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((t,e)=>Object.assign(t,{[e]:sessionStorage.getItem(e)||DEFAULT_OPTIONS[e]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
 </head><body class="single-column">
@@ -57,11 +63,9 @@
 
 <header>
     <a class="centered uppercase" href="..">World Map</a>
-    <a class="centered uppercase" href="../about">About</a>
-    <a class="centered uppercase" href="https://github.com/open-covid-19/data" target="_blank">Source</a>
-    <a class="centered uppercase" href="mailto:oscar@wahltinez.org" target="_blank">Contact</a>
+    <a class="centered uppercase" href="https://github.com/GoogleCloudPlatform/covid-19-open-data" target="_blank">About</a>
+    <a class="centered uppercase" href="https://github.com/GoogleCloudPlatform/covid-19-open-data/issues/new/choose" target="_blank">Contact</a>
 </header>
-
 
     <main>
         <!-- Title of the page -->
