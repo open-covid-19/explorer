@@ -69,7 +69,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.AreaChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Estimated Active Cases by Age`,
+                title: `Estimated active cases by age`,
                 isStacked: true,
                 curveType: 'function',
                 legend: { position: 'in' },
