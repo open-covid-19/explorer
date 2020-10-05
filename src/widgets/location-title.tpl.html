@@ -34,14 +34,14 @@
 
             // Fill the elements with data
             const metadata = locationData[0];
-            const placeLabel = lvl => {
+            const locationLabel = lvl => {
                 if (lvl === '0') return metadata.country_name;
                 else if (lvl === '1') return metadata.subregion1_name;
                 else if (lvl === '2') return metadata.subregion2_name;
                 else if (lvl === '3') return metadata.locality_name;
                 else return `Unknown`;
             }
-            elem.innerText = placeLabel(metadata.aggregation_level);
+            elem.innerText = locationLabel(metadata.aggregation_level);
 
             // Unhide element
             elem.parentElement.style.visibility = 'visible';

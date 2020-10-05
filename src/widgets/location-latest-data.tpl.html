@@ -24,13 +24,13 @@
 
             // Create a new element to hold the data and add it to the page
             const details = attachElement('details', {}, root = rootElement, prepend = true);
-            const summary = attachElement('summary', { innerHTML: 'Show the latest data for this place' }, details);
+            const summary = attachElement('summary', { innerHTML: 'Show the latest data for this location' }, details);
             const table = attachElement('table', { className: 'fullwidth' }, details);
             table.style.tableLayout = 'fixed';
 
             // Fill the elements with data
             const metadata = locationData.slice(-1)[0];
-            let tableData = `<tr><th colspan=2><span class="centered">Latest Place Data</span></th></tr>`;
+            let tableData = `<tr><th colspan=2><span class="centered">Latest Location Data</span></th></tr>`;
             Object.keys(metadata).forEach(col => {
                 const latestRecord = locationData.filter(row => row[col] && row[col] !== '').slice(-1)[0];
                 if (latestRecord[col]) tableData += `<tr><td>${col}</td><td>${latestRecord[col]}</td></tr>`;

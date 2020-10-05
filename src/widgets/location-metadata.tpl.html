@@ -34,17 +34,17 @@
 
             // Fill the elements with data
             const metadata = locationData[0];
-            let tableData = `<tr><th colspan=2><span class="centered">Place Information</span></th></tr>`;
+            let tableData = `<tr><th colspan=2><span class="centered">Location Information</span></th></tr>`;
 
             // Located in
             const keyTokenCount = locationKey.split('_').length;
             const locatedInLabel = lvl => {
                 if (lvl === '0') return `World`;
                 else if (lvl === '1') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === '2') return `<a href="{{root}}/report/index.html?key=${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === '2') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
                 else if (lvl === '3' && keyTokenCount === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === '3' && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
-                else if (lvl === '3' && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
+                else if (lvl === '3' && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === '3' && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
                 else return `Unknown`;
             }
             tableData += `<tr><td>Located in</td><td>${locatedInLabel(metadata.aggregation_level)}</td></tr>`;
