@@ -22,18 +22,8 @@
                 return;
             }
 
-            // Use only the last 100 datapoints if this is a touchscreen device
-            if ('ontouchstart' in document.documentElement) {
-                const mobileSubsetSize = 100;
-                locationData = locationData.slice(-mobileSubsetSize);
-            }
-
-            // Get rid of irrelevant data prior to the first confirmed case
-            notNull = (row, col) => parseInt(row[col]) || null;
-            const firstDataPointIndex = locationData
-                .map((row, idx) => columns.some(col => notNull(row, col)) ? idx : null)
-                .filter(idx => idx)[0];
-            locationData = locationData.slice(firstDataPointIndex);
+            // Get rid of irrelevant data according to settings
+            locationData = filterData(locationData);
 
             // Put the confirmed cases from the state data into a table and draw it in the chart
             const data = locationData
