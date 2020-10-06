@@ -36,9 +36,23 @@
             const metadata = locationData[0];
             let tableData = `<tr><th colspan=2><span class="centered">Location Information</span></th></tr>`;
 
+            // Index aggregation level
+            const aggregationLevelLabel = lvl => {
+                if (lvl === '0') return `Country`;
+                else if (lvl === '1') return `Administrative Level 1`;
+                else if (lvl === '2') return `Administrative Level 2`;
+                else if (lvl === '3') return `Locality`;
+                else return `Unknown`;
+            }
+            tableData += `
+                <tr>
+                    <td>Aggregation Level</td>
+                    <td>${aggregationLevelLabel(metadata.aggregation_level)}</td>
+                </tr>`;
+
             // Located in
             const keyTokenCount = locationKey.split('_').length;
-            const locatedInLabel = lvl => {
+            const locatedInLabelMap = lvl => {
                 if (lvl === '0') return `World`;
                 else if (lvl === '1') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
                 else if (lvl === '2') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
@@ -47,24 +61,46 @@
                 else if (lvl === '3' && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
                 else return `Unknown`;
             }
-            tableData += `<tr><td>Located in</td><td>${locatedInLabel(metadata.aggregation_level)}</td></tr>`;
-
-            // Index aggregation level
-            const aggregationLevelLabel = lvl => {
-                if (lvl === '0') return `Country`;
-                else if (lvl === '1') return `Admin Level 1`;
-                else if (lvl === '2') return `Admin Level 2`;
-                else if (lvl === '3') return `Locality`;
-                else return `Unknown`;
+            const locatedInLabelVal = locatedInLabelMap(metadata.aggregation_level);
+            if (locatedInLabelVal !== 'World' && locatedInLabelVal !== 'Unknown') {
+                tableData += `
+                    <tr>
+                        <td>Located in</td>
+                        <td>${locatedInLabelVal}</td>
+                    </tr>`;
             }
-            tableData += `<tr><td>Aggregation Level</td><td>${aggregationLevelLabel(metadata.aggregation_level)}</td></tr>`;
+
+            // Total population
+            if (metadata.population) {
+                tableData += `
+                    <tr>
+                        <td>Total Population</td>
+                        <td>${Number(metadata.population).toLocaleString()}</td>
+                    </tr>`;
+            }
 
             // Total case count
             const lastConfirmedCase = locationData
                 .filter(row => row.cumulative_confirmed && row.cumulative_confirmed !== '')
                 .slice(-1);
             if (lastConfirmedCase.length > 0) {
-                tableData += `<tr><td>Total Confirmed Cases</td><td>${lastConfirmedCase[0].cumulative_confirmed}</td></tr>`;
+                tableData += `
+                    <tr>
+                        <td>Total Confirmed Cases</td>
+                        <td>${Number(lastConfirmedCase[0].cumulative_confirmed).toLocaleString()}</td>
+                    </tr>`;
+            }
+
+            // Total deceased persons count
+            const lastDeceasedCase = locationData
+                .filter(row => row.cumulative_deceased && row.cumulative_deceased !== '')
+                .slice(-1);
+            if (lastConfirmedCase.length > 0) {
+                tableData += `
+                    <tr>
+                        <td>Total Deceased Persons</td>
+                        <td>${Number(lastConfirmedCase[0].cumulative_deceased).toLocaleString()}</td>
+                    </tr>`;
             }
 
             // First case information
@@ -84,27 +120,31 @@
                 tableData += `<tr><td>First Deceased Person</td><td>${firstDeceasedCase[0].date}</td></tr>`;
             }
 
-            // Knowledge graph information
-            let knowledgeGraph = '';
+            // Related links information
+            let relatedLinks = '';
+            relatedLinks +=
+                `<a href="${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv" target="_blank">
+                    <img src="{{root}}/static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                </a>`
             if (metadata.wikidata_id) {
-                knowledgeGraph +=
+                relatedLinks +=
                     `<a href="https://www.wikidata.org/wiki/${metadata.wikidata_id}" target="_blank">
                         <img src="{{root}}/static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
                     </a>`
             }
             if (metadata.datacommons_id) {
-                knowledgeGraph +=
+                relatedLinks +=
                     `<a href="https://datacommons.org/place?dcid=${metadata.datacommons_id}" target="_blank">
                         <img src="{{root}}/static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />
                     </a>`
             }
             if (metadata.openstreetmap_id) {
-                knowledgeGraph +=
+                relatedLinks +=
                     `<a href="https://www.openstreetmap.org/relation/${metadata.openstreetmap_id}" target="_blank">
                         <img src="{{root}}/static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
                     </a>`
             }
-            tableData += `<tr><td>Related Links</td><td>${knowledgeGraph}</td></tr>`;
+            tableData += `<tr><td>Related Links</td><td>${relatedLinks}</td></tr>`;
 
             // Update table HTML content
             elem.innerHTML = tableData;

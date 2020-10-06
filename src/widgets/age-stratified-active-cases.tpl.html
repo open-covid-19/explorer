@@ -34,7 +34,7 @@
                 return;
             }
 
-            // Use only the last 100 datapoints if this is a touchscreen device
+            // Use only the last 100 data points if this is a touchscreen device
             if ('ontouchstart' in document.documentElement) {
                 const mobileSubsetSize = 100;
                 locationData = locationData.slice(-mobileSubsetSize);
