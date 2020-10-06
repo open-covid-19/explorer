@@ -84,3 +84,23 @@ function loadGoogleCharts(packages = ['corechart']) {
     CACHE['gcharts'][cacheKey] = google.charts.load('current', { packages: packages });
     return CACHE['gcharts'][cacheKey];
 }
+
+function filterData(records) {
+
+    // Get rid of irrelevant data prior to the first outbreak
+    if (CURRENT_OPTIONS['skip-until-outbreak']) {
+        const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
+        const maxDaily = Math.max(...records.map(row => row.new_confirmed));
+        const firstDataPointIndex = records
+            .map((row, idx) => ((parseInt(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
+            .filter(idx => idx)[0];
+        records = records.slice(firstDataPointIndex);
+    }
+
+    // Use only the last few data points if this is a touchscreen device
+    if ('ontouchstart' in document.documentElement) {
+        records = records.slice(-CURRENT_OPTIONS['history-size-mobile']);
+    }
+
+    return records;
+}
