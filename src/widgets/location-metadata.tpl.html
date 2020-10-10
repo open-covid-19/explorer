@@ -95,11 +95,11 @@
             const lastDeceasedCase = locationData
                 .filter(row => row.cumulative_deceased && row.cumulative_deceased !== '')
                 .slice(-1);
-            if (lastConfirmedCase.length > 0) {
+            if (lastDeceasedCase.length > 0) {
                 tableData += `
                     <tr>
                         <td>Total Deceased Persons</td>
-                        <td>${Number(lastConfirmedCase[0].cumulative_deceased).toLocaleString()}</td>
+                        <td>${Number(lastDeceasedCase[0].cumulative_deceased).toLocaleString()}</td>
                     </tr>`;
             }
 
