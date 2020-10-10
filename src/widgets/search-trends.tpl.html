@@ -16,7 +16,17 @@
                 'search_trends_fever',
                 'search_trends_cough',
                 'search_trends_common_cold',
-                'search_trends_pneumonia',
+                'search_trends_fatigue',
+                'search_trends_shortness_of_breath',
+                'search_trends_sputum',
+                'search_trends_myalgia',
+                'search_trends_chills',
+                'search_trends_dizziness',
+                'search_trends_headache',
+                'search_trends_sore_throat',
+                'search_trends_nausea',
+                'search_trends_vomiting',
+                'search_trends_diarrhea',
             ];
             const rootElement = document.currentScript.parentElement;
 
@@ -29,7 +39,6 @@
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
             if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
-                console.log(locationData)
                 console.error('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;

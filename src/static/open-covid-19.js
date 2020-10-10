@@ -90,7 +90,7 @@ function filterData(records) {
     // Get rid of irrelevant data prior to the first outbreak
     if (CURRENT_OPTIONS['skip-until-outbreak']) {
         const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
-        const maxDaily = Math.max(...records.map(row => row.new_confirmed));
+        const maxDaily = Math.max(...records.filter(row => row.date < '2020-06-01').map(row => row.new_confirmed));
         const firstDataPointIndex = records
             .map((row, idx) => ((parseInt(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
             .filter(idx => idx)[0];

@@ -1,30 +1,32 @@
 <div class="centered fullwidth">
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0" />
 </div>
-<script>
-    loadData(['index'], (name, table) => {
-        const records = tableToRecords(table)
-            .sort((a, b) => (b.population || 0) - (a.population || 0));
-        const locationLabelMap = records.map(row => {
+<script async>
+    (async function () {
+        const indexRecords = (await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/index.csv`))
+            .sort((a, b) => (parseInt(b.population) || 0) - (parseInt(a.population) || 0));
+
+        const locationLabelMap = indexRecords.map(row => {
             let label = '';
-            switch (row.aggregation_level) {
+            switch (parseInt(row.aggregation_level)) {
                 case 0:
-                    label = `${row.country_name} [${row.key}]`
-                    return { value: row.key, label: label };
+                    label = `${row.country_name} [${row.location_key}]`
+                    return { value: row.location_key, label: label };
                 case 1:
-                    label = `${row.subregion1_name}, ${row.country_name} [${row.key}]`;
-                    return { value: row.key, label: label };
+                    label = `${row.subregion1_name}, ${row.country_name} [${row.location_key}]`;
+                    return { value: row.location_key, label: label };
                 case 2:
-                    label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
-                    return { value: row.key, label: label };
+                    label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
+                    return { value: row.location_key, label: label };
                 case 3:
-                    label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.key}]`;
-                    return { value: row.key, label: label };
+                    label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
+                    return { value: row.location_key, label: label };
                 default:
                     console.error(`Unknown aggregation level for record:`);
                     console.error(row);
             }
         }).filter(row => row && row.value && row.label);
+
         $("#location-selector").autocomplete({
             minLength: 2,
             source: locationLabelMap,
@@ -35,6 +37,7 @@
                 }
             }
         });
+
         $('#location-selector').attr('disabled', false);
-    });
+    })();
 </script>
