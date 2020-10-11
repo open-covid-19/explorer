@@ -7,7 +7,7 @@
 
         (async function () {
             const minRows = 20;
-            const columns = ['new_deceased'];
+            const columns = ['new_confirmed', 'new_deceased'];
             const rootElement = document.currentScript.parentElement;
 
             // Get the location key from the URL
@@ -26,20 +26,48 @@
             // Get rid of irrelevant data according to settings
             locationData = filterData(locationData);
 
-            // Put the confirmed cases from the state data into a table and draw it in the chart
-            const data = locationData
-                .filter(row => row.new_deceased !== "")
-                .map(row => ({
+            // Use a moving average for the mortality rate to avoid spikes
+            const rollingWindowSize = 14;
+            const data = locationData.map((row, idx) => {
+
+                // Use the 14-day rolling average of deceased cases
+                const startIdxNumerator = Math.max(0, idx - rollingWindowSize);
+                const rollingSumNumerator = locationData.slice(startIdxNumerator, idx)
+                    .reduce((total, row) => total + (parseInt(row.new_deceased) || 0), 0);
+
+                // Use the *prior* 14-day rolling average of confirmed cases
+                const startIdxDenominator = Math.max(0, idx - rollingWindowSize * 2);
+                const rollingSumDenominator = locationData.slice(startIdxDenominator, idx)
+                    .reduce((total, row) => total + (parseInt(row.new_confirmed) || parseInt(row.new_deceased) || 0), 0);
+
+                return {
                     ['Date']: row.date,
-                    ['Deceased']: parseInt(row.new_deceased)
-                }));
+                    ['Deceased Persons']: parseInt(row.new_deceased),
+                    ['Mortality Rate']: rollingSumNumerator / rollingSumDenominator,
+                };
+            });
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
-            const chartObject = new google.visualization.ColumnChart(elem);
+            const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Deceased persons`,
-                colors: ['#EF5350'],  // material red 400
+                title: `Deceased Persons and Mortality Rate`,
+                colors: ['#D32F2F', '#757575'],  // material teal, material indigo
+                curveType: 'function',
+                series: {
+                    0: { targetAxisIndex: 0, type: 'bars' },
+                    1: { targetAxisIndex: 1, type: 'line' },
+                },
+                vAxes: {
+                    1: {
+                        textPosition: 'in',
+                        viewWindow: {
+                            min: 0,
+                            max: 0.5,
+                        }
+                    },
+                },
+                chartArea: Object.assign({}, GOOGLE_CHARTS_CONFIG.chartArea, { right: 48 }),
             }));
 
             // Unhide element
