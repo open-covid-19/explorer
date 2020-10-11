@@ -1,0 +1,71 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = ['new_confirmed', 'new_tested'];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Get rid of irrelevant data according to settings
+            locationData = filterData(locationData);
+
+            // Use a moving average for the positivity rate to avoid spikes
+            const rollingWindowSize = 7;
+            const data = locationData.map((row, idx) => {
+                const start = Math.max(0, idx - rollingWindowSize);
+                const rollingSumNumerator = locationData.slice(start, idx)
+                    .reduce((total, row) => total + (parseInt(row.new_confirmed) || 0), 0);
+                const rollingSumDenominator = locationData.slice(start, idx)
+                    .reduce((total, row) => total + (parseInt(row.new_tested) || parseInt(row.new_confirmed) || 0), 0);
+                return {
+                    ['Date']: row.date,
+                    ['Tested Persons']: parseInt(row.new_tested),
+                    ['Positivity Rate']: rollingSumNumerator / rollingSumDenominator,
+                };
+            });
+
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.ComboChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Tested Persons and Positivity Rate`,
+                colors: ['#009688', '#536DFE'],  // material teal, material indigo
+                curveType: 'function',
+                series: {
+                    0: { targetAxisIndex: 0, type: 'bars' },
+                    1: { targetAxisIndex: 1, type: 'line' },
+                },
+                vAxes: {
+                    1: {
+                        textPosition: 'in',
+                        viewWindow: {
+                            min: 0,
+                            max: 1,
+                        }
+                    },
+                },
+                chartArea: Object.assign({}, GOOGLE_CHARTS_CONFIG.chartArea, { right: 48 }),
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>
