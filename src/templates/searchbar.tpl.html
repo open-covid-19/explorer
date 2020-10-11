@@ -3,8 +3,14 @@
 </div>
 <script async>
     (async function () {
+        const populations = (await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/demographics.csv`))
+            .reduce((acc, row) => {
+                acc[row.location_key] = parseInt(row.population) || 0;
+                return acc;
+            }, {});
         const indexRecords = (await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/index.csv`))
-            .sort((a, b) => (parseInt(b.population) || 0) - (parseInt(a.population) || 0));
+            .map(row => Object.assign({}, row, { 'population': populations[row.location_key] }))
+            .sort((a, b) => (b.population || 0) - (a.population || 0));
 
         const locationLabelMap = indexRecords.map(row => {
             let label = '';
