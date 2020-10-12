@@ -24,22 +24,28 @@
             }
 
             // Get rid of irrelevant data according to settings
-            locationData = filterData(locationData);
+            const indices = new Set(filterDataIndices(locationData));
+
+            // Convert the relevant rows to numbers
+            locationData = mapToPositiveNumeric(locationData, ['new_confirmed', 'new_tested']);
 
             // Use a moving average for the positivity rate to avoid spikes
             const rollingWindowSize = 7;
-            const data = locationData.map((row, idx) => {
+            locationData = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
                 const rollingSumNumerator = locationData.slice(start, idx)
-                    .reduce((total, row) => total + (parseInt(row.new_confirmed) || 0), 0);
+                    .reduce((total, row) => total + row.new_confirmed, 0);
                 const rollingSumDenominator = locationData.slice(start, idx)
-                    .reduce((total, row) => total + (parseInt(row.new_tested) || parseInt(row.new_confirmed) || 0), 0);
+                    .reduce((total, row) => total + (row.new_tested || row.new_confirmed), 0);
                 return {
                     ['Date']: row.date,
-                    ['Tested Persons']: parseInt(row.new_tested),
-                    ['Positivity Rate']: rollingSumNumerator / rollingSumDenominator,
+                    ['Tested Persons']: row.new_tested,
+                    ['Positivity Rate']: Math.min(1, rollingSumNumerator / rollingSumDenominator),
                 };
             });
+
+            // Get rid of irrelevant data according to settings
+            const data = locationData.filter((_, idx) => indices.has(idx));
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);

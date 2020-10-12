@@ -45,7 +45,8 @@
             }
 
             // Get rid of irrelevant data according to settings
-            locationData = filterData(locationData);
+            const indices = new Set(filterDataIndices(locationData));
+            locationData = locationData.filter((_, idx) => indices.has(idx));
 
             // Human-friendly label for a symptom
             const symptomLabel = column => column.split('_').slice(2).join(' ');

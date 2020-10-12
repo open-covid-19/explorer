@@ -24,28 +24,40 @@
             }
 
             // Get rid of irrelevant data according to settings
-            locationData = filterData(locationData);
+            const indices = new Set(filterDataIndices(locationData));
+
+            // Convert the relevant rows to numbers
+            locationData = mapToPositiveNumeric(locationData, ['new_confirmed', 'new_deceased']);
 
             // Use a moving average for the mortality rate to avoid spikes
             const rollingWindowSize = 14;
-            const data = locationData.map((row, idx) => {
-
-                // Use the 14-day rolling average of deceased cases
-                const startIdxNumerator = Math.max(0, idx - rollingWindowSize);
-                const rollingSumNumerator = locationData.slice(startIdxNumerator, idx)
-                    .reduce((total, row) => total + (parseInt(row.new_deceased) || 0), 0);
-
-                // Use the *prior* 14-day rolling average of confirmed cases
-                const startIdxDenominator = Math.max(0, idx - rollingWindowSize * 2);
-                const rollingSumDenominator = locationData.slice(startIdxDenominator, idx)
-                    .reduce((total, row) => total + (parseInt(row.new_confirmed) || parseInt(row.new_deceased) || 0), 0);
-
-                return {
+            locationData = locationData.map((row, idx) => {
+                const record = {
                     ['Date']: row.date,
-                    ['Deceased Persons']: parseInt(row.new_deceased),
-                    ['Mortality Rate']: rollingSumNumerator / rollingSumDenominator,
+                    ['Deceased Persons']: row.new_deceased,
+                    ['Mortality Rate']: null,
                 };
+
+                if (idx > rollingWindowSize * 2) {
+                    // Use the 14-day rolling average of deceased cases
+                    const startIdxNumerator = Math.max(0, idx - rollingWindowSize);
+                    const rollingSumNumerator = locationData.slice(startIdxNumerator, idx)
+                        .reduce((total, row) => total + row.new_deceased, 0);
+
+                    // Use the *prior* 14-day rolling average of confirmed cases
+                    const startIdxDenominator = Math.max(0, idx - rollingWindowSize * 2);
+                    const rollingSumDenominator = locationData.slice(startIdxDenominator, idx)
+                        .reduce((total, row) => total + (row.new_confirmed || row.new_deceased), 0);
+
+                    record['Mortality Rate'] = Math.min(
+                        1, rollingSumNumerator / (rollingSumDenominator || 1));
+                }
+
+                return record;
             });
+
+            // Get rid of irrelevant data according to settings
+            const data = locationData.filter((_, idx) => indices.has(idx));
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);

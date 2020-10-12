@@ -36,8 +36,9 @@
             }
 
             // Get rid of irrelevant data according to settings
-            locationData = filterData(locationData);
-            
+            const indices = new Set(filterDataIndices(locationData));
+            locationData = locationData.filter((_, idx) => indices.has(idx));
+
             const ageBinMap = (row, col) => row[`age_bin_${col.split('_').slice(-1)[0]}`];
 
             // Compute a rolling sum to estimate active cases
