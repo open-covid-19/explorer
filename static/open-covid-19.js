@@ -85,22 +85,32 @@ function loadGoogleCharts(packages = ['corechart']) {
     return CACHE['gcharts'][cacheKey];
 }
 
-function filterData(records) {
+function filterDataIndices(records) {
+    let indices = records.map((row, idx) => Object.assign({}, row, { 'idx': idx }));
 
     // Get rid of irrelevant data prior to the first outbreak
     if (CURRENT_OPTIONS['skip-until-outbreak']) {
         const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
         const maxDaily = Math.max(...records.filter(row => row.date < '2020-06-01').map(row => row.new_confirmed));
         const firstDataPointIndex = records
-            .map((row, idx) => ((parseInt(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
+            .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
             .filter(idx => idx)[0];
-        records = records.slice(firstDataPointIndex);
+        indices = indices.slice(firstDataPointIndex);
     }
 
     // Use only the last few data points if this is a touchscreen device
     if ('ontouchstart' in document.documentElement) {
-        records = records.slice(-CURRENT_OPTIONS['history-size-mobile']);
+        indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile']);
     }
 
-    return records;
+    // Return the indices of data which we keep
+    return indices.map(row => row['idx']);
+}
+
+function mapToPositiveNumeric(records, columns) {
+    return records.map(row => {
+        const record = Object.assign({}, row);
+        columns.forEach(col => record[col] = Math.max(0, Number(record[col])) || 0);
+        return record;
+    });
 }
