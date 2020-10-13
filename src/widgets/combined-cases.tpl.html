@@ -25,6 +25,7 @@
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
             locationData = locationData.filter((_, idx) => indices.has(idx));
+            locationData = locationData.filter(row => columns.some(col => row[col] !== ''));
 
             // Put the confirmed cases from the state data into a table and draw it in the chart
             const rollingWindowSize = 14;

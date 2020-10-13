@@ -38,6 +38,7 @@
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
             locationData = locationData.filter((_, idx) => indices.has(idx));
+            locationData = locationData.filter(row => columns.some(col => row[col] !== ''));
 
             // Human-friendly label for a location
             const locationLabel = column => column.split('_').slice(1).join(' ');

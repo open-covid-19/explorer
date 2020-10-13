@@ -57,7 +57,9 @@
             });
 
             // Get rid of irrelevant data according to settings
-            const data = locationData.filter((_, idx) => indices.has(idx));
+            const data = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => row[col] !== ''));
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
@@ -79,7 +81,6 @@
                         }
                     },
                 },
-                chartArea: Object.assign({}, GOOGLE_CHARTS_CONFIG.chartArea, { right: 48 }),
             }));
 
             // Unhide element
