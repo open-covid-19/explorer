@@ -98,6 +98,12 @@ function filterDataIndices(records) {
         indices = indices.slice(firstDataPointIndex);
     }
 
+    // Remove the data at the end which has null values
+    const nullColumns = ['new_confirmed', 'new_deceased'];
+    while (nullColumns.every(col => indices.slice(-1)[0][col] === '')) {
+        indices.pop();
+    }
+
     // Use only the last few data points if this is a touchscreen device
     if ('ontouchstart' in document.documentElement) {
         indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile']);
