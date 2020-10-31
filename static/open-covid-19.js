@@ -8,6 +8,17 @@ function loadData(tableNames, callback) {
     tableNames.forEach(key => loadJSON(key, `${key}.json`));
 }
 
+async function loadLocationData(locationKey) {
+    console.log(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.json`);
+    if (CURRENT_OPTIONS['read-format'] === 'CSV') {
+        return await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+    } else {
+        return tableToRecords(
+            await loadJSON(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.json`));
+    }
+
+}
+
 function tableToRecords(table) {
     return table.data.map(row =>
         table.columns.reduce((acc, col, idx) => Object.assign(acc, { [col]: row[idx] }), {}));
@@ -45,6 +56,17 @@ async function loadResource(url) {
     } else {
         throw new Error('Response failed');
     }
+}
+
+function loadJSON(url, forceCors = false) {
+    // Early exit: return from cache
+    if (url in CACHE['JSON']) return CACHE['JSON'][url];
+    // Add promise to cache to avoid others loading simultaneously
+    CACHE['JSON'][url] = new Promise(async (resolve, reject) => {
+        if (forceCors) url = `https://cors-anywhere.herokuapp.com/${url}`;
+        resolve((await loadResource(url)).json());
+    });
+    return CACHE['JSON'][url];
 }
 
 function loadCSV(url, forceCors = false) {
@@ -113,10 +135,19 @@ function filterDataIndices(records) {
     return indices.map(row => row['idx']);
 }
 
-function mapToPositiveNumeric(records, columns) {
+function mapToNumeric(records, columns, positive = true) {
     return records.map(row => {
         const record = Object.assign({}, row);
-        columns.forEach(col => record[col] = Math.max(0, Number(record[col])) || 0);
+        columns.forEach(col => {
+            const num = Number(record[col]);
+            if (record[col] === null || Number.isNaN(num)) {
+                record[col] = Number.NaN;
+            } else if (positive) {
+                record[col] = Math.max(0, num);
+            } else {
+                record[col] = num;
+            }
+        });
         return record;
     });
 }
