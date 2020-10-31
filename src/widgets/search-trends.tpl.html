@@ -34,7 +34,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
@@ -44,20 +44,23 @@
                 return;
             }
 
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = false);
+
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
-            locationData = locationData.filter((_, idx) => indices.has(idx));
-            locationData = locationData.filter(row => columns.some(col => row[col] !== ''));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Human-friendly label for a symptom
             const symptomLabel = column => column.split('_').slice(2).join(' ');
 
             // Put the symptom search trends data into a table and draw it in the chart
             const data = locationData
-                .filter(row => columns.some(col => row[col] !== ""))
                 .map(row => {
                     const record = { 'Date': row.date };
-                    columns.forEach(col => record[symptomLabel(col)] = parseFloat(row[col]));
+                    columns.forEach(col => record[symptomLabel(col)] = row[col]);
                     return record;
                 });
 

@@ -12,7 +12,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
@@ -32,7 +32,7 @@
             const metadata = locationData.slice(-1)[0];
             let tableData = `<tr><th colspan=2><span class="centered">Latest Location Data</span></th></tr>`;
             Object.keys(metadata).forEach(col => {
-                const latestRecord = locationData.filter(row => row[col] && row[col] !== '').slice(-1)[0];
+                const latestRecord = locationData.filter(row => row[col] && row[col] !== '').slice(-1)[0] || {};
                 if (latestRecord[col]) tableData += `<tr><td>${col}</td><td>${latestRecord[col]}</td></tr>`;
             });
 

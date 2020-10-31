@@ -18,7 +18,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
@@ -38,30 +38,30 @@
 
             // Index aggregation level
             const aggregationLevelLabel = lvl => {
-                if (lvl === '0') return `Country`;
-                else if (lvl === '1') return `Administrative Level 1`;
-                else if (lvl === '2') return `Administrative Level 2`;
-                else if (lvl === '3') return `Locality`;
+                if (lvl === 0) return `Country`;
+                else if (lvl === 1) return `Administrative Level 1`;
+                else if (lvl === 2) return `Administrative Level 2`;
+                else if (lvl === 3) return `Locality`;
                 else return `Unknown`;
             }
             tableData += `
                 <tr>
                     <td>Aggregation Level</td>
-                    <td>${aggregationLevelLabel(metadata.aggregation_level)}</td>
+                    <td>${aggregationLevelLabel(Number(metadata.aggregation_level))}</td>
                 </tr>`;
 
             // Located in
             const keyTokenCount = locationKey.split('_').length;
             const locatedInLabelMap = lvl => {
-                if (lvl === '0') return `World`;
-                else if (lvl === '1') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === '2') return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
-                else if (lvl === '3' && keyTokenCount === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === '3' && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
-                else if (lvl === '3' && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
+                if (lvl === 0) return `World`;
+                else if (lvl === 1) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
                 else return `Unknown`;
             }
-            const locatedInLabelVal = locatedInLabelMap(metadata.aggregation_level);
+            const locatedInLabelVal = locatedInLabelMap(Number(metadata.aggregation_level));
             if (locatedInLabelVal !== 'World' && locatedInLabelVal !== 'Unknown') {
                 tableData += `
                     <tr>

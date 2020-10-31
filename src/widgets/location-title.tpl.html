@@ -17,7 +17,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
@@ -35,13 +35,13 @@
             // Fill the elements with data
             const metadata = locationData[0];
             const locationLabel = lvl => {
-                if (lvl === '0') return metadata.country_name;
-                else if (lvl === '1') return metadata.subregion1_name;
-                else if (lvl === '2') return metadata.subregion2_name;
-                else if (lvl === '3') return metadata.locality_name;
+                if (lvl === 0) return metadata.country_name;
+                else if (lvl === 1) return metadata.subregion1_name;
+                else if (lvl === 2) return metadata.subregion2_name;
+                else if (lvl === 3) return metadata.locality_name;
                 else return `Unknown`;
             }
-            elem.innerText = locationLabel(metadata.aggregation_level);
+            elem.innerText = locationLabel(Number(metadata.aggregation_level));
 
             // Unhide element
             elem.parentElement.style.visibility = 'visible';

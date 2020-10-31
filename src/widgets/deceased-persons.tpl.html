@@ -14,7 +14,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
@@ -23,15 +23,18 @@
                 return;
             }
 
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = true);
+
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
-
-            // Convert the relevant rows to numbers
-            locationData = mapToPositiveNumeric(locationData, ['new_confirmed', 'new_deceased']);
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Use a moving average for the mortality rate to avoid spikes
             const rollingWindowSize = 14;
-            locationData = locationData.map((row, idx) => {
+            const data = locationData.map((row, idx) => {
                 const record = {
                     ['Date']: row.date,
                     ['Deceased Persons']: row.new_deceased,
@@ -55,11 +58,6 @@
 
                 return record;
             });
-
-            // Get rid of irrelevant data according to settings
-            const data = locationData
-                .filter((_, idx) => indices.has(idx))
-                .filter(row => columns.some(col => row[col] !== ''));
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);

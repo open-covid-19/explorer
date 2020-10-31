@@ -26,7 +26,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+            let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
@@ -35,10 +35,14 @@
                 return;
             }
 
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = false);
+
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
-            locationData = locationData.filter((_, idx) => indices.has(idx));
-            locationData = locationData.filter(row => columns.some(col => row[col] !== ''));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Human-friendly label for a location
             const locationLabel = column => column.split('_').slice(1).join(' ');
@@ -53,12 +57,11 @@
                 'mobility_retail_and_recreation': '#1967D2',
             }
 
-            // Put the symptom search trends data into a table and draw it in the chart
+            // Put the mobility reports data into a table and draw it in the chart
             const data = locationData
-                .filter(row => columns.some(col => row[col] !== ""))
                 .map(row => {
                     const record = { 'Date': row.date };
-                    columns.forEach(col => record[locationLabel(col)] = parseFloat(row[col]));
+                    columns.forEach(col => record[locationLabel(col)] = row[col]);
                     return record;
                 });
 
