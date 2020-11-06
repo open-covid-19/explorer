@@ -9,7 +9,6 @@ function loadData(tableNames, callback) {
 }
 
 async function loadLocationData(locationKey) {
-    console.log(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.json`);
     if (CURRENT_OPTIONS['read-format'] === 'CSV') {
         return await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
     } else {
@@ -107,7 +106,7 @@ function loadGoogleCharts(packages = ['corechart']) {
     return CACHE['gcharts'][cacheKey];
 }
 
-function filterDataIndices(records) {
+function filterDataIndices(records, pad = 0) {
     let indices = records.map((row, idx) => Object.assign({}, row, { 'idx': idx }));
 
     // Get rid of irrelevant data prior to the first outbreak
@@ -117,7 +116,7 @@ function filterDataIndices(records) {
         const firstDataPointIndex = records
             .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
             .filter(idx => idx)[0];
-        indices = indices.slice(firstDataPointIndex);
+        indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
     }
 
     // Remove the data at the end which has null values
@@ -128,7 +127,7 @@ function filterDataIndices(records) {
 
     // Use only the last few data points if this is a touchscreen device
     if ('ontouchstart' in document.documentElement) {
-        indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile']);
+        indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile'] - pad);
     }
 
     // Return the indices of data which we keep
