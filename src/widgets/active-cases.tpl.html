@@ -6,7 +6,8 @@
     <script async>
 
         (async function () {
-            const minRows = 20;
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed'];
             const rootElement = document.currentScript.parentElement;
 
@@ -22,29 +23,22 @@
                 return;
             }
 
-            // Use only the last 100 datapoints if this is a touchscreen device
-            if ('ontouchstart' in document.documentElement) {
-                const mobileSubsetSize = 100;
-                locationData = locationData.slice(-mobileSubsetSize);
-            }
-
             // Convert the relevant rows to numbers
             locationData = mapToNumeric(locationData, columns, positive = true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData));
+            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Put the confirmed cases from the state data into a table and draw it in the chart
-            const rollingWindowSize = 14;
             const data = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
                 const rollingSum = locationData.slice(start, idx)
                     .reduce((total, row) => total + row.new_confirmed, 0);
                 return { ['Date']: row.date, ['Estimated Active Cases']: rollingSum };
-            })
+            }).slice(rollingWindowSize);
 
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);

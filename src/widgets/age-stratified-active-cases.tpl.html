@@ -6,7 +6,8 @@
     <script async>
 
         (async function () {
-            const minRows = 20;
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
             const columns = [
                 'new_confirmed_age_0',
                 'new_confirmed_age_1',
@@ -36,14 +37,13 @@
             }
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData));
+            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
             locationData = locationData.filter((_, idx) => indices.has(idx));
             locationData = locationData.filter(row => columns.some(col => row[col] !== ''));
 
             const ageBinMap = (row, col) => row[`age_bin_${col.split('_').slice(-1)[0]}`];
 
             // Compute a rolling sum to estimate active cases
-            const rollingWindowSize = 14;
             const data = locationData.map((row, idx) => {
                 const record = { 'Date': row.date };
                 const start = Math.max(0, idx - rollingWindowSize);
@@ -56,7 +56,7 @@
                     }
                 })
                 return record;
-            })
+            }).slice(rollingWindowSize);
 
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
