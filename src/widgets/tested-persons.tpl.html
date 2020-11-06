@@ -6,7 +6,8 @@
     <script async>
 
         (async function () {
-            const minRows = 20;
+            const rollingWindowSize = 7;
+            const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'new_tested'];
             const rootElement = document.currentScript.parentElement;
 
@@ -27,25 +28,46 @@
             locationData = mapToNumeric(locationData, columns, positive = true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData));
+            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Use a moving average for the positivity rate to avoid spikes
-            const rollingWindowSize = 7;
+            let cumulativeTests = 0;
             const data = locationData.map((row, idx) => {
-                const start = Math.max(0, idx - rollingWindowSize);
-                const rollingSumNumerator = locationData.slice(start, idx)
-                    .reduce((total, row) => total + row.new_confirmed, 0);
-                const rollingSumDenominator = locationData.slice(start, idx)
-                    .reduce((total, row) => total + (row.new_tested || row.new_confirmed), 0);
-                return {
+                const record = {
                     ['Date']: row.date,
                     ['Tested Persons']: row.new_tested,
-                    ['Positivity Rate']: Math.min(1, rollingSumNumerator / rollingSumDenominator),
+                    ['Positivity Rate']: Number.NaN,
                 };
-            });
+
+                // Increment cumulative count of deaths
+                cumulativeTests += Number.isNaN(row.new_tested) ? 0 : row.new_tested;
+
+                if (idx > rollingWindowSize) {
+
+                    const startIdx = Math.max(0, idx - rollingWindowSize);
+                    const rollingSumNumerator = locationData.slice(startIdx, idx)
+                        .reduce((total, row) => total + row.new_confirmed, 0);
+                    const rollingSumDenominator = locationData.slice(startIdx, idx)
+                        .reduce((total, row) => total + (row.new_tested || row.new_confirmed), 0);
+
+                    const positivityRate = Math.min(1, rollingSumNumerator / rollingSumDenominator);
+
+                    if (cumulativeTests < 100) {
+                        // Only compute positivity rate if there are at least 100 cumulative tests
+                        record['Positivity Rate'] = 0;
+                    } else if (positivityRate < 1) {
+                        // Avoid charting suspiciously high positivity rates
+                        record['Positivity Rate'] = positivityRate
+                    } else {
+                        record['Positivity Rate'] = Number.NaN;
+                    }
+                }
+
+                return record
+            }).slice(rollingWindowSize);
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);

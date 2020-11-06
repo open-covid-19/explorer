@@ -6,7 +6,8 @@
     <script async>
 
         (async function () {
-            const minRows = 20;
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'new_deceased'];
             const rootElement = document.currentScript.parentElement;
 
@@ -27,19 +28,22 @@
             locationData = mapToNumeric(locationData, columns, positive = true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData));
+            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Use a moving average for the mortality rate to avoid spikes
-            const rollingWindowSize = 14;
+            let cumulativeDeaths = 0;
             const data = locationData.map((row, idx) => {
                 const record = {
                     ['Date']: row.date,
                     ['Deceased Persons']: row.new_deceased,
-                    ['Mortality Rate']: null,
+                    ['Mortality Rate']: Number.NaN,
                 };
+
+                // Increment cumulative count of deaths
+                cumulativeDeaths += Number.isNaN(row.new_deceased) ? 0 : row.new_deceased;
 
                 if (idx > rollingWindowSize * 2) {
                     // Use the 14-day rolling average of deceased cases
@@ -52,12 +56,22 @@
                     const rollingSumDenominator = locationData.slice(startIdxDenominator, idx)
                         .reduce((total, row) => total + (row.new_confirmed || row.new_deceased), 0);
 
-                    record['Mortality Rate'] = Math.min(
-                        1, rollingSumNumerator / (rollingSumDenominator || 1));
+                    const mortalityRate = Math.min(1, rollingSumNumerator / (rollingSumDenominator || 1));
+
+                    if (cumulativeDeaths < 25) {
+                        // Only compute mortality rate if there are at least 25 cumulative deaths
+                        record['Mortality Rate'] = 0;
+                    } else if (mortalityRate < 0.5) {
+                        // Avoid charting suspiciously high mortality rates
+                        record['Mortality Rate'] = Math.min(
+                            1, rollingSumNumerator / (rollingSumDenominator || 1));
+                    } else {
+                        record['Mortality Rate'] = Number.NaN;
+                    }
                 }
 
                 return record;
-            });
+            }).slice(rollingWindowSize);
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
