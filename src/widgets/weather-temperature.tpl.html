@@ -56,7 +56,7 @@
             const rowTooltip = row =>
                 `${row['Date']}\n` +
                 `${numString(row['average'])}°C ` +
-                `(Min ${numString(row['minimum'])} — Max ${numString(row['maximum'])})`;
+                `(Max ${numString(row['maximum'])} — Min ${numString(row['minimum'])})`;
             const dataTable = new google.visualization.DataTable();
             dataTable.addColumn({ id: 'Date', type: 'string' });
             dataTable.addColumn({ id: 'average', type: 'number' });
