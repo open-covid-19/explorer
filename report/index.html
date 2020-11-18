@@ -159,6 +159,14 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
+    <script async>!async function(){const e=["average_temperature_celsius","minimum_temperature_celsius","maximum_temperature_celsius"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);if(i.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<20)return console.error("Not enough records found for columns:",e),void(t.style.display="none");i=mapToNumeric(i,e,positive=!0);const n=new Set(filterDataIndices(i));i=i.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])));const r=i.map(t=>{const a={Date:t.date};return e.forEach(e=>a[(e=>e.split("_").slice(0,1).join(" "))(e)]=t[e]),a});await loadGoogleCharts(["corechart"]);const o=e=>`${e.average.toFixed(1)}°C (Min ${e.minimum.toFixed(1)} - Max ${e.maximum.toFixed(1)})`,m=new google.visualization.DataTable;m.addColumn({id:"Date",type:"string"}),m.addColumn({id:"average",type:"number"}),m.addColumn({id:"minimum",type:"number",role:"interval"}),m.addColumn({id:"maximum",type:"number",role:"interval"}),m.addColumn({type:"string",role:"tooltip"}),m.addRows(r.map(e=>[e.Date,e.average,e.minimum,e.maximum,o(e)]));const l=attachElement("div",{},t,prepend=!0);new google.visualization.LineChart(l).draw(m,Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Average, minimum and maximum temperature in Celsius",curveType:"function",series:[{color:"#FFC107"}],intervals:{style:"area"}})),t.style.visibility="visible"}();</script>
+</div>
+
+        <!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
     <script async>!async function(){const t=document.currentScript.parentElement,e=new URLSearchParams(location.search).get("key");let a=await loadLocationData(e);if(a.length<1)return console.error("Not enough records found for columns:",columns),void(t.style.display="none");const n=attachElement("details",{},root=t,prepend=!0),o=(attachElement("summary",{innerHTML:"Show the latest data for this location"},n),attachElement("table",{className:"fullwidth"},n));o.style.tableLayout="fixed";const l=a.slice(-1)[0];let s='<tr><th colspan=2><span class="centered">Latest Location Data</span></th></tr>';Object.keys(l).forEach(t=>{const e=a.filter(e=>e[t]&&""!==e[t]).slice(-1)[0]||{};e[t]&&(s+=`<tr><td>${t}</td><td>${e[t]}</td></tr>`)}),o.innerHTML=s,n.parentElement.style.visibility="visible"}();</script>
 </div>
 
