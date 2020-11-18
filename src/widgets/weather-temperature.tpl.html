@@ -1,5 +1,8 @@
 <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Data from <a href="https://www.ncei.noaa.gov" target="_blank">NOAA</a>
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
@@ -51,6 +54,7 @@
             await loadGoogleCharts(['corechart']);
             const numString = num => num.toLocaleString(undefined, { maximumFractionDigits: 1 });
             const rowTooltip = row =>
+                `${row['Date']}\n` +
                 `${numString(row['average'])}°C ` +
                 `(Min ${numString(row['minimum'])} — Max ${numString(row['maximum'])})`;
             const dataTable = new google.visualization.DataTable();
