@@ -1,0 +1,75 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = [
+                'average_temperature_celsius',
+                'minimum_temperature_celsius',
+                'maximum_temperature_celsius',
+            ];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = true);
+
+            // Get rid of irrelevant data according to settings
+            const indices = new Set(filterDataIndices(locationData));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Human-friendly label for a symptom
+            const columnLabel = column => column.split('_').slice(0, 1).join(' ');
+
+            // Put the data into a table and draw it in the chart
+            const data = locationData
+                .map(row => {
+                    const record = { 'Date': row.date };
+                    columns.forEach(col => record[columnLabel(col)] = row[col]);
+                    return record;
+                });
+
+            // Create a custom data table since we use the fancy interval type
+            await loadGoogleCharts(['corechart']);
+            const rowTooltip = row => `${row['average'].toFixed(1)}°C (Min ${row['minimum'].toFixed(1)} - Max ${row['maximum'].toFixed(1)})`
+            const dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ id: 'Date', type: 'string' });
+            dataTable.addColumn({ id: 'average', type: 'number' });
+            dataTable.addColumn({ id: 'minimum', type: 'number', role: 'interval' });
+            dataTable.addColumn({ id: 'maximum', type: 'number', role: 'interval' });
+            dataTable.addColumn({ type: 'string', role: 'tooltip' });
+            dataTable.addRows(data.map(
+                row => [row['Date'], row['average'], row['minimum'], row['maximum'], rowTooltip(row)]));
+
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(dataTable, Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Average, minimum and maximum temperature in Celsius`,
+                curveType: 'function',
+                series: [{ 'color': '#FFC107' }],  // material amber
+                intervals: { 'style': 'area' },
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>
