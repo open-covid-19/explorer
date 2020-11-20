@@ -2,13 +2,17 @@
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0" />
 </div>
 <script async>
+    function searchify(term) {
+        return transliterate(term).toLocaleLowerCase();
+    }
+
     (async function () {
-        const populations = (await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/demographics.csv`))
+        const populations = (await loadCSV(`${CURRENT_OPTIONS['data-url']}/v3/demographics.csv`))
             .reduce((acc, row) => {
                 acc[row.location_key] = parseInt(row.population) || 0;
                 return acc;
             }, {});
-        const indexRecords = (await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/index.csv`))
+        const indexRecords = (await loadCSV(`${CURRENT_OPTIONS['data-url']}/v3/index.csv`))
             .map(row => Object.assign({}, row, { 'population': populations[row.location_key] }))
             .sort((a, b) => (b.population || 0) - (a.population || 0));
 
@@ -17,16 +21,16 @@
             switch (parseInt(row.aggregation_level)) {
                 case 0:
                     label = `${row.country_name} [${row.location_key}]`
-                    return { value: row.location_key, label: label };
+                    return { value: row.location_key, label: label, match: searchify(label) };
                 case 1:
                     label = `${row.subregion1_name}, ${row.country_name} [${row.location_key}]`;
-                    return { value: row.location_key, label: label };
+                    return { value: row.location_key, label: label, match: searchify(label) };
                 case 2:
                     label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
-                    return { value: row.location_key, label: label };
+                    return { value: row.location_key, label: label, match: searchify(label) };
                 case 3:
                     label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
-                    return { value: row.location_key, label: label };
+                    return { value: row.location_key, label: label, match: searchify(label) };
                 default:
                     console.error(`Unknown aggregation level for record:`);
                     console.error(row);
@@ -35,7 +39,10 @@
 
         $("#location-selector").autocomplete({
             minLength: 2,
-            source: locationLabelMap,
+            source: (req, res) => {
+                const search = searchify(req.term);
+                return res(locationLabelMap.filter(row => row.match.indexOf(search) !== -1));
+            },
             select: function (event, ui) {
                 const key = ui.item.value;
                 if (locationLabelMap.map(row => row.value).indexOf(key) !== -1) {

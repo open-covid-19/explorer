@@ -38,6 +38,9 @@
     <!-- CSV Parsing -->
     <script type="text/javascript" src="{{root}}/third_party/papaparse/papaparse.min.js"></script>
 
+    <!-- Character transliteration -->
+    <script type="text/javascript" src="{{root}}/third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
+
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{root}}/third_party/picnic/picnic.min.css" />
     <link rel="stylesheet" href="{{root}}/static/styles.min.css" />
@@ -53,7 +56,6 @@
         // Define constants and default options
         const DEFAULT_OPTIONS = {
             'data-url': 'https://storage.googleapis.com/covid19-open-data',
-            'cod-data-url': 'https://storage.googleapis.com/covid19-open-data/v3',
             'history-size-mobile': 100,
             'skip-until-outbreak': true,
             'outbreak-threshold-ratio': 0.05,
