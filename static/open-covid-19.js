@@ -10,12 +10,11 @@ function loadData(tableNames, callback) {
 
 async function loadLocationData(locationKey) {
     if (CURRENT_OPTIONS['read-format'] === 'CSV') {
-        return await loadCSV(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.csv`);
+        return await loadCSV(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.csv`);
     } else {
         return tableToRecords(
-            await loadJSON(`${CURRENT_OPTIONS['cod-data-url']}/${locationKey}/main.json`));
+            await loadJSON(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.json`));
     }
-
 }
 
 function tableToRecords(table) {
