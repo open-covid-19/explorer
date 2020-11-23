@@ -99,12 +99,66 @@
     <script async>!async function(){const e=["new_confirmed","new_deceased"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let n=await loadLocationData(a);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,positive=!0);const i=new Set(filterDataIndices(n,pad=14));n=n.filter((e,t)=>i.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])));let o=0;const s=n.map((e,t)=>{const a={Date:e.date,"Deceased Persons":e.new_deceased,"Mortality Rate":Number.NaN};if(o+=Number.isNaN(e.new_deceased)?0:e.new_deceased,t>28){const e=Math.max(0,t-14),i=n.slice(e,t).reduce((e,t)=>e+t.new_deceased,0),s=Math.max(0,t-28),r=n.slice(s,t).reduce((e,t)=>e+(t.new_confirmed||t.new_deceased),0),c=Math.min(1,i/(r||1));a["Mortality Rate"]=o<25?0:c<.5?Math.min(1,i/(r||1)):Number.NaN}return a}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(r).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Deceased Persons and Mortality Rate",colors:["#D32F2F","#757575"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:.5}}}})),t.style.visibility="visible"}();</script>
 </div>
 
+        <!-- <script src="../widgets/active-cases.tpl.html" data-include data-vars='{"root": ".."}'></script> -->
+
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["new_confirmed"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);if(i.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return void(t.style.display="none");i=mapToNumeric(i,e,positive=!0);const n=new Set(filterDataIndices(i,pad=14)),r=(i=i.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).map((e,t)=>{const a=Math.max(0,t-14),n=i.slice(a,t).reduce((e,t)=>e+t.new_confirmed,0);return{Date:e.date,"Estimated Active Cases":n}}).slice(14);await loadGoogleCharts(["corechart"]);const c=attachElement("div",{},t,prepend=!0);new google.visualization.AreaChart(c).draw(recordsToDataTable(r),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Estimated active cases",curveType:"function",colors:["#FFA726"]})),t.style.visibility="visible"}();</script>
+    <script async>
+
+        (async function () {
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
+            const columns = ['new_confirmed', 'population'];
+            const rootElement = document.currentScript.parentElement;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = true);
+
+            // Get rid of irrelevant data according to settings
+            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Put the confirmed cases from the state data into a table and draw it in the chart
+            const pop = locationData[0]['population'];
+            const data = locationData.map((row, idx) => {
+                const start = Math.max(0, idx - rollingWindowSize);
+                const rollingSum = locationData.slice(start, idx)
+                    .reduce((total, row) => total + row.new_confirmed, 0);
+                const confirmedPer100k = rollingSum * 100_000 / pop;
+                return { ['Date']: row.date, ['Confirmed cases per 100K']: confirmedPer100k };
+            }).slice(rollingWindowSize);
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.AreaChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: `Confirmed cases per 100K`,
+                curveType: 'function',
+                colors: ['#78002E'],  // material dark pink
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
