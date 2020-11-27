@@ -94,7 +94,7 @@
         <!-- Wrap the whole widget into a DIV -->
 <div id="confirmed-cases-100k" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Cases per 100K is computed using a 7-day moving average
+        Cases per 100K is computed using a 14-day count
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -102,7 +102,7 @@
     <script async>
 
         (async function () {
-            const rollingWindowSize = 7;
+            const rollingWindowSize = 14;
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
