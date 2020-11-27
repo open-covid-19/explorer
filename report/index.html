@@ -84,7 +84,7 @@
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
+<div id="confirmed-cases" style="visibility: hidden;">
     <div class="spacer"></div>
     <div class="spacer"></div>
 
@@ -92,24 +92,17 @@
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
-    <div class="spacer"></div>
-    <div class="spacer"></div>
-
-    <script async>!async function(){const e=["new_confirmed","new_deceased"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let n=await loadLocationData(a);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,positive=!0);const i=new Set(filterDataIndices(n,pad=14));n=n.filter((e,t)=>i.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])));let o=0;const s=n.map((e,t)=>{const a={Date:e.date,"Deceased Persons":e.new_deceased,"Mortality Rate":Number.NaN};if(o+=Number.isNaN(e.new_deceased)?0:e.new_deceased,t>28){const e=Math.max(0,t-14),i=n.slice(e,t).reduce((e,t)=>e+t.new_deceased,0),s=Math.max(0,t-28),r=n.slice(s,t).reduce((e,t)=>e+(t.new_confirmed||t.new_deceased),0),c=Math.min(1,i/(r||1));a["Mortality Rate"]=o<25?0:c<.5?Math.min(1,i/(r||1)):Number.NaN}return a}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(r).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Deceased Persons and Mortality Rate",colors:["#D32F2F","#757575"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:.5}}}})),t.style.visibility="visible"}();</script>
-</div>
-
-        <!-- <script src="../widgets/active-cases.tpl.html" data-include data-vars='{"root": ".."}'></script> -->
-
-        <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
+<div id="confirmed-cases-100k" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Cases per 100K is computed using a 7-day moving average
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
     <script async>
 
         (async function () {
-            const rollingWindowSize = 14;
+            const rollingWindowSize = 7;
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
@@ -122,6 +115,7 @@
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;
             }
@@ -135,34 +129,74 @@
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
-            // Put the confirmed cases from the state data into a table and draw it in the chart
+            // Use a moving average for the cases per 100K to avoid spikes
             const pop = locationData[0]['population'];
             const data = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
                 const rollingSum = locationData.slice(start, idx)
                     .reduce((total, row) => total + row.new_confirmed, 0);
                 const confirmedPer100k = rollingSum * 100_000 / pop;
-                return { ['Date']: row.date, ['Confirmed cases per 100K']: confirmedPer100k };
+                return {
+                    ['Date']: row.date,
+                    ['Confirmed Cases']: row.new_confirmed,
+                    ['Cases per 100K']: confirmedPer100k,
+                };
             }).slice(rollingWindowSize);
 
-            // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
-            const chartObject = new google.visualization.AreaChart(elem);
+            const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Confirmed cases per 100K`,
+                title: `Confirmed cases and cases per 100K`,
+                colors: ['#0277BD', '#78002E'],  // material light blue, dark pink
                 curveType: 'function',
-                colors: ['#78002E'],  // material dark pink
+                series: {
+                    0: { targetAxisIndex: 0, type: 'bars' },
+                    1: { targetAxisIndex: 1, type: 'line' },
+                },
+                vAxes: {
+                    1: {
+                        textPosition: 'in',
+                    },
+                },
             }));
 
             // Unhide element
             rootElement.style.visibility = 'visible';
+
+            // If this chart loaded correctly, we can get rid of the basic confirmed cases
+            document.querySelector('#confirmed-cases').style.display = 'none';
         })();
     </script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
+<div id="deceased-persons" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Mortality rate is computed using a 14-day moving average
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>!async function(){const e=["new_confirmed","new_deceased"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let n=await loadLocationData(a);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,positive=!0);const i=new Set(filterDataIndices(n,pad=14));n=n.filter((e,t)=>i.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])));let o=0;const r=n.map((e,t)=>{const a={Date:e.date,"Deceased Persons":e.new_deceased,"Mortality Rate":Number.NaN};if(o+=Number.isNaN(e.new_deceased)?0:e.new_deceased,t>28){const e=Math.max(0,t-14),i=n.slice(e,t).reduce((e,t)=>e+t.new_deceased,0),r=Math.max(0,t-28),s=n.slice(r,t).reduce((e,t)=>e+(t.new_confirmed||t.new_deceased),0),c=Math.min(1,i/(s||1));a["Mortality Rate"]=o<25?0:c<.5?Math.min(1,i/(s||1)):Number.NaN}return a}).slice(14);await loadGoogleCharts(["corechart"]);const s=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(s).draw(recordsToDataTable(r),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Deceased persons and mortality rate",colors:["#D32F2F","#757575"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:.5}}}})),t.style.visibility="visible"}();</script>
+</div>
+
+        <!-- Wrap the whole widget into a DIV -->
+<div id="active-cases" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Active cases are estimated as the 14-day rolling sum of cases
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>!async function(){const e=["new_confirmed"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);if(i.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return void(t.style.display="none");i=mapToNumeric(i,e,positive=!0);const n=new Set(filterDataIndices(i,pad=14)),r=(i=i.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).map((e,t)=>{const a=Math.max(0,t-14),n=i.slice(a,t).reduce((e,t)=>e+t.new_confirmed,0);return{Date:e.date,"Estimated Active Cases":n}}).slice(14);await loadGoogleCharts(["corechart"]);const c=attachElement("div",{},t,prepend=!0);new google.visualization.AreaChart(c).draw(recordsToDataTable(r),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Estimated active cases",curveType:"function",colors:["#FFA726"]})),t.style.visibility="visible"}();</script>
+</div>
+
+        <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Positivity rate is computed using a 7-day moving average
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
@@ -170,11 +204,14 @@
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
+<div id="age-stratified-active-cases" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Active cases are estimated as the 14-day rolling sum of cases
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],n=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let t=await loadLocationData(a);if(t.filter(n=>e.some(e=>n[e]&&""!==n[e])).length<34)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const o=new Set(filterDataIndices(t,pad=14)),i=(t=(t=t.filter((e,n)=>o.has(n))).filter(n=>e.some(e=>""!==n[e]))).reduce((n,a)=>(e.forEach(e=>{const t=`age_bin_${e.split("_").slice(-1)[0]}`;a[t]&&(n[e]=a[t])}),n),{}),c=t.map((n,a)=>{const o={Date:n.date},c=Math.max(0,a-14);return e.forEach(e=>{const r=i[e];if(n[e]){const n=t.slice(c,a).reduce((n,a)=>n+(parseInt(a[e])||0),0);o[r]=n}else r&&(o[r]=Number.NaN)}),o}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},n,prepend=!0);new google.visualization.AreaChart(r).draw(recordsToDataTable(c),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Estimated active cases by age",isStacked:!0,curveType:"function",legend:{position:"in"},colors:void 0})),n.style.visibility="visible"}();</script>
+    <script async>!async function(){const e=["new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],n=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let t=await loadLocationData(a);if(t.filter(n=>e.some(e=>n[e]&&""!==n[e])).length<34)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const o=new Set(filterDataIndices(t,pad=14)),c=(t=(t=t.filter((e,n)=>o.has(n))).filter(n=>e.some(e=>""!==n[e]))).reduce((n,a)=>(e.forEach(e=>{const t=`age_bin_${e.split("_").slice(-1)[0]}`;a[t]&&(n[e]=a[t])}),n),{}),i=t.map((n,a)=>{const o={Date:n.date},i=Math.max(0,a-14);return e.forEach(e=>{const r=c[e];if(n[e]){const n=t.slice(i,a).reduce((n,a)=>n+(parseInt(a[e])||0),0);o[r]=n}else r&&(o[r]=Number.NaN)}),o}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},n,prepend=!0);new google.visualization.AreaChart(r).draw(recordsToDataTable(i),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:"Estimated active cases by age",isStacked:!0,curveType:"function",legend:{position:"in"},colors:void 0})),n.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
