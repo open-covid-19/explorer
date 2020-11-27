@@ -1,12 +1,15 @@
 <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
+<div id="confirmed-cases-100k" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Cases per 100K is computed using a 7-day moving average
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
     <script async>
 
         (async function () {
-            const rollingWindowSize = 14;
+            const rollingWindowSize = 7;
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
@@ -19,6 +22,7 @@
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;
             }
@@ -32,28 +36,43 @@
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
-            // Put the confirmed cases from the state data into a table and draw it in the chart
+            // Use a moving average for the cases per 100K to avoid spikes
             const pop = locationData[0]['population'];
             const data = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
                 const rollingSum = locationData.slice(start, idx)
                     .reduce((total, row) => total + row.new_confirmed, 0);
                 const confirmedPer100k = rollingSum * 100_000 / pop;
-                return { ['Date']: row.date, ['Confirmed cases per 100K']: confirmedPer100k };
+                return {
+                    ['Date']: row.date,
+                    ['Confirmed Cases']: row.new_confirmed,
+                    ['Cases per 100K']: confirmedPer100k,
+                };
             }).slice(rollingWindowSize);
 
-            // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
-            const chartObject = new google.visualization.AreaChart(elem);
+            const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Confirmed cases per 100K`,
+                title: `Confirmed cases and cases per 100K`,
+                colors: ['#0277BD', '#78002E'],  // material light blue, dark pink
                 curveType: 'function',
-                colors: ['#78002E'],  // material dark pink
+                series: {
+                    0: { targetAxisIndex: 0, type: 'bars' },
+                    1: { targetAxisIndex: 1, type: 'line' },
+                },
+                vAxes: {
+                    1: {
+                        textPosition: 'in',
+                    },
+                },
             }));
 
             // Unhide element
             rootElement.style.visibility = 'visible';
+
+            // If this chart loaded correctly, we can get rid of the basic confirmed cases
+            document.querySelector('#confirmed-cases').style.display = 'none';
         })();
     </script>
 </div>

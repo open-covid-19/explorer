@@ -1,5 +1,8 @@
 <!-- Wrap the whole widget into a DIV -->
-<div style="visibility: hidden;">
+<div id="age-stratified-active-cases" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Active cases are estimated as the 14-day rolling sum of cases
+    </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
@@ -81,6 +84,9 @@
 
             // Unhide element
             rootElement.style.visibility = 'visible';
+
+            // If this chart loaded correctly, we can get rid of the basic active cases
+            document.querySelector('#active-cases').style.display = 'none';
         })();
     </script>
 </div>
