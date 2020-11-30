@@ -11,7 +11,7 @@
         (async function () {
             const rollingWindowSize = 14;
             const minRows = 20 + rollingWindowSize;
-            const columns = ['new_confirmed'];
+            const columns = ['date', 'new_confirmed'];  // add date to ensure we don't skip days
             const rootElement = document.currentScript.parentElement;
 
             // Get the location key from the URL
@@ -27,7 +27,8 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, positive = true);
+            // Do not try to convert dates to numbers!
+            locationData = mapToNumeric(locationData, columns.slice(1), positive = true);
 
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
@@ -36,10 +37,11 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Put the confirmed cases from the state data into a table and draw it in the chart
+            console.log(locationData)
             const data = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
-                const rollingSum = locationData.slice(start, idx)
-                    .reduce((total, row) => total + row.new_confirmed, 0);
+                const rollingSum = locationData.slice(start, idx).reduce((total, row) =>
+                    total + (Number.isNaN(row.new_confirmed) ? 0 : row.new_confirmed), 0);
                 return { ['Date']: row.date, ['Estimated Active Cases']: rollingSum };
             }).slice(rollingWindowSize);
 
