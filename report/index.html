@@ -133,8 +133,8 @@
             const pop = locationData[0]['population'];
             const data = locationData.map((row, idx) => {
                 const start = Math.max(0, idx - rollingWindowSize);
-                const rollingSum = locationData.slice(start, idx)
-                    .reduce((total, row) => total + row.new_confirmed, 0);
+                const rollingSum = locationData.slice(start, idx).reduce((total, row) =>
+                    total + (Number.isNaN(row.new_confirmed) ? 0 : row.new_confirmed), 0);
                 const confirmedPer100k = rollingSum * 100_000 / pop;
                 return {
                     ['Date']: row.date,
