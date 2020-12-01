@@ -105,7 +105,7 @@ function loadGoogleCharts(packages = ['corechart']) {
     return CACHE['gcharts'][cacheKey];
 }
 
-function filterDataIndices(records, pad = 0) {
+function filterDataIndices(records, pad = 0, columns = null) {
     let indices = records.map((row, idx) => Object.assign({}, row, { 'idx': idx }));
 
     // Get rid of irrelevant data prior to the first outbreak
@@ -120,8 +120,8 @@ function filterDataIndices(records, pad = 0) {
     }
 
     // Remove the data at the end which has null values
-    const nullColumns = ['new_confirmed', 'new_deceased'];
-    while (nullColumns.every(col => indices.slice(-1)[0][col] === '')) {
+    const nullColumns = columns || ['new_confirmed', 'new_deceased'];
+    while (nullColumns.every(col => Number.isNaN(indices.slice(-1)[0][col]))) {
         indices.pop();
     }
 
@@ -135,6 +135,8 @@ function filterDataIndices(records, pad = 0) {
 }
 
 function mapToNumeric(records, columns, positive = true) {
+    // Make sure the confirmed and deceased cases are always mapped to numeric
+    columns = columns.concat(['new_confirmed', 'new_deceased']);
     return records.map(row => {
         const record = Object.assign({}, row);
         columns.forEach(col => {

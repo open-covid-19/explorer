@@ -31,7 +31,7 @@
             locationData = mapToNumeric(locationData, columns, positive = true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, ['new_tested']));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
