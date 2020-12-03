@@ -128,9 +128,18 @@ function filterDataIndices(records, pad = 0, columns = null) {
         indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
     }
 
-    // Remove the data at the end which has null values
+    // Remove the data at the beginning which has null values
     const nullColumns = columns || ['new_confirmed', 'new_deceased'];
-    while (nullColumns.every(col => Number.isNaN(indices.slice(-1)[0][col]))) {
+    const firstRecord = col => indices.slice(0, 1)[0][col];
+    const nullish = val => val === '' || val === null || Number.isNaN(val);
+    while (nullColumns.every(col => nullish(firstRecord(col)))) {
+        console.log('shift');
+        indices.shift();
+    }
+
+    // Remove the data at the end which has null values
+    const latestRecord = col => indices.slice(-1)[0][col];
+    while (nullColumns.every(col => nullish(latestRecord(col)))) {
         indices.pop();
     }
 
