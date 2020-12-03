@@ -52,9 +52,9 @@
             let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
-            // NOTE: Using `some` since we want to display this table with a subset of data too
-            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
-                console.error('Not enough records found for columns:', columns);
+            const requiredColumns = ['age_bin_0', 'new_confirmed_age_0', 'population_age_00_09'];
+            if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', requiredColumns);
                 rootElement.style.display = 'none';
                 return;
             }
