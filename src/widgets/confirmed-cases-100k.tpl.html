@@ -13,6 +13,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
+            const title = `Confirmed cases and cases per 100K`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -54,7 +55,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Confirmed cases and cases per 100K`,
+                title: chartLabel(title),
                 colors: ['#0277BD', '#78002E'],  // material light blue, dark pink
                 curveType: 'function',
                 series: {

@@ -29,6 +29,7 @@
                 'search_trends_diarrhea',
             ];
             const rootElement = document.currentScript.parentElement;
+            const title = `Google Search Trends`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -68,7 +69,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Google Search Trends`,
+                title: chartLabel(title),
                 curveType: 'function',
                 legend: { position: 'in' },
                 colors: undefined,  // automatic from material theme

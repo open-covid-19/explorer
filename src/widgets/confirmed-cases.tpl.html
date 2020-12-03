@@ -9,6 +9,7 @@
             const minRows = 20;
             const columns = ['new_confirmed'];
             const rootElement = document.currentScript.parentElement;
+            const title = `Confirmed cases`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -42,7 +43,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ColumnChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Confirmed cases`,
+                title: chartLabel(title),
                 colors: ['#0277BD'],  // material light blue 800
             }));
 

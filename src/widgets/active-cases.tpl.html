@@ -13,6 +13,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['date', 'new_confirmed'];  // add date to ensure we don't skip days
             const rootElement = document.currentScript.parentElement;
+            const title = `Estimated active cases`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -28,7 +29,7 @@
 
             // Convert the relevant rows to numbers
             // Do not try to convert dates to numbers!
-            locationData = mapToNumeric(locationData, columns.slice(1), positive = true);
+            locationData = mapToNumeric(locationData, columns.slice(1), true);
 
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
@@ -49,7 +50,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.AreaChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Estimated active cases`,
+                title: chartLabel(title),
                 curveType: 'function',
                 colors: ['#FFA726'],  // material orange 400
             }));

@@ -16,6 +16,7 @@
                 'maximum_temperature_celsius',
             ];
             const rootElement = document.currentScript.parentElement;
+            const title = `Average, minimum and maximum temperature in Celsius`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -69,7 +70,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(dataTable, Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Average, minimum and maximum temperature in Celsius`,
+                title: chartLabel(title),
                 curveType: 'function',
                 series: [{ 'color': '#FFC107' }],  // material amber
                 intervals: { 'style': 'area' },

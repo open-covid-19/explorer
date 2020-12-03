@@ -1,7 +1,7 @@
 <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Active cases are estimated as the 14-day rolling sum of cases
+        Infection rates are computed as the 14-day rolling sum of cases per 1,000
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -32,9 +32,18 @@
                 'new_confirmed_age_7',
                 'new_confirmed_age_8',
                 'new_confirmed_age_9',
+                'population_age_00_09',
+                'population_age_10_19',
+                'population_age_20_29',
+                'population_age_30_39',
+                'population_age_40_49',
+                'population_age_50_59',
+                'population_age_60_69',
+                'population_age_70_79',
+                'population_age_80_and_older',
             ];
             const rootElement = document.currentScript.parentElement;
-            const title = `Estimated active cases by age group`;
+            const title = `Infection rates by age group`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -51,6 +60,7 @@
             }
 
             // Convert the relevant rows to numbers
+            const confirmedColumns = columns.filter(col => col.startsWith('new_confirmed_age_'));
             const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
             locationData = mapToNumeric(locationData, numColumns, true);
 
@@ -60,8 +70,21 @@
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
+            // Keep only the columns where the age bin matches what's in the population bucket
+            const getAgeBins = row =>
+                Object.keys(row).filter(col => col.startsWith('age_bin_')).map(col => row[col])
+            const ageBinPopulationMap = getAgeBins(locationData.slice(-7)[0]).reduce((agg, bin, idx) => {
+                const [lo, hi] = bin.split('-', 2).map(x => parseInt(x));
+                if (lo % 10 === 0 && (hi === lo + 9 || hi === lo + 10)) {
+                    agg[bin] = `population_age_${lo}_${lo + 9}`;
+                } else if ((lo === 80 || lo === 90) && Number.isNaN(hi)) {
+                    agg[bin] = `population_age_${lo}_and_older`;
+                }
+                return agg;
+            }, { '80-': 'population_age_80_and_older' });
+
             // Map from new_confirmed_x to corresponding age bin
-            const ageBinMap = locationData.reduce((acc, row) => {
+            const ageBinConfirmedMap = locationData.reduce((acc, row) => {
                 columns.forEach(col => {
                     const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
                     if (row[binColumn]) acc[col] = row[binColumn];
@@ -73,15 +96,30 @@
             const data = locationData.map((row, idx) => {
                 const record = { 'Date': row.date };
                 const start = Math.max(0, idx - rollingWindowSize);
-                columns.forEach(col => {
-                    const ageBin = ageBinMap[col];
-                    if (!Number.isNaN([col])) {
+                confirmedColumns.forEach(col => {
+                    const ageBin = ageBinConfirmedMap[col];
+                    if (row[col]) {
                         const rollingSum = locationData.slice(start, idx)
-                            .reduce((total, row) => total + row[col], 0);
+                            .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
                         record[ageBin] = rollingSum;
                     } else if (ageBin) {
                         record[ageBin] = Number.NaN;
                     }
+                });
+
+                // Especial case: we have 80-90 and 90+ instead of 80+
+                const popPrefix = 'population_age';
+                const popValues = Object.keys(ageBinPopulationMap).map(bin => ageBinPopulationMap[bin]);
+                if (popValues.includes(`${popPrefix}_80_89`) && popValues.includes(`${popPrefix}_90_and_older`)) {
+                    record['80-'] = record['80-89'] + record['90-'];
+                    delete record['80-89'];
+                    delete record['90-'];
+                }
+
+                // Compute the ratio of each bin based on the population
+                Object.keys(ageBinPopulationMap).forEach(bin => {
+                    if (bin === '80-89' || bin === '90-') return;
+                    record[bin] = 1000 * record[bin] / row[ageBinPopulationMap[bin]];
                 });
                 return record;
             }).slice(rollingWindowSize);
@@ -89,13 +127,13 @@
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
-            const chartObject = new google.visualization.AreaChart(elem);
+            const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
-                isStacked: true,
                 curveType: 'function',
                 legend: { position: 'in' },
                 colors: undefined,  // automatic from material theme
+                interpolateNulls: true,
             }));
 
             // Unhide element

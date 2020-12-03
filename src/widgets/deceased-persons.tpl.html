@@ -13,6 +13,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'new_deceased'];
             const rootElement = document.currentScript.parentElement;
+            const title = `Deceased persons and mortality rate`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -28,10 +29,10 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, positive = true);
+            locationData = mapToNumeric(locationData, columns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize * 2));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
@@ -74,13 +75,13 @@
                 }
 
                 return record;
-            }).slice(rollingWindowSize);
+            }).slice(rollingWindowSize * 2);
 
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Deceased persons and mortality rate`,
+                title: chartLabel(title),
                 colors: ['#D32F2F', '#757575'],  // material teal, material indigo
                 curveType: 'function',
                 series: {

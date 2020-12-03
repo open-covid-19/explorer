@@ -1,3 +1,11 @@
+function setting(key, val) {
+    if (val === null) {
+        sessionStorage.removeItem(key);
+    } else {
+        sessionStorage.setItem(key, val);
+    }
+}
+
 function loadData(tableNames, callback) {
     function loadJSON(key, path) {
         const oneMinuteCache = Math.round(Date.now() / 1000 / 60);
@@ -111,8 +119,9 @@ function filterDataIndices(records, pad = 0, columns = null) {
     // Get rid of irrelevant data prior to the first outbreak
     if (CURRENT_OPTIONS['skip-until-outbreak']) {
         const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
-        const maxDaily = Math.max(...records.filter(row => row.date < '2020-06-01')
-            .map(row => !Number.isNaN(row.new_confirmed)));
+        const maxDaily = Math.max(...records.filter(row =>
+            row.date < '2020-06-01' && !Number.isNaN(row.new_confirmed))
+            .map(row => row.new_confirmed));
         const firstDataPointIndex = records
             .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
             .filter(idx => idx)[0];
@@ -140,7 +149,7 @@ function mapToNumeric(records, columns, positive = true) {
     return records.map(row => {
         const record = Object.assign({}, row);
         columns.forEach(col => {
-            const num = Number(record[col]);
+            const num = parseInt(record[col]);
             if (record[col] === null || Number.isNaN(num)) {
                 record[col] = Number.NaN;
             } else if (positive) {
@@ -151,4 +160,9 @@ function mapToNumeric(records, columns, positive = true) {
         });
         return record;
     });
+}
+
+function chartLabel(title) {
+    const locationName = document.querySelector('#location-title').innerText;
+    return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${locationName}` : '');
 }

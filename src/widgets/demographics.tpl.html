@@ -9,6 +9,7 @@
             const minRows = 1;
             const columns = ['population_age_00_09', 'population_age_80_and_older'];
             const rootElement = document.currentScript.parentElement;
+            const title = `Age-stratified demographics`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -41,7 +42,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ColumnChart(elem);
             const chartConfig = Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Age-stratified demographics`,
+                title: chartLabel(title),
                 colors: ['#4E342E'],  // material brown 800
                 vAxis: { textPosition: 'out', viewWindow: { min: 0 } },
                 hAxis: { textPosition: 'bottom', slantedText: false, slantedTextAngle: 0 },

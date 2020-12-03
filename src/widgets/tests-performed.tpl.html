@@ -13,6 +13,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'new_tested'];
             const rootElement = document.currentScript.parentElement;
+            const title = `Tests Performed and Positivity Rate`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -76,7 +77,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Tests Performed and Positivity Rate`,
+                title: chartLabel(title),
                 colors: ['#009688', '#536DFE'],  // material teal, material indigo
                 curveType: 'function',
                 series: {

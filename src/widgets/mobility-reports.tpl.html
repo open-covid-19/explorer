@@ -21,6 +21,7 @@
                 'mobility_retail_and_recreation',
             ];
             const rootElement = document.currentScript.parentElement;
+            const title = `Google Mobility Reports`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -69,7 +70,7 @@
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.AreaChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
-                title: `Google Mobility Reports`,
+                title: chartLabel(title),
                 curveType: 'function',
                 legend: { position: 'in' },
                 vAxis: { textPosition: 'out' },
