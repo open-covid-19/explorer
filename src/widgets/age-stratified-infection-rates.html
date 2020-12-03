@@ -65,7 +65,7 @@
             locationData = mapToNumeric(locationData, numColumns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, rollingWindowSize));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, confirmedColumns));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
@@ -117,16 +117,26 @@
                 }
 
                 // Compute the ratio of each bin based on the population
-                Object.keys(ageBinPopulationMap).forEach(bin => {
-                    if (bin === '80-89' || bin === '90-') return;
-                    record[bin] = 1000 * record[bin] / row[ageBinPopulationMap[bin]];
-                });
+                Object.keys(record).slice(1).forEach(bin => {
+                    if (!ageBinPopulationMap[bin]) {
+                        delete record[bin]
+                    } else {
+                        record[bin] = 1000 * record[bin] / row[ageBinPopulationMap[bin]];
+                    }
+                })
                 return record;
             }).slice(rollingWindowSize);
 
+            // Early exit: not enough bins mapped to population
+            if (!data.every(row => Object.keys(row).length > 1)) {
+                console.error('Age bins for cases do not match population buckets:', ageBinConfirmedMap);
+                rootElement.style.display = 'none';
+                return;
+            }
+
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
-            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const elem = attachElement('div', {}, rootElement, true);
             const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),

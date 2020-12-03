@@ -43,8 +43,8 @@
             let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
-            // NOTE: Using `some` since we want to display this table with a subset of data too
-            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
+            const requiredColumns = ['age_bin_0', 'new_confirmed_age_0'];
+            if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
                 console.error('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;
@@ -55,7 +55,8 @@
             locationData = mapToNumeric(locationData, numColumns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, rollingWindowSize));
+            const confirmedColumns = columns.filter(col => col.startsWith('new_confirmed_age_'));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, confirmedColumns));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
