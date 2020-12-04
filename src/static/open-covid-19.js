@@ -133,7 +133,6 @@ function filterDataIndices(records, pad = 0, columns = null) {
     const firstRecord = col => indices.slice(0, 1)[0][col];
     const nullish = val => val === '' || val === null || Number.isNaN(val);
     while (nullColumns.every(col => nullish(firstRecord(col)))) {
-        console.log('shift');
         indices.shift();
     }
 
@@ -174,4 +173,36 @@ function mapToNumeric(records, columns, positive = true) {
 function chartLabel(title) {
     const locationName = document.querySelector('#location-title').innerText;
     return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${locationName}` : '');
+}
+
+function mergeAgeBins(records, columnPrefix) {
+    const mergeBins = ['80-89', '80-90', '90-99', '90-100', '90-', '100-'];
+
+    return records.map(row => {
+        row = Object.assign({}, row);
+        const columns = Object.keys(row);
+
+        const ageBinsMap = columns
+            .filter(col => col.startsWith('age_bin_'))
+            .reduce((acc, col, idx) => Object.assign(acc, { [idx]: row[col] }), {});
+
+        // Early exit: age bins already contain 80-
+        if (Object.keys(ageBinsMap).map(idx => ageBinsMap[idx]).includes('80-')) return row;
+
+        // Clear all age bins to be merged
+        const mergeAgeBinIndices = Object.keys(ageBinsMap)
+            .filter(idx => mergeBins.includes(ageBinsMap[idx]));
+        mergeAgeBinIndices.forEach(idx => {
+            row[`age_bin_${idx}`] = '';
+        });
+
+        // Merge the desired column as the sum of all merged bins
+        const replaceIndex = mergeAgeBinIndices[0];
+        row[`${columnPrefix}_age_${replaceIndex}`] = mergeAgeBinIndices.reduce((total, idx) =>
+            total + row[`${columnPrefix}_age_${idx}`], 0);
+
+        // Add the new age bin to the record
+        row[`age_bin_${replaceIndex}`] = '80-';
+        return row;
+    });
 }

@@ -1,7 +1,7 @@
 <!-- Wrap the whole widget into a DIV -->
 <div id="confirmed-cases-100k" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Cases per 100K is computed using a 14-day count
+        Computed using a 14-day count of cases per 100,000 persons
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -13,7 +13,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
-            const title = `Confirmed cases and cases per 100K`;
+            const title = `Confirmed cases and cases per 100,000 persons`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -29,10 +29,10 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, positive = true);
+            locationData = mapToNumeric(locationData, columns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
@@ -52,7 +52,7 @@
             }).slice(rollingWindowSize);
 
             await loadGoogleCharts(['corechart']);
-            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const elem = attachElement('div', {}, rootElement, true);
             const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),

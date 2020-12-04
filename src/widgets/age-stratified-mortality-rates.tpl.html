@@ -1,0 +1,130 @@
+<!-- Wrap the whole widget into a DIV -->
+<div id="age-stratified-active-cases" style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 1;
+            const columns = [
+                'age_bin_0',
+                'age_bin_1',
+                'age_bin_2',
+                'age_bin_3',
+                'age_bin_4',
+                'age_bin_5',
+                'age_bin_6',
+                'age_bin_7',
+                'age_bin_8',
+                'age_bin_9',
+                'cumulative_deceased_age_0',
+                'cumulative_deceased_age_1',
+                'cumulative_deceased_age_2',
+                'cumulative_deceased_age_3',
+                'cumulative_deceased_age_4',
+                'cumulative_deceased_age_5',
+                'cumulative_deceased_age_6',
+                'cumulative_deceased_age_7',
+                'cumulative_deceased_age_8',
+                'cumulative_deceased_age_9',
+                'cumulative_confirmed_age_0',
+                'cumulative_confirmed_age_1',
+                'cumulative_confirmed_age_2',
+                'cumulative_confirmed_age_3',
+                'cumulative_confirmed_age_4',
+                'cumulative_confirmed_age_5',
+                'cumulative_confirmed_age_6',
+                'cumulative_confirmed_age_7',
+                'cumulative_confirmed_age_8',
+                'cumulative_confirmed_age_9',
+            ];
+            const rootElement = document.currentScript.parentElement;
+            const title = `Cumulative mortality rates by age group`;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            const requiredColumns = ['age_bin_0', 'population_age_00_09'];
+            if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', requiredColumns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Early exit: there is not enough relevant data for this chart
+            const optionalColumns1 = [
+                'cumulative_deceased_age_0',
+                'cumulative_deceased_age_1',
+                'cumulative_deceased_age_2',
+            ];
+            if (locationData.filter(row => optionalColumns1.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', optionalColumns1);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Early exit: there is not enough relevant data for this chart
+            const optionalColumns2 = [
+                'cumulative_confirmed_age_0',
+                'cumulative_confirmed_age_1',
+                'cumulative_confirmed_age_2',
+            ];
+            if (locationData.filter(row => optionalColumns2.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', optionalColumns2);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant columns to numbers
+            const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
+            locationData = mapToNumeric(locationData, numColumns, true);
+
+            // Special case: merge 80-90 and 90-100 and 100+
+            locationData = mergeAgeBins(locationData, 'new_deceased');
+            locationData = mergeAgeBins(locationData, 'new_confirmed');
+
+            // Get the latest data for each column
+            const latest = locationData.reduce((acc, row) => {
+                const recordColumns = Object.keys(row);
+                columns.forEach(col => {
+                    if (recordColumns.includes(col) && row[col] !== '' && !Number.isNaN(row[col])) {
+                        acc[col] = row[col];
+                    }
+                });
+                return acc;
+            }, {});
+
+            const ageBins = Object.keys(latest).filter(col => col.startsWith('age_bin_'));
+            const data = ageBins.map((label, idx) => {
+                const [lo, hi] = latest[label].split('-');
+                const mortalityRate = latest[`cumulative_deceased_age_${idx}`] /
+                    latest[`cumulative_confirmed_age_${idx}`]
+                return {
+                    'Age Group': `${lo}${hi === '' ? '+' : '-' + hi}`,
+                    'Mortality Rate': mortalityRate,
+                }
+            });
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, true);
+            const chartObject = new google.visualization.ColumnChart(elem);
+            const chartConfig = Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: chartLabel(title),
+                colors: ['#757575'],  // material gray
+                vAxis: { textPosition: 'out', viewWindow: { min: 0 }, format: '#%' },
+                hAxis: { textPosition: 'bottom', slantedText: false, slantedTextAngle: 0 },
+            });
+            chartConfig.chartArea = Object.assign({}, chartConfig.chartArea, { bottom: 32 });
+            chartObject.draw(recordsToDataTable(data), chartConfig);
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>

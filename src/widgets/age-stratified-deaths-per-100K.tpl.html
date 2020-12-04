@@ -1,7 +1,7 @@
 <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Infection rates are computed as the 14-day rolling sum of cases per 1,000
+        Computed as the 14-day count of deaths per 1,000 persons
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -22,16 +22,16 @@
                 'age_bin_7',
                 'age_bin_8',
                 'age_bin_9',
-                'new_confirmed_age_0',
-                'new_confirmed_age_1',
-                'new_confirmed_age_2',
-                'new_confirmed_age_3',
-                'new_confirmed_age_4',
-                'new_confirmed_age_5',
-                'new_confirmed_age_6',
-                'new_confirmed_age_7',
-                'new_confirmed_age_8',
-                'new_confirmed_age_9',
+                'new_deceased_age_0',
+                'new_deceased_age_1',
+                'new_deceased_age_2',
+                'new_deceased_age_3',
+                'new_deceased_age_4',
+                'new_deceased_age_5',
+                'new_deceased_age_6',
+                'new_deceased_age_7',
+                'new_deceased_age_8',
+                'new_deceased_age_9',
                 'population_age_00_09',
                 'population_age_10_19',
                 'population_age_20_29',
@@ -43,7 +43,7 @@
                 'population_age_80_and_older',
             ];
             const rootElement = document.currentScript.parentElement;
-            const title = `Infection rates by age group`;
+            const title = `Deaths per 100,000 persons by age group`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -52,23 +52,38 @@
             let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
-            const requiredColumns = ['age_bin_0', 'new_confirmed_age_0', 'population_age_00_09'];
+            const requiredColumns = ['age_bin_0', 'population_age_00_09'];
             if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
                 console.error('Not enough records found for columns:', requiredColumns);
                 rootElement.style.display = 'none';
                 return;
             }
 
+            // Early exit: there is not enough relevant data for this chart
+            const optionalColumns = [
+                'new_deceased_age_0',
+                'new_deceased_age_1',
+                'new_deceased_age_2',
+            ];
+            if (locationData.filter(row => optionalColumns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', optionalColumns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
             // Convert the relevant rows to numbers
-            const confirmedColumns = columns.filter(col => col.startsWith('new_confirmed_age_'));
             const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
             locationData = mapToNumeric(locationData, numColumns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, confirmedColumns));
+            const deceasedColumns = columns.filter(col => col.startsWith('new_deceased_age_'));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, deceasedColumns));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Special case: merge 80-90 and 90-100 and 100+
+            locationData = mergeAgeBins(locationData, 'new_deceased');
 
             // Keep only the columns where the age bin matches what's in the population bucket
             const getAgeBins = row =>
@@ -77,59 +92,45 @@
                 const [lo, hi] = bin.split('-', 2).map(x => parseInt(x));
                 if (lo % 10 === 0 && (hi === lo + 9 || hi === lo + 10)) {
                     agg[bin] = `population_age_${lo}_${lo + 9}`;
-                } else if ((lo === 80 || lo === 90) && Number.isNaN(hi)) {
+                } else if (lo >= 80 && Number.isNaN(hi)) {
                     agg[bin] = `population_age_${lo}_and_older`;
                 }
                 return agg;
-            }, { '80-': 'population_age_80_and_older' });
+            }, {});
 
-            // Map from new_confirmed_x to corresponding age bin
-            const ageBinConfirmedMap = locationData.reduce((acc, row) => {
-                columns.forEach(col => {
+            // Map from new_deceased_x to corresponding age bin XX-YY
+            const ageBinDeceasedMap = locationData.reduce((acc, row) => {
+                columns.filter(col => col.startsWith('new_')).forEach(col => {
                     const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
                     if (row[binColumn]) acc[col] = row[binColumn];
                 });
                 return acc;
             }, {});
 
-            // Compute a rolling sum to estimate active cases
+            // Use a moving average for the mortality rate to avoid spikes
             const data = locationData.map((row, idx) => {
-                const record = { 'Date': row.date };
-                const start = Math.max(0, idx - rollingWindowSize);
-                confirmedColumns.forEach(col => {
-                    const ageBin = ageBinConfirmedMap[col];
-                    if (row[col]) {
-                        const rollingSum = locationData.slice(start, idx)
-                            .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
-                        record[ageBin] = rollingSum;
-                    } else if (ageBin) {
-                        record[ageBin] = Number.NaN;
-                    }
-                });
+                const record = { ['Date']: row.date };
 
-                // Especial case: we have 80-90 and 90+ instead of 80+
-                const popPrefix = 'population_age';
-                const popValues = Object.keys(ageBinPopulationMap).map(bin => ageBinPopulationMap[bin]);
-                if (popValues.includes(`${popPrefix}_80_89`) && popValues.includes(`${popPrefix}_90_and_older`)) {
-                    record['80-'] = record['80-89'] + record['90-'];
-                    delete record['80-89'];
-                    delete record['90-'];
-                }
+                deceasedColumns.forEach(col => {
+                    const popKey = ageBinDeceasedMap[col];
+                    const popColumn = ageBinPopulationMap[popKey];
+                    if (!popKey || !popColumn || !row[popColumn]) return;
 
-                // Compute the ratio of each bin based on the population
-                Object.keys(record).slice(1).forEach(bin => {
-                    if (!ageBinPopulationMap[bin]) {
-                        delete record[bin]
-                    } else {
-                        record[bin] = 1000 * record[bin] / row[ageBinPopulationMap[bin]];
-                    }
+                    // Use the 14-day rolling average of deceased cases
+                    const startIdx = Math.max(0, idx - rollingWindowSize);
+                    const rollingSum = locationData.slice(startIdx, idx)
+                        .reduce((total, row) => total + row[col], 0);
+
+                    const binLabel = popKey.endsWith('-') ? popKey.replace('-', '+') : popKey;
+                    record[binLabel] = 100_000 * rollingSum / row[popColumn];
                 })
+
                 return record;
             }).slice(rollingWindowSize);
 
             // Early exit: not enough bins mapped to population
             if (!data.every(row => Object.keys(row).length > 1)) {
-                console.error('Age bins for cases do not match population buckets:', ageBinConfirmedMap);
+                console.error('Age bins for cases do not match population buckets:', ageBinDeceasedMap);
                 rootElement.style.display = 'none';
                 return;
             }
@@ -148,9 +149,6 @@
 
             // Unhide element
             rootElement.style.visibility = 'visible';
-
-            // If this chart loaded correctly, we can get rid of the basic active cases
-            document.querySelector('#active-cases').style.display = 'none';
         })();
     </script>
 </div>
