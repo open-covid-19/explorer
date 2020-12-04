@@ -68,7 +68,6 @@
 <script async>function searchify(e){return transliterate(e).toLocaleLowerCase()}!async function(){const e=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/demographics.csv`)).reduce((e,a)=>(e[a.location_key]=parseInt(a.population)||0,e),{}),a=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/index.csv`)).map(a=>Object.assign({},a,{population:e[a.location_key]})).sort((e,a)=>(a.population||0)-(e.population||0)).map(e=>{let a="";switch(parseInt(e.aggregation_level)){case 0:return a=`${e.country_name} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 1:return a=`${e.subregion1_name}, ${e.country_name} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 3:return a=`${e.locality_name}, ${e.subregion1_name} ${e.country_code} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};default:console.error("Unknown aggregation level for record:"),console.error(e)}}).filter(e=>e&&e.value&&e.label);$("#location-selector").autocomplete({minLength:2,source:(e,o)=>{const t=searchify(e.term);return o(a.filter(e=>-1!==e.match.indexOf(t)))},select:function(e,o){const t=o.item.value;-1!==a.map(e=>e.value).indexOf(t)&&window.goto(`?key=${t}`)}}),$("#location-selector").attr("disabled",!1)}();</script>
 
     <main>
-
         <!-- Wrap the whole widget into a DIV -->
 <div id="location-title" style="visibility: hidden;">
 
@@ -94,7 +93,7 @@
         <!-- Wrap the whole widget into a DIV -->
 <div id="confirmed-cases-100k" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Cases per 100K is computed using a 14-day count
+        Computed using a 14-day count of cases per 100,000 persons
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -106,7 +105,7 @@
             const minRows = 20 + rollingWindowSize;
             const columns = ['new_confirmed', 'population'];
             const rootElement = document.currentScript.parentElement;
-            const title = `Confirmed cases and cases per 100K`;
+            const title = `Confirmed cases and cases per 100,000 persons`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -122,10 +121,10 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, positive = true);
+            locationData = mapToNumeric(locationData, columns, true);
 
             // Get rid of irrelevant data according to settings
-            const indices = new Set(filterDataIndices(locationData, pad = rollingWindowSize));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize));
             locationData = locationData
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
@@ -145,7 +144,7 @@
             }).slice(rollingWindowSize);
 
             await loadGoogleCharts(['corechart']);
-            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const elem = attachElement('div', {}, rootElement, true);
             const chartObject = new google.visualization.ComboChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
@@ -207,23 +206,317 @@
         <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Infection rates are computed as the 14-day rolling sum of cases per 1,000
+        Infection rates are computed as the 14-day count of cases per 1,000 persons
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9","population_age_00_09","population_age_10_19","population_age_20_29","population_age_30_39","population_age_40_49","population_age_50_59","population_age_60_69","population_age_70_79","population_age_80_and_older"],a=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let _=await loadLocationData(n);const o=["age_bin_0","new_confirmed_age_0","population_age_00_09"];if(_.filter(e=>o.every(a=>e[a]&&""!==e[a])).length<34)return console.error("Not enough records found for columns:",o),void(a.style.display="none");const t=e.filter(e=>e.startsWith("new_confirmed_age_")),i=e.filter(e=>!e.startsWith("age_bin_"));_=mapToNumeric(_,i,!0);const r=new Set(filterDataIndices(_,14,t)),c=(e=>Object.keys(e).filter(e=>e.startsWith("age_bin_")).map(a=>e[a]))((_=_.filter((e,a)=>r.has(a)).filter(a=>e.some(e=>!Number.isNaN(a[e])))).slice(-7)[0]).reduce((e,a,n)=>{const[_,o]=a.split("-",2).map(e=>parseInt(e));return _%10!=0||o!==_+9&&o!==_+10?80!==_&&90!==_||!Number.isNaN(o)||(e[a]=`population_age_${_}_and_older`):e[a]=`population_age_${_}_${_+9}`,e},{"80-":"population_age_80_and_older"}),l=_.reduce((a,n)=>(e.forEach(e=>{const _=`age_bin_${e.split("_").slice(-1)[0]}`;n[_]&&(a[e]=n[_])}),a),{}),s=_.map((e,a)=>{const n={Date:e.date},o=Math.max(0,a-14);t.forEach(t=>{const i=l[t];if(e[t]){const e=_.slice(o,a).reduce((e,a)=>e+(parseInt(a[t])||0),0);n[i]=e}else i&&(n[i]=Number.NaN)});const i=Object.keys(c).map(e=>c[e]);return i.includes("population_age_80_89")&&i.includes("population_age_90_and_older")&&(n["80-"]=n["80-89"]+n["90-"],delete n["80-89"],delete n["90-"]),Object.keys(n).slice(1).forEach(a=>{c[a]?n[a]=1e3*n[a]/e[c[a]]:delete n[a]}),n}).slice(14);if(!s.every(e=>Object.keys(e).length>1))return console.error("Age bins for cases do not match population buckets:",l),void(a.style.display="none");await loadGoogleCharts(["corechart"]);const g=attachElement("div",{},a,!0);new google.visualization.LineChart(g).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Infection rates by age group"),curveType:"function",legend:{position:"in"},colors:void 0,interpolateNulls:!0})),a.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
+    <script async>
+
+        (async function () {
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
+            const columns = [
+                'age_bin_0',
+                'age_bin_1',
+                'age_bin_2',
+                'age_bin_3',
+                'age_bin_4',
+                'age_bin_5',
+                'age_bin_6',
+                'age_bin_7',
+                'age_bin_8',
+                'age_bin_9',
+                'new_confirmed_age_0',
+                'new_confirmed_age_1',
+                'new_confirmed_age_2',
+                'new_confirmed_age_3',
+                'new_confirmed_age_4',
+                'new_confirmed_age_5',
+                'new_confirmed_age_6',
+                'new_confirmed_age_7',
+                'new_confirmed_age_8',
+                'new_confirmed_age_9',
+                'population_age_00_09',
+                'population_age_10_19',
+                'population_age_20_29',
+                'population_age_30_39',
+                'population_age_40_49',
+                'population_age_50_59',
+                'population_age_60_69',
+                'population_age_70_79',
+                'population_age_80_and_older',
+            ];
+            const rootElement = document.currentScript.parentElement;
+            const title = `Infection rates by age group`;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            const requiredColumns = ['age_bin_0', 'new_confirmed_age_0', 'population_age_00_09'];
+            if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', requiredColumns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant rows to numbers
+            const confirmedColumns = columns.filter(col => col.startsWith('new_confirmed_age_'));
+            const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
+            locationData = mapToNumeric(locationData, numColumns, true);
+
+            // Get rid of irrelevant data according to settings
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, confirmedColumns));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Special case: merge 80-90 and 90-100 and 100+
+            locationData = mergeAgeBins(locationData, 'new_deceased');
+
+            // Keep only the columns where the age bin matches what's in the population bucket
+            const getAgeBins = row =>
+                Object.keys(row).filter(col => col.startsWith('age_bin_')).map(col => row[col])
+            const ageBinPopulationMap = getAgeBins(locationData.slice(-7)[0]).reduce((agg, bin) => {
+                const [lo, hi] = bin.split('-', 2).map(x => parseInt(x));
+                if (lo % 10 === 0 && (hi === lo + 9 || hi === lo + 10)) {
+                    agg[bin] = `population_age_${lo}_${lo + 9}`;
+                } else if ((lo === 80 || lo === 90) && Number.isNaN(hi)) {
+                    agg[bin] = `population_age_${lo}_and_older`;
+                }
+                return agg;
+            }, {});
+
+            // Map from new_confirmed_x to corresponding age bin XX-YY
+            const ageBinConfirmedMap = locationData.reduce((acc, row) => {
+                columns.forEach(col => {
+                    const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
+                    if (row[binColumn]) acc[col] = row[binColumn];
+                });
+                return acc;
+            }, {});
+
+            // Compute a rolling sum to estimate active cases and divide by age band population
+            const data = locationData.map((row, idx) => {
+                const record = { 'Date': row.date };
+                const start = Math.max(0, idx - rollingWindowSize);
+                confirmedColumns.forEach(col => {
+                    const ageBin = ageBinConfirmedMap[col];
+                    if (!ageBin || !ageBinPopulationMap[ageBin]) return;
+                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
+
+                    if (row[col] && ageBinPopulationMap[ageBin]) {
+                        const rollingSum = locationData.slice(start, idx)
+                            .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
+                        record[binLabel] = 1_000 * rollingSum / row[ageBinPopulationMap[ageBin]];
+                    } else if (ageBinPopulationMap[ageBin]) {
+                        record[binLabel] = Number.NaN;
+                    }
+                });
+                return record;
+            }).slice(rollingWindowSize);
+
+            // Early exit: not enough bins mapped to population
+            if (!data.every(row => Object.keys(row).length > 1)) {
+                console.error('Age bins for cases do not match population buckets:', ageBinConfirmedMap);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: chartLabel(title),
+                curveType: 'function',
+                legend: { position: 'in' },
+                colors: undefined,  // automatic from material theme
+                interpolateNulls: true,
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
     <p style="text-align: end; font-size: small;">
-        Active cases are estimated as the 14-day rolling sum of cases
+        Active cases are estimated as the 14-day count of cases
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],a=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let i=await loadLocationData(n);const t=["age_bin_0","new_confirmed_age_0"];if(i.filter(e=>t.every(a=>e[a]&&""!==e[a])).length<34)return console.error("Not enough records found for columns:",e),void(a.style.display="none");const _=e.filter(e=>!e.startsWith("age_bin_"));i=mapToNumeric(i,_,!0);const o=e.filter(e=>e.startsWith("new_confirmed_age_")),r=new Set(filterDataIndices(i,14,o)),c=(i=i.filter((e,a)=>r.has(a)).filter(a=>e.some(e=>!Number.isNaN(a[e])))).reduce((a,n)=>(e.forEach(e=>{const i=`age_bin_${e.split("_").slice(-1)[0]}`;n[i]&&(a[e]=n[i])}),a),{}),s=i.map((a,n)=>{const t={Date:a.date},_=Math.max(0,n-14);return e.forEach(e=>{const a=c[e];if(Number.isNaN([e]))a&&(t[a]=Number.NaN);else{const o=i.slice(_,n).reduce((a,n)=>a+n[e],0);t[a]=o}}),t}).slice(14);await loadGoogleCharts(["corechart"]);const l=attachElement("div",{},a,prepend=!0);new google.visualization.AreaChart(l).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Estimated active cases by age group"),isStacked:!0,curveType:"function",legend:{position:"in"},colors:void 0})),a.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
+    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],n=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);const t=["age_bin_0","new_confirmed_age_0"];if(i.filter(e=>t.every(n=>e[n]&&""!==e[n])).length<34)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const r=e.filter(e=>!e.startsWith("age_bin_"));i=mapToNumeric(i,r,!0);const _=e.filter(e=>e.startsWith("new_confirmed_age_")),o=new Set(filterDataIndices(i,14,_));i=i.filter((e,n)=>o.has(n)).filter(n=>e.some(e=>!Number.isNaN(n[e])));const c=(i=mergeAgeBins(i,"new_confirmed")).reduce((n,a)=>(e.forEach(e=>{const i=`age_bin_${e.split("_").slice(-1)[0]}`;a[i]&&(n[e]=a[i])}),n),{}),s=i.map((n,a)=>{const t={Date:n.date},r=Math.max(0,a-14);return e.forEach(e=>{const n=c[e];if(!n)return;const _=n.endsWith("-")?n.replace("-","+"):n;if(Number.isNaN([e]))n&&(t[_]=Number.NaN);else{const n=i.slice(r,a).reduce((n,a)=>n+a[e],0);t[_]=n}}),t}).slice(14);await loadGoogleCharts(["corechart"]);const g=attachElement("div",{},n,prepend=!0);new google.visualization.AreaChart(g).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Estimated active cases by age group"),isStacked:!0,curveType:"function",legend:{position:"in"},colors:void 0})),n.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
+</div>
+
+        <!-- Wrap the whole widget into a DIV -->
+<div id="age-stratified-active-cases" style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Computed as the 14-day count of deaths per 1,000 persons
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const rollingWindowSize = 14;
+            const minRows = 20 + rollingWindowSize;
+            const columns = [
+                'age_bin_0',
+                'age_bin_1',
+                'age_bin_2',
+                'age_bin_3',
+                'age_bin_4',
+                'age_bin_5',
+                'age_bin_6',
+                'age_bin_7',
+                'age_bin_8',
+                'age_bin_9',
+                'new_deceased_age_0',
+                'new_deceased_age_1',
+                'new_deceased_age_2',
+                'new_deceased_age_3',
+                'new_deceased_age_4',
+                'new_deceased_age_5',
+                'new_deceased_age_6',
+                'new_deceased_age_7',
+                'new_deceased_age_8',
+                'new_deceased_age_9',
+                'population_age_00_09',
+                'population_age_10_19',
+                'population_age_20_29',
+                'population_age_30_39',
+                'population_age_40_49',
+                'population_age_50_59',
+                'population_age_60_69',
+                'population_age_70_79',
+                'population_age_80_and_older',
+            ];
+            const rootElement = document.currentScript.parentElement;
+            const title = `Deaths per 100,000 persons by age group`;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            const requiredColumns = ['age_bin_0', 'population_age_00_09'];
+            if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', requiredColumns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Early exit: there is not enough relevant data for this chart
+            const optionalColumns = [
+                'new_deceased_age_0',
+                'new_deceased_age_1',
+                'new_deceased_age_2',
+            ];
+            if (locationData.filter(row => optionalColumns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', optionalColumns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant rows to numbers
+            const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
+            locationData = mapToNumeric(locationData, numColumns, true);
+
+            // Get rid of irrelevant data according to settings
+            const deceasedColumns = columns.filter(col => col.startsWith('new_deceased_age_'));
+            const indices = new Set(filterDataIndices(locationData, rollingWindowSize, deceasedColumns));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Special case: merge 80-90 and 90-100 and 100+
+            locationData = mergeAgeBins(locationData, 'new_deceased');
+
+            // Keep only the columns where the age bin matches what's in the population bucket
+            const getAgeBins = row =>
+                Object.keys(row).filter(col => col.startsWith('age_bin_')).map(col => row[col])
+            const ageBinPopulationMap = getAgeBins(locationData.slice(-7)[0]).reduce((agg, bin, idx) => {
+                const [lo, hi] = bin.split('-', 2).map(x => parseInt(x));
+                if (lo % 10 === 0 && (hi === lo + 9 || hi === lo + 10)) {
+                    agg[bin] = `population_age_${lo}_${lo + 9}`;
+                } else if (lo >= 80 && Number.isNaN(hi)) {
+                    agg[bin] = `population_age_${lo}_and_older`;
+                }
+                return agg;
+            }, {});
+
+            // Map from new_deceased_x to corresponding age bin XX-YY
+            const ageBinDeceasedMap = locationData.reduce((acc, row) => {
+                columns.filter(col => col.startsWith('new_')).forEach(col => {
+                    const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
+                    if (row[binColumn]) acc[col] = row[binColumn];
+                });
+                return acc;
+            }, {});
+
+            // Use a moving average for the mortality rate to avoid spikes
+            const data = locationData.map((row, idx) => {
+                const record = { ['Date']: row.date };
+
+                deceasedColumns.forEach(col => {
+                    const popKey = ageBinDeceasedMap[col];
+                    const popColumn = ageBinPopulationMap[popKey];
+                    if (!popKey || !popColumn || !row[popColumn]) return;
+
+                    // Use the 14-day rolling average of deceased cases
+                    const startIdx = Math.max(0, idx - rollingWindowSize);
+                    const rollingSum = locationData.slice(startIdx, idx)
+                        .reduce((total, row) => total + row[col], 0);
+
+                    const binLabel = popKey.endsWith('-') ? popKey.replace('-', '+') : popKey;
+                    record[binLabel] = 100_000 * rollingSum / row[popColumn];
+                })
+
+                return record;
+            }).slice(rollingWindowSize);
+
+            // Early exit: not enough bins mapped to population
+            if (!data.every(row => Object.keys(row).length > 1)) {
+                console.error('Age bins for cases do not match population buckets:', ageBinDeceasedMap);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Make sure Google Charts loads and attach element to page
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: chartLabel(title),
+                curveType: 'function',
+                legend: { position: 'in' },
+                colors: undefined,  // automatic from material theme
+                interpolateNulls: true,
+            }));
+
+            // Unhide element
+            rootElement.style.visibility = 'visible';
+        })();
+    </script>
+</div>
+
+        <!-- Wrap the whole widget into a DIV -->
+<div id="age-stratified-active-cases" style="visibility: hidden;">
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","cumulative_deceased_age_0","cumulative_deceased_age_1","cumulative_deceased_age_2","cumulative_deceased_age_3","cumulative_deceased_age_4","cumulative_deceased_age_5","cumulative_deceased_age_6","cumulative_deceased_age_7","cumulative_deceased_age_8","cumulative_deceased_age_9","cumulative_confirmed_age_0","cumulative_confirmed_age_1","cumulative_confirmed_age_2","cumulative_confirmed_age_3","cumulative_confirmed_age_4","cumulative_confirmed_age_5","cumulative_confirmed_age_6","cumulative_confirmed_age_7","cumulative_confirmed_age_8","cumulative_confirmed_age_9"],a=document.currentScript.parentElement,t=new URLSearchParams(location.search).get("key");let _=await loadLocationData(t);const i=["age_bin_0","population_age_00_09"];if(_.filter(e=>i.every(a=>e[a]&&""!==e[a])).length<1)return console.error("Not enough records found for columns:",i),void(a.style.display="none");const c=["cumulative_deceased_age_0","cumulative_deceased_age_1","cumulative_deceased_age_2"];if(_.filter(e=>c.some(a=>e[a]&&""!==e[a])).length<1)return console.error("Not enough records found for columns:",c),void(a.style.display="none");const o=["cumulative_confirmed_age_0","cumulative_confirmed_age_1","cumulative_confirmed_age_2"];if(_.filter(e=>o.some(a=>e[a]&&""!==e[a])).length<1)return console.error("Not enough records found for columns:",o),void(a.style.display="none");const n=e.filter(e=>!e.startsWith("age_bin_"));_=mapToNumeric(_,n,!0),_=mergeAgeBins(_,"new_deceased");const u=(_=mergeAgeBins(_,"new_confirmed")).reduce((a,t)=>{const _=Object.keys(t);return e.forEach(e=>{_.includes(e)&&""!==t[e]&&!Number.isNaN(t[e])&&(a[e]=t[e])}),a},{}),r=Object.keys(u).filter(e=>e.startsWith("age_bin_")).map((e,a)=>{const[t,_]=u[e].split("-");return{"Age Group":`${t}${""===_?"+":"-"+_}`,"Mortality Rate":u[`cumulative_deceased_age_${a}`]/u[`cumulative_confirmed_age_${a}`]}});await loadGoogleCharts(["corechart"]);const l=attachElement("div",{},a,!0),s=new google.visualization.ColumnChart(l),d=Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Cumulative mortality rates by age group"),colors:["#757575"],vAxis:{textPosition:"out",viewWindow:{min:0},format:"#%"},hAxis:{textPosition:"bottom",slantedText:!1,slantedTextAngle:0}});d.chartArea=Object.assign({},d.chartArea,{bottom:32}),s.draw(recordsToDataTable(r),d),a.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
@@ -278,7 +571,6 @@
 
     <script async>!async function(){const t=document.currentScript.parentElement,e=new URLSearchParams(location.search).get("key");let a=await loadLocationData(e);if(a.length<1)return console.error("Not enough records found for columns:",columns),void(t.style.display="none");const n=attachElement("details",{},root=t,prepend=!0),o=(attachElement("summary",{innerHTML:"Show the latest data for this location"},n),attachElement("table",{className:"fullwidth"},n));o.style.tableLayout="fixed";const l=a.slice(-1)[0];let s='<tr><th colspan=2><span class="centered">Latest Location Data</span></th></tr>';Object.keys(l).forEach(t=>{const e=a.filter(e=>e[t]&&""!==e[t]).slice(-1)[0]||{};e[t]&&(s+=`<tr><td>${t}</td><td>${e[t]}</td></tr>`)}),o.innerHTML=s,n.parentElement.style.visibility="visible"}();</script>
 </div>
-
     </main>
 
     <!-- Load analytics at the end of the page -->
