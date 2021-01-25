@@ -1,0 +1,74 @@
+<!-- Wrap the whole widget into a DIV -->
+<div style="visibility: hidden;">
+    <p style="text-align: end; font-size: small;">
+        Data from <a href="{{covid-19-open-data-url}}/blob/main/docs/table-government-response.md" target="_blank">
+            Oxford's Government Response Dataset
+        </a>
+    </p>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
+    <script async>
+
+        (async function () {
+            const minRows = 20;
+            const columns = [
+                'facial_coverings',
+                'school_closing',
+                'workplace_closing',
+                'restrictions_on_gatherings',
+                'restrictions_on_internal_movement',
+            ];
+            const rootElement = document.currentScript.parentElement;
+            const title = `Oxford's Government Response Metrics`;
+
+            // Get the location key from the URL
+            const locationKey = new URLSearchParams(location.search).get('key');
+
+            // Load the location data using the location key
+            let locationData = await loadLocationData(locationKey);
+
+            // Early exit: there is not enough relevant data for this chart
+            // NOTE: Using `some` since we want to display this table with a subset of data too
+            if (locationData.filter(row => columns.some(col => row[col] && row[col] !== '')).length < minRows) {
+                console.error('Not enough records found for columns:', columns);
+                rootElement.style.display = 'none';
+                return;
+            }
+
+            // Convert the relevant rows to numbers
+            locationData = mapToNumeric(locationData, columns, positive = false);
+            console.log(locationData);
+
+            // Get rid of irrelevant data according to settings
+            const indices = new Set(filterDataIndices(locationData));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
+            // Human-friendly label for a variable
+            const variableLabel = column => column.replace(/'_'/g, ' ');
+
+            // Put the symptom search trends data into a table and draw it in the chart
+            const data = locationData
+                .map(row => {
+                    const record = { 'Date': row.date };
+                    columns.forEach(col => record[variableLabel(col)] = row[col]);
+                    return record;
+                });
+
+            await loadGoogleCharts(['corechart']);
+            const elem = attachElement('div', {}, rootElement, prepend = true);
+            const chartObject = new google.visualization.LineChart(elem);
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+                title: chartLabel(title),
+                legend: { position: 'in' },
+                colors: undefined,  // automatic from material theme
+            }));
+
+            // Unhide element
+            elem.parentElement.style.visibility = 'visible';
+
+        })();
+    </script>
+</div>
