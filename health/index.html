@@ -47,7 +47,7 @@
     <!-- Polyfills, custom functions and constants -->
     <script type="text/javascript" src="../static/polyfills.min.js"></script>
     <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!1},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
+    <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!1},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
 <!-- Google Charts -->
@@ -55,13 +55,15 @@
 
 <script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey","table"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
 
+<style>.table-wrapper{max-height:400px;overflow-y:auto}</style>
+
 </head><body class="single-column">
 
     <!-- Header with links -->
     <header>
     <a class="centered uppercase" href="..">World Map</a>
+    <a class="centered uppercase" href="../health/">Data Health</a>
     <a class="centered uppercase" href="https://github.com/GoogleCloudPlatform/covid-19-open-data" target="_blank">About</a>
-    <a class="centered uppercase" href="https://github.com/GoogleCloudPlatform/covid-19-open-data/issues/new/choose" target="_blank">Contact</a>
 </header>
 
     <main>
@@ -69,24 +71,30 @@
         <h1 id="health-title" class="centered">COVID-19 Data Health Dashboard</h1>
 
         <!-- Create a selector with each data table -->
-        <div id="health-table">
-            <p class="justify">
-                See below for a list of tables. Refer to the
-                <a href="https://github.com/open-covid-19/data">documentation</a> for details about
-                each field.
-            </p>
-            <select id="table-list"></select>
-            <br>
-            <br>
-            <table id="table-metadata" class="fullwidth"></table>
-            <div id="admin-level-chart" class="fullwidth"></div>
+        <p class="justify">
+            See below for a list of tables. Click on the table name for more details. Refer to the
+            <a href="https://github.com/open-covid-19/data">documentation</a> for a description of
+            each field.
+        </p>
+
+        <table id="table-list" class="fullwidth"></table>
+
+        <div class="spacer"></div>
+
+        <h2 id="table-subsection" class="centered">
+            </h2>
+
+            <div class="table-wrapper">
+                <table id="table-metadata" class="fullwidth"></table>
+            </div>
+            <div id="country-coverage-chart" style="display: inline-block;"></div>
+            <div id="admin-level-chart" style="display: inline-block;"></div>
             <div id="null-analysis-chart" class="fullwidth" style="padding-bottom: 2em;"></div>
-        </div>
 
-        <!-- Load all the data -->
-        <script>window.data={},$("#table-list").html(["<option selected disabled>Select Data Table</option>"].concat(Object.keys(OPEN_COVID_CONFIG.tables).map(t=>{return`<option id="list-option-${t}" value="${t}" disabled>${OPEN_COVID_CONFIG.tables[t]}</option>`}))),$("#table-list").on("change",t=>{const e=$("#table-list option:selected")[0].value,n=window.data[e];$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(n.columns.map((t,e)=>{const l=n.data.filter(t=>t[e]);if(l.length>0){const n=l[l.length-1][e];let a=typeof n;return Number.isInteger(n)?a="int":"number"===a&&(a="double"),`<tr><td>${t}</td><td>${a}</td><td>${n}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=n.columns.indexOf("key");if(t<0)return void console.error(`Index not present in table ${e} with columns ${n.columns}`);const l=n.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),a=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",l[0]],["State/Province",l[1]],["County/Municipality",l[2]]]),o=document.getElementById("admin-level-chart");new google.visualization.PieChart(o).draw(a,{height:500,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const e=[];n.columns.forEach((t,l)=>{const a=n.data.filter(t=>null==t[l]).length;e.push([t,"null",a]),e.push([t,"non-null",n.data.length-a])}),t.addRows(e);const l=document.getElementById("null-analysis-chart");e.length>20?new google.visualization.Table(l).draw(t,{width:"100%",height:"100%",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(l).draw(t,{height:"500"})})});</script>
+            <!-- Load all the data -->
+            <script>function onTableSelected(t){const e=window.data[t],a=OPEN_COVID_CONFIG.tables[t];$("#table-subsection").text(a),$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(e.columns.map((t,a)=>{const n=e.data.filter(t=>t[a]);if(n.length>0){const e=n[n.length-1][a];let l=typeof e;return Number.isInteger(e)?l="int":"number"===l&&(l="double"),`<tr><td>${t}</td><td>${l}</td><td>${e}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=e.columns.indexOf("location_key"),a=e.data.map(e=>e[t].split("_")[0]).reduce((t,e)=>(t[e]=t[e]||0,t[e]+=1,t),{}),n=google.visualization.arrayToDataTable([["Country","Record Count"]].concat(Object.keys(a).map(t=>[t,a[t]]).sort((t,e)=>e[1]-t[1]))),l=document.getElementById("country-coverage-chart");new google.visualization.PieChart(l).draw(n,{title:"Coverage by Country",width:500,height:400,pieHole:.3})}),chart(()=>{const t=e.columns.indexOf("location_key"),a=e.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),n=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",a[0]],["State/Province",a[1]],["County/Municipality",a[2]]]),l=document.getElementById("admin-level-chart");new google.visualization.PieChart(l).draw(n,{title:"Coverage by Admin Level",width:500,height:400,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const a=[];e.columns.forEach((t,n)=>{const l=e.data.filter(t=>null==t[n]).length;a.push([t,"null",l]),a.push([t,"non-null",e.data.length-l])}),t.addRows(a);const n=document.getElementById("null-analysis-chart");a.length>20?new google.visualization.Table(n).draw(t,{width:"100%",height:"400px",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(n).draw(t,{height:"400px"})})}window.data={},$("#table-list").html(["<tr><th>Table Name</th><th>Date Range</th><th>Column Count</th></tr>"].concat(Object.keys(OPEN_COVID_CONFIG.tables).map(t=>{return`<tr data-value="${t}"><td>${OPEN_COVID_CONFIG.tables[t]}</td><td colspan=2>Loading...</td></tr>`})));</script>
 
-        <script async>loadData(null,(l,o)=>{window.data[l]=o,$(`#list-option-${l}`).prop("disabled",!1),console.log(`${l} table loaded successfully`)});</script>
+            <script async>Object.keys(OPEN_COVID_CONFIG.tables).forEach(async t=>{const a=OPEN_COVID_CONFIG.tables[t];let e;const l=`${OPEN_COVID_CONFIG["data-url"]}/v3/${t}.json`;try{e=await loadJSON(l)}catch(e){return console.error(e),void $(`tr[data-value=${t}]`).html(`<td>${a}</td><td colspan=2>Error Loading</td>`)}window.data[t]=e;let o="Static";if(e.columns.includes("date")){let t="2020-01-01",a=moment().format("YYYY-MM-DD");const l=e.columns.indexOf("date"),d=e.data.map(t=>t[l]).sort(),n=d[0],c=d.slice(-1)[0];n>t&&(t=n),c<a&&(a=c),o=`${t} – ${a}`}$(`tr[data-value=${t}]`).html(`<td><a href="#table-subsection" onclick="onTableSelected('${t}')">${a}</a></td>\n                        <td>${o}</td>\n                        <td>${e.columns.length}</td>\n                    `),console.log(`${a} table loaded successfully`)});</script>
     </main>
 
     <!-- Load analytics at the end of the page -->
