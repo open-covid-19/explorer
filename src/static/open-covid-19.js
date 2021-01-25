@@ -7,13 +7,14 @@ function setting(key, val) {
 }
 
 function loadData(tableNames, callback) {
-    function loadJSON(key, path) {
+    async function downloadTable(key, path) {
         const oneMinuteCache = Math.round(Date.now() / 1000 / 60);
-        const tableUrl = `${OPEN_COVID_CONFIG['data-url']}/v2/${path}`;
-        $.getJSON(`${tableUrl}?cache=${oneMinuteCache}`, json => callback(key, json));
+        const tableUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/${path}`;
+        const data = await loadJSON(`${tableUrl}?cache=${oneMinuteCache}`);
+        callback(key, data);
     }
     tableNames = tableNames || Object.keys(OPEN_COVID_CONFIG['tables']);
-    tableNames.forEach(key => loadJSON(key, `${key}.json`));
+    tableNames.forEach(key => downloadTable(key, `${key}.csv`));
 }
 
 async function loadLocationData(locationKey) {
@@ -70,7 +71,7 @@ function loadJSON(url, forceCors = false) {
     // Add promise to cache to avoid others loading simultaneously
     CACHE['JSON'][url] = new Promise(async (resolve, reject) => {
         if (forceCors) url = `https://cors-anywhere.herokuapp.com/${url}`;
-        resolve((await loadResource(url)).json());
+        loadResource(url).then(res => res.json().then(resolve)).catch(reject);
     });
     return CACHE['JSON'][url];
 }
@@ -85,6 +86,7 @@ function loadCSV(url, forceCors = false) {
         const csvText = await response.text();
         Papa.parse(csvText, {
             header: true,
+            delimiter: ',',
             skipEmptyLines: true,
             complete: result => {
                 if (result.errors.length > 0) {
