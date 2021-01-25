@@ -81,12 +81,12 @@
                     const ageBin = ageBinMap[col];
                     if (!ageBin) return;
                     const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
-                    if (!Number.isNaN([col])) {
-                        const rollingSum = locationData.slice(start, idx)
-                            .reduce((total, row) => total + row[col], 0);
-                        record[binLabel] = rollingSum;
-                    } else if (ageBin) {
+                    const subset = locationData.slice(start, idx).map(x => x[col]);
+                    if (subset.every(x => Number.isNaN(x))) {
                         record[binLabel] = Number.NaN;
+                    } else {
+                        record[binLabel] = locationData.slice(start, idx)
+                            .reduce((total, row) => total + (Number.isNaN(row[col]) ? 0 : row[col]), 0);
                     }
                 });
                 return record;
@@ -100,6 +100,7 @@
                 title: chartLabel(title),
                 isStacked: true,
                 curveType: 'function',
+                interpolateNulls: true,
                 legend: { position: 'in' },
                 colors: undefined,  // automatic from material theme
             }));
