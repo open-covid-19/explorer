@@ -11,12 +11,13 @@
         (async function () {
             const minRows = 20;
             const columns = [
+                'relative_humidity',
                 'average_temperature_celsius',
                 'minimum_temperature_celsius',
                 'maximum_temperature_celsius',
             ];
             const rootElement = document.currentScript.parentElement;
-            const title = `Average, minimum and maximum temperature in Celsius`;
+            const title = `Relative humidity and temperature in Celsius`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -40,8 +41,11 @@
                 .filter((_, idx) => indices.has(idx))
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
-            // Human-friendly label for a symptom
-            const columnLabel = column => column.split('_').slice(0, 1).join(' ');
+            // Human-friendly label for a variable
+            const columnLabel = column => column
+                .replace('_celsius', '')
+                .replace('_temperature', '')
+                .replace(/_/g, ' ');
 
             // Put the data into a table and draw it in the chart
             const data = locationData
@@ -60,21 +64,30 @@
                 `(Max ${numString(row['maximum'])} — Min ${numString(row['minimum'])})`;
             const dataTable = new google.visualization.DataTable();
             dataTable.addColumn({ id: 'Date', type: 'string' });
-            dataTable.addColumn({ id: 'average', type: 'number' });
+            dataTable.addColumn({ id: 'humidity', type: 'number', role: 'data', label: 'Relative Humidity' });
+            dataTable.addColumn({ id: 'average', type: 'number', role: 'data', label: 'Temperature' });
             dataTable.addColumn({ id: 'minimum', type: 'number', role: 'interval' });
             dataTable.addColumn({ id: 'maximum', type: 'number', role: 'interval' });
             dataTable.addColumn({ type: 'string', role: 'tooltip' });
             dataTable.addRows(data.map(
-                row => [row['Date'], row['average'], row['minimum'], row['maximum'], rowTooltip(row)]));
+                row => [row['Date'], row['relative humidity'], row['average'], row['minimum'], row['maximum'], rowTooltip(row)]));
 
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(dataTable, Object.assign({}, GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
+                legend: 'in',
                 curveType: 'function',
-                series: [{ 'color': '#FFC107' }],  // material amber
+                series: {
+                    0: { targetAxisIndex: 1, type: 'line', 'color': '#325CA8' },
+                    1: { targetAxisIndex: 0, type: 'line', 'color': '#FFC107' },
+                },
                 intervals: { 'style': 'area' },
-                vAxis: { textPosition: 'out' },
+                vAxes: {
+                    1: {
+                        textPosition: 'in',
+                    },
+                },
             }));
 
             // Unhide element

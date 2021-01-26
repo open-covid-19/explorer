@@ -38,7 +38,6 @@
 
             // Convert the relevant rows to numbers
             locationData = mapToNumeric(locationData, columns, positive = false);
-            console.log(locationData);
 
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData));
