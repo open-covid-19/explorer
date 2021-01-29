@@ -181,6 +181,13 @@
                 Object.keys(OPEN_COVID_CONFIG['tables']).forEach(async tableKey => {
                     const tableName = OPEN_COVID_CONFIG['tables'][tableKey];
 
+                    // Skip tables that make the client crash during parsing
+                    if (['by-age', 'weather', 'google-search-trends'].includes(tableKey)) {
+                        $(`tr[data-value=${tableKey}]`).html(
+                            `<td>${tableName}</td><td colspan=2>Table too large to load</td>`);
+                        return;
+                    }
+
                     let table;
                     const url = `${OPEN_COVID_CONFIG['data-url']}/v3/${tableKey}.json`;
                     try {
