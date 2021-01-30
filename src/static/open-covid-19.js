@@ -121,13 +121,27 @@ function filterDataIndices(records, pad = 0, columns = null) {
     // Get rid of irrelevant data prior to the first outbreak
     if (CURRENT_OPTIONS['skip-until-outbreak']) {
         const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
-        const maxDaily = Math.max(...records.filter(row =>
+        const maxDaily = Math.max(...indices.filter(row =>
             row.date < '2020-06-01' && !Number.isNaN(row.new_confirmed))
             .map(row => row.new_confirmed));
-        const firstDataPointIndex = records
+        const firstDataPointIndex = indices
             .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
             .filter(idx => idx)[0];
         indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
+    }
+
+    // Filter by dates if requested in the settings
+    if (CURRENT_OPTIONS['min-date']) {
+        const firstDataPointIndex = indices
+            .map((row, idx) => row['date'] >= CURRENT_OPTIONS['min-date'] ? idx : null)
+            .filter(idx => idx)[0];
+        indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
+    }
+    if (CURRENT_OPTIONS['max-date']) {
+        const lastDataPointIndex = indices
+            .map((row, idx) => row['date'] <= CURRENT_OPTIONS['max-date'] ? idx : null)
+            .filter(idx => idx).slice(-1)[0];
+        indices = indices.slice(0, Math.min(indices.length, lastDataPointIndex));
     }
 
     // Remove the data at the beginning which has null values
@@ -144,9 +158,13 @@ function filterDataIndices(records, pad = 0, columns = null) {
         indices.pop();
     }
 
-    // Use only the last few data points if this is a touchscreen device
+    // Use only the last few data points if this is a touchscreen device or history is limited
     if ('ontouchstart' in document.documentElement) {
-        indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile'] - pad);
+        const historySize = CURRENT_OPTIONS['history-size-mobile'];
+        indices = indices.slice(-historySize - pad);
+    } else if (CURRENT_OPTIONS['history-size-limit'] > 0) {
+        const historySize = CURRENT_OPTIONS['history-size-limit'];
+        indices = indices.slice(-historySize - pad);
     }
 
     // Return the indices of data which we keep
