@@ -130,6 +130,18 @@ function filterDataIndices(records, pad = 0, columns = null) {
         indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
     }
 
+    // Filter by dates if requested in the settings
+    if (CURRENT_OPTIONS['min-date']) {
+        const firstDataPointIndex = records
+            .map((row, idx) => row['date'] >= CURRENT_OPTIONS['min-date'] ? idx : null)
+            .filter(idx => idx)[0];
+    }
+    if (CURRENT_OPTIONS['max-date']) {
+        const firstDataPointIndex = records
+            .map((row, idx) => row['date'] <= CURRENT_OPTIONS['max-date'] ? idx : null)
+            .filter(idx => idx)[0];
+    }
+
     // Remove the data at the beginning which has null values
     const nullColumns = columns || ['new_confirmed', 'new_deceased'];
     const firstRecord = col => indices.slice(0, 1)[0][col];
@@ -144,9 +156,11 @@ function filterDataIndices(records, pad = 0, columns = null) {
         indices.pop();
     }
 
-    // Use only the last few data points if this is a touchscreen device
-    if ('ontouchstart' in document.documentElement) {
-        indices = indices.slice(-CURRENT_OPTIONS['history-size-mobile'] - pad);
+    // Use only the last few data points if this is a touchscreen device or history is limited
+    if ('ontouchstart' in document.documentElement || CURRENT_OPTIONS['history-size-limit'] > 0) {
+        const historySize = Math.min(
+            CURRENT_OPTIONS['history-size-mobile'], CURRENT_OPTIONS['history-size-limit']);
+        indices = indices.slice(-historySize - pad);
     }
 
     // Return the indices of data which we keep
