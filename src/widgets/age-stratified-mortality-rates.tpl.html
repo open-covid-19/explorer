@@ -84,6 +84,12 @@
             const numColumns = columns.filter(col => !col.startsWith('age_bin_'));
             locationData = mapToNumeric(locationData, numColumns, true);
 
+            // Get rid of irrelevant data according to settings
+            const indices = new Set(filterDataIndices(locationData));
+            locationData = locationData
+                .filter((_, idx) => indices.has(idx))
+                .filter(row => columns.some(col => !Number.isNaN(row[col])));
+
             // Special case: merge 80-90 and 90-100 and 100+
             locationData = mergeAgeBins(locationData, 'new_deceased');
             locationData = mergeAgeBins(locationData, 'new_confirmed');
