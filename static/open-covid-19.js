@@ -141,7 +141,7 @@ function filterDataIndices(records, pad = 0, columns = null) {
         const lastDataPointIndex = records
             .map((row, idx) => row['date'] <= CURRENT_OPTIONS['max-date'] ? idx : null)
             .filter(idx => idx).slice(-1)[0];
-        indices = indices.slice(Math.min(records.length, lastDataPointIndex + pad));
+        indices = indices.slice(0, Math.min(records.length, lastDataPointIndex + pad));
     }
 
     // Remove the data at the beginning which has null values
