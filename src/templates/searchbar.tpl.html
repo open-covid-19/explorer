@@ -58,11 +58,16 @@
             select: function (event, ui) {
                 const key = ui.item.value;
                 if (locationLabelMap.map(row => row.value).indexOf(key) !== -1) {
-                    window.goto(`{{url-prefix}}?key=${key}`);
+                    if ('{{action-download}}' === 'true') {
+                        window.open(`https://storage.googleapis.com/covid19-open-data/v3/location/${key}.csv`);
+                    } else {
+                        window.goto(`{{url-prefix}}?key=${key}`);
+                    }
                 }
             }
         });
 
         $('#location-selector').attr('disabled', false);
+        $('#location-selector').focus();
     })();
 </script>

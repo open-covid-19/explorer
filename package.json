@@ -19,6 +19,7 @@
     "rebuild": "gulp clean ; gulp build:prod",
     "deploy": "gulp deploy",
     "start": "http-server public -p 8080",
+    "watch": "watch 'npm run rebuild' ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "version": "1.0.0",
@@ -55,7 +56,8 @@
     "http-server": "^0.11.1",
     "merge2": "^1.2.4",
     "minimist": "^1.2.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "watch": "^1.0.2"
   },
   "dependencies": {
     "jquery": "^3.4.1",
