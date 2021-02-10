@@ -103,6 +103,18 @@
                     </tr>`;
             }
 
+            // Total vaccinated persons count
+            const lastVaccination = locationData
+                .filter(row => row.cumulative_persons_vaccinated && row.cumulative_persons_vaccinated !== '')
+                .slice(-1);
+            if (lastVaccination.length > 0) {
+                tableData += `
+                    <tr>
+                        <td>Total Vaccinated Persons</td>
+                        <td>${Number(lastVaccination[0].cumulative_persons_vaccinated).toLocaleString()}</td>
+                    </tr>`;
+            }
+
             // First case information
             notNull = (row, col) => parseInt(row[col]) || null;
             const firstConfirmedCase = locationData
