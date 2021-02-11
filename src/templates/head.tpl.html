@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <title>{{name}}</title>
     <meta name="description" content="{{description}}" />
-    <link rel="icon" type="image/png" href="{{root}}/static/logo-64.png" />
+    <link rel="icon" type="image/png" href="{{wwwroot}}/static/logo-64.png" />
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -11,43 +11,47 @@
     <meta name="apple-mobile-web-app-title" content="{{name}}" />
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="{{root}}/static/icon-64x64.png" />
-    <link rel="apple-touch-icon" sizes="64x64" href="{{root}}/static/icon-64x64.png" />
-    <link rel="apple-touch-icon" sizes="128x128" href="{{root}}/static/icon-128x128.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="{{root}}/static/icon-512x512.png" />
+    <link rel="apple-touch-icon" href="{{wwwroot}}/static/icon-64x64.png" />
+    <link rel="apple-touch-icon" sizes="64x64" href="{{wwwroot}}/static/icon-64x64.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="{{wwwroot}}/static/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="{{wwwroot}}/static/icon-512x512.png" />
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
 
+    <!-- Google Fonts -->
+    <link
+        href="//fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Google+Sans:400,500|Product+Sans:400&amp;lang=en"
+        rel="stylesheet">
+
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="{{root}}/third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="{{root}}/third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{root}}/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="{{root}}/static/jquery.ui.combobox.min.js"></script>
-    <script type="text/javascript" src="{{root}}/third_party/jqvmap/dist/maps/jquery.vmap.world.js"
-        charset="utf-8"></script>
-    <link rel="stylesheet" href="{{root}}/third_party/jqvmap/dist/jqvmap.min.css" />
-    <link rel="stylesheet" href="{{root}}/third_party/jquery-ui-dist/jquery-ui.min.css">
+    <script type="text/javascript" src="{{wwwroot}}/third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/third_party/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/static/jquery.ui.combobox.min.js"></script>
+    <link rel="stylesheet" href="{{wwwroot}}/third_party/jquery-ui-dist/jquery-ui.min.css">
 
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- MomentJS -->
-    <script type="text/javascript" src="{{root}}/third_party/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/third_party/moment/min/moment.min.js"></script>
 
     <!-- CSV Parsing -->
-    <script type="text/javascript" src="{{root}}/third_party/papaparse/papaparse.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Character transliteration -->
-    <script type="text/javascript" src="{{root}}/third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
+    <script type="text/javascript"
+        src="{{wwwroot}}/third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
 
     <!-- Custom styles -->
-    <link rel="stylesheet" href="{{root}}/third_party/picnic/picnic.min.css" />
-    <link rel="stylesheet" href="{{root}}/static/styles.min.css" />
+    <link rel="stylesheet" href="https://pair-code.github.io/covid19_symptom_dataset/style.css" />
+    <link rel="stylesheet" href="{{wwwroot}}/third_party/picnic/picnic.min.css" />
+    <link rel="stylesheet" href="{{wwwroot}}/static/styles.min.css" />
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="{{root}}/static/polyfills.min.js"></script>
-    <script type="text/javascript" src="{{root}}/static/open-covid-19.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/static/polyfills.min.js"></script>
+    <script type="text/javascript" src="{{wwwroot}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
 
         // Global object used to cache objects and data
@@ -55,7 +59,7 @@
 
         // Define constants and default options
         const DEFAULT_OPTIONS = {
-            'data-url': 'https://storage.googleapis.com/covid19-open-data',
+            'data-url': '{{gcs-url}}',
             'history-size-limit': 0,
             'history-size-mobile': 100,
             'skip-until-outbreak': true,
@@ -98,6 +102,7 @@
         GOOGLE_CHARTS_CONFIG = window.GOOGLE_CHARTS_CONFIG || {
             theme: 'material',
             colors: ['{{theme-primary}}'],
+            backgroundColor: { fill: "#FCFCFC" },
             legend: {
                 position: CURRENT_OPTIONS.chart_legend_position || 'none'
             },

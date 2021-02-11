@@ -2,55 +2,59 @@
 <html>
 
 <!-- HTML page head -->
-<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+<script src="../templates/head.tpl.html" data-include></script>
 
 <body class="single-column">
 
     <!-- Header with links -->
-    <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+    <script src="../templates/header.tpl.html" data-include></script>
 
     <div class="spacer"></div>
 
     <!-- Location search bar -->
     <script src="../templates/searchbar.tpl.html" data-include data-vars='{"url-prefix": ""}'></script>
 
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
     <main>
-        <script src="../widgets/location-title.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/location-metadata.tpl.html" data-include></script>
 
-        <script src="../widgets/location-metadata.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/partial-vaccination-rates.tpl.html" data-include></script>
 
-        <script src="../widgets/partial-vaccination-rates.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/confirmed-cases.tpl.html" data-include></script>
 
-        <script src="../widgets/confirmed-cases.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/confirmed-cases-per-100k.tpl.html" data-include></script>
 
-        <script src="../widgets/confirmed-cases-per-100k.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/deceased-persons.tpl.html" data-include></script>
 
-        <script src="../widgets/deceased-persons.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/active-cases.tpl.html" data-include></script>
 
-        <script src="../widgets/active-cases.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/tests-performed.tpl.html" data-include></script>
 
-        <script src="../widgets/tests-performed.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/age-stratified-infection-rates.tpl.html" data-include></script>
 
-        <script src="../widgets/age-stratified-infection-rates.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/age-stratified-active-cases.tpl.html" data-include></script>
 
-        <script src="../widgets/age-stratified-active-cases.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/age-stratified-deaths-per-100K.tpl.html" data-include></script>
 
-        <script src="../widgets/age-stratified-deaths-per-100K.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/age-stratified-mortality-rates.tpl.html" data-include></script>
 
-        <script src="../widgets/age-stratified-mortality-rates.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/demographics.tpl.html" data-include></script>
 
-        <script src="../widgets/demographics.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/mobility-reports.tpl.html" data-include></script>
 
-        <script src="../widgets/mobility-reports.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/search-trends.tpl.html" data-include></script>
 
-        <script src="../widgets/search-trends.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/government-response.tpl.html" data-include></script>
 
-        <script src="../widgets/government-response.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/weather-temperature.tpl.html" data-include></script>
 
-        <script src="../widgets/weather-temperature.tpl.html" data-include data-vars='{"root": ".."}'></script>
-
-        <script src="../widgets/location-latest-data.tpl.html" data-include data-vars='{"root": ".."}'></script>
+        <script src="../widgets/location-latest-data.tpl.html" data-include></script>
     </main>
+
+    <!-- Footer with links -->
+    <script src="../templates/footer.tpl.html" data-include></script>
 
     <!-- Load analytics at the end of the page -->
     <script src="../templates/analytics.tpl.html" data-include></script>

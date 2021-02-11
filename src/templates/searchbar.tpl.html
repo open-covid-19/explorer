@@ -32,16 +32,16 @@
             let label = '';
             switch (parseInt(row.aggregation_level)) {
                 case 0:
-                    label = `${row.country_name} [${row.location_key}]`
+                    label = `<div>${row.country_name} <span class="mono">${row.location_key}</span</div>`
                     return { value: row.location_key, label: label, match: searchify(label) };
                 case 1:
-                    label = `${row.subregion1_name}, ${row.country_name} [${row.location_key}]`;
+                    label = `<div>${row.subregion1_name}, ${row.country_name} <span class="mono">${row.location_key}</span></div>`;
                     return { value: row.location_key, label: label, match: searchify(label) };
                 case 2:
-                    label = `${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
+                    label = `<div>${row.subregion2_name}, ${row.subregion1_name} ${row.country_code} <span class="mono">${row.location_key}</span></div>`;
                     return { value: row.location_key, label: label, match: searchify(label) };
                 case 3:
-                    label = `${row.locality_name}, ${row.subregion1_name} ${row.country_code} [${row.location_key}]`;
+                    label = `<div>${row.locality_name}, ${row.subregion1_name} ${row.country_code} <span class="mono">${row.location_key}</span></div>`;
                     return { value: row.location_key, label: label, match: searchify(label) };
                 default:
                     console.error(`Unknown aggregation level for record:`);
@@ -59,11 +59,19 @@
                 const key = ui.item.value;
                 if (locationLabelMap.map(row => row.value).indexOf(key) !== -1) {
                     if ('{{action-download}}' === 'true') {
-                        window.open(`https://storage.googleapis.com/covid19-open-data/v3/location/${key}.csv`);
+                        window.open(`{{gcs-url}}/v3/location/${key}.csv`);
                     } else {
                         window.goto(`{{url-prefix}}?key=${key}`);
                     }
                 }
+            },
+            create: function () {
+                $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
+                    return $("<li></li>")
+                        .data("item.autocomplete", item)
+                        .append(item.label)
+                        .appendTo(ul);
+                };
             }
         });
 

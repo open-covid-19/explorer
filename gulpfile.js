@@ -90,7 +90,8 @@ gulp.task('build:html', function () {
             fs: fs,
             encodeHtmlAttrib: mancha.encodeHtmlAttrib,
             console: console,
-            canonical: null
+            canonical: null,
+            wwwroot: 'src',
         }))
         .pipe(gulp.dest('public'));
 });

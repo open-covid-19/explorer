@@ -5,7 +5,8 @@
     --theme-text-on-background: {{theme-text-on-background}};
 }
 
-html, body {
+html,
+body {
     margin: 0;
     width: 100%;
     max-width: 100%;
@@ -15,28 +16,44 @@ html, body {
     align-items: stretch;
 }
 
-html, body, main, section {
-    font-family: Roboto, Helvetica, sans-serif;
+html,
+body,
+main,
+section {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-weight: 300;
     background-color: var(--theme-background, #FCFCFC);
-    color: var(--theme-text-on-background, #000000);
+    color: rgb(32, 33, 36);
     -webkit-overflow-scrolling: touch;
     font-size: 16px;
 }
 
 body {
-    font-family: Roboto, Helvetica, sans-serif;
-    background-color: var(--theme-background, #FCFCFC);
-    color: var(--theme-text-on-background, #000000);
-    font-size: 16px;
     flex: 1;
-}
-
-b, h1, h2, h3 {
-    color: var(--theme-primary, #82A8E5);
 }
 
 .colored {
     color: var(--theme-primary, #82A8E5)
+}
+
+.mono {
+    font-family: monospace;
+}
+
+h1,
+h2 {
+    font-style: normal;
+    font-weight: 400;
+}
+
+th {
+    color: #fff;
+    background-color: rgb(32, 33, 36);
+}
+
+th,
+td {
+    padding: .3em;
 }
 
 
@@ -44,11 +61,19 @@ b, h1, h2, h3 {
 /*     Fixed H/W     */
 /*********************/
 
-.l32, header .l32, .l32 a, .l32 i, .l32 span {
+.l32,
+header .l32,
+.l32 a,
+.l32 i,
+.l32 span {
     line-height: 32px;
 }
 
-.l48, header .l48, .l48 a, .l48 i, .l48 span {
+.l48,
+header .l48,
+.l48 a,
+.l48 i,
+.l48 span {
     line-height: 48px;
 }
 
@@ -61,16 +86,17 @@ b, h1, h2, h3 {
 }
 
 
-
 /*********************/
 /*  General Purpose  */
 /*********************/
 
-amp-img.contain img, img.contain {
+amp-img.contain img,
+img.contain {
     object-fit: contain;
 }
 
-amp-img.cover img, img.cover {
+amp-img.cover img,
+img.cover {
     object-fit: cover;
     object-position: 50% 50%;
 }
@@ -121,7 +147,9 @@ button.centered {
     text-transform: uppercase;
 }
 
-.invisible, .invisible:hover, .invisible:active {
+.invisible,
+.invisible:hover,
+.invisible:active {
     color: transparent;
     background-color: transparent;
     border: 0;
@@ -158,14 +186,17 @@ button.centered {
     padding-left: 0;
     padding-right: 0;
 }
+
 .padding-s {
     padding-left: 0.5em;
     padding-right: 0.5em;
 }
+
 .padding-m {
     padding-left: 1em;
     padding-right: 1em;
 }
+
 .padding-l {
     padding-left: 2em;
     padding-right: 2em;
@@ -175,14 +206,17 @@ button.centered {
     margin-left: 0;
     margin-right: 0;
 }
+
 .margin-s {
     margin-left: 0.5em;
     margin-right: 0.5em;
 }
+
 .margin-m {
     margin-left: 1em;
     margin-right: 1em;
 }
+
 .margin-l {
     margin-left: 2em;
     margin-right: 2em;
@@ -208,4 +242,5 @@ button.centered {
 @media (max-width: 350px) {
     .hide-s {
         display: none;
-}}
+    }
+}

@@ -2,44 +2,217 @@
 <html>
 
 <!-- HTML page head -->
-<script src="templates/head.tpl.html" data-include data-vars='{"root": "."}'></script>
+<script src="templates/head.tpl.html" data-include></script>
 
-<body>
+<body class="single-column">
 
-    <!-- Map section -->
-    <div id="vmap"></div>
+    <!-- Header with links -->
+    <script src="templates/header.tpl.html" data-include></script>
 
-    <!-- Search bar -->
-    <div style="position: absolute; top: 0; width: calc(100% - 8em); margin: 2em 4em;">
-        <script src="templates/searchbar.tpl.html" data-include data-vars='{"url-prefix": "report/"}'></script>
-    </div>
+    <div class="spacer"></div>
 
-    <!-- Setup map data -->
-    <script>
+    <!-- Location search bar -->
+    <script src="templates/searchbar.tpl.html" data-include data-vars='{"url-prefix": "/report"}'></script>
 
-        $('#vmap').vectorMap({
-            map: 'world_en',
-            // values: infectionRate,
-            selectedColor: null,
-            backgroundColor: '#424242',
-            scaleColors: ['#FFFFFF', '#FFFFFF'],
-            normalizeFunction: null,
-            onRegionSelect: (event, code, region) => {
-                code = code.toUpperCase();
+    <div class="spacer"></div>
+    <div class="spacer"></div>
 
-                // If this is a touch input device, ask for confirmation
-                if ('ontouchstart' in window && !confirm(`See data for ${code}?`)) return
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Table</th>
+                    <th>Keys<sup>1</sup></th>
+                    <th>Content</th>
+                    <th>URL</th>
+                    <th>Source<sup>2</sup></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#main-table">Main</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Flat table with records from (almost) all other tables joined by <span class="mono">date</span>
+                        and/or
+                        <span class="mono">key</span>; see below for more details
+                    </td>
+                    <td><a href="{{gcs-url}}/v3/aggregated.csv.gz">aggregated.csv.gz</a>
+                    </td>
+                    <td>All tables below</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-index.md">Index</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Various names and codes, useful for joining with other datasets</td>
+                    <td><a href="{{gcs-url}}/v3/index.csv">index.csv</a>, <a
+                            href="{{gcs-url}}/v3/index.json">index.json</a></td>
+                    <td>Wikidata, DataCommons, Eurostat</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-demographics.md">Demographics</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Various (current<sup>3</sup>) population statistics</td>
+                    <td><a href="{{gcs-url}}/v3/demographics.csv">demographics.csv</a>,
+                        <a href="{{gcs-url}}/v3/demographics.json">demographics.json</a>
+                    </td>
+                    <td>Wikidata, DataCommons, WorldBank, WorldPop, Eurostat</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-economy.md">Economy</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Various (current<sup>3</sup>) economic indicators</td>
+                    <td><a href="{{gcs-url}}/v3/economy.csv">economy.csv</a>, <a
+                            href="{{gcs-url}}/v3/economy.json">economy.json</a>
+                    </td>
+                    <td>Wikidata, DataCommons, Eurostat</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-epidemiology.md">Epidemiology</a>
+                    </td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>COVID-19 cases, deaths, recoveries and tests</td>
+                    <td><a href="{{gcs-url}}/v3/epidemiology.csv">epidemiology.csv</a>,
+                        <a href="{{gcs-url}}/v3/epidemiology.json">epidemiology.json</a>
+                    </td>
+                    <td>Various<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-vaccinations.md">Vaccinations</a>
+                    </td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>COVID-19 vaccine deployment metrics</td>
+                    <td><a href="{{gcs-url}}/v3/vaccinations.csv">vaccinations.csv</a>,
+                        <a href="{{gcs-url}}/v3/vaccinations.json">vaccinations.json</a>
+                    </td>
+                    <td>Various<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-emergency-declarations.md">Emergency
+                            Declarations</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Government emergency declarations and mitigation policies</td>
+                    <td><a
+                            href="{{gcs-url}}/v3/lawatlas-emergency-declarations.csv">lawatlas-emergency-declarations.csv</a>
+                    </td>
+                    <td>LawAtlas Project</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-geography.md">Geography</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Geographical information about the region</td>
+                    <td><a href="{{gcs-url}}/v3/geography.csv">geography.csv</a>,
+                        <a href="{{gcs-url}}/v3/geography.json">geography.json</a>
+                    </td>
+                    <td>Wikidata</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-health.md">Health</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Health indicators for the region</td>
+                    <td><a href="{{gcs-url}}/v3/health.csv">health.csv</a>, <a
+                            href="{{gcs-url}}/v3/geography.json">health.json</a>
+                    </td>
+                    <td>Wikidata, WorldBank, Eurostat</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-hospitalizations.md">Hospitalizations</a>
+                    </td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Information related to patients of COVID-19 and hospitals</td>
+                    <td><a href="{{gcs-url}}/v3/hospitalizations.csv">hospitalizations.csv</a>,
+                        <a href="{{gcs-url}}/v3/hospitalization.json">hospitalizations.json</a>
+                    </td>
+                    <td>Various<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-mobility.md">Mobility</a>
+                    </td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Various metrics related to the movement of people.<br><br>To download or use the data, you must
+                        agree to the Google <a href="https://policies.google.com/terms">Terms of
+                            Service</a>.</td>
+                    <td><a href="{{gcs-url}}/v3/mobility.csv">mobility.csv</a>, <a
+                            href="{{gcs-url}}/v3/mobility.json">mobility.json</a>
+                    </td>
+                    <td>Google</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-search-trends.md">Search
+                            Trends</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Trends in symptom search volumes due to COVID-19.<br><br>To download or use the data, you must
+                        agree to the Google <a href="https://policies.google.com/terms">Terms of
+                            Service</a>.</td>
+                    <td><a href="{{gcs-url}}/v3/google-search-trends.csv">google-search-trends.csv</a>
+                    </td>
+                    <td>Google</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-government-response.md">Government
+                            Response</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Government interventions and their relative stringency</td>
+                    <td><a href="{{gcs-url}}/v3/oxford-government-response.csv">oxford-government-response.csv</a>,
+                        <a href="{{gcs-url}}/v3/oxford-government-response.json">oxford-government-response.json</a>
+                    </td>
+                    <td>University of Oxford</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-weather.md">Weather</a>
+                    </td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Dated meteorological information for each region</td>
+                    <td><a href="{{gcs-url}}/v3/weather.csv">weather.csv</a></td>
+                    <td>NOAA</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-worldbank.md">WorldBank</a>
+                    </td>
+                    <td><span class="mono">[key]</span></td>
+                    <td>Latest record for each indicator from WorldBank for all reporting countries</td>
+                    <td><a href="{{gcs-url}}/v3/worldbank.csv">worldbank.csv</a>,
+                        <a href="{{gcs-url}}/v3/worldbank.json">worldbank.json</a>
+                    </td>
+                    <td>WorldBank</td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-by-age.md">By
+                            Age</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Epidemiology and hospitalizations data stratified by age</td>
+                    <td><a href="{{gcs-url}}/v3/by-age.csv">by-age.csv</a>, <a
+                            href="{{gcs-url}}/v3/by-age.json">by-age.json</a></td>
+                    <td>Various<sup>2</sup></td>
+                </tr>
+                <tr>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-by-sex.md">By
+                            Sex</a></td>
+                    <td><span class="mono">[key][date]</span></td>
+                    <td>Epidemiology and hospitalizations data stratified by sex</td>
+                    <td><a href="{{gcs-url}}/v3/by-sex.csv">by-sex.csv</a>, <a
+                            href="{{gcs-url}}/v3/by-sex.json">by-sex.json</a></td>
+                    <td>Various<sup>2</sup></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="max-width: 100%;">
+            <sup>1</sup> <span class="mono">key</span> is a unique string for the specific geographical region built
+            from a combination of codes such as <span class="mono">ISO 3166</span>, <span class="mono">NUTS</span>,
+            <span class="mono">FIPS</span> and other local equivalents.<br>
+            <sup>2</sup> Refer to the <a href="{{repo-url}}/#sources-of-data">data sources</a> for specifics about each
+            data source and the associated terms of use.<br>
+            <sup>3</sup> Datasets without a <span class="mono">date</span> column contain the most recently reported
+            information for each datapoint to date.
+        </p>
+    </main>
 
-                window.location = `report/?key=${code}`;
-            }
-        });
-    </script>
-
-    <!-- Information button -->
-    <a id="vmap-help" href="about">?</a>
-
-    <!-- Title -->
-    <a id="vmap-title" href="about">{{name}}</a>
+    <!-- Footer with links -->
+    <script src="templates/footer.tpl.html" data-include></script>
 
     <!-- Load analytics at the end of the page -->
     <script src="templates/analytics.tpl.html" data-include></script>

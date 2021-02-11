@@ -2,9 +2,14 @@
 <html>
 
 <!-- HTML page head -->
-<script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+<script src="../templates/head.tpl.html" data-include></script>
 
 <body class="single-column">
+
+    <!-- Header with links -->
+    <script src="../templates/header.tpl.html" data-include></script>
+
+    <div class="spacer"></div>
 
     <h1 class="centered">Download COVID-19 Open-Data</h1>
     <h3 class="centered">goo.gle/covid-19-open-data-download</h3>
@@ -35,181 +40,156 @@
                     <td>Flat table with records from (almost) all other tables joined by <code>date</code> and/or
                         <code>key</code>; see below for more details
                     </td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/aggregated.csv.gz">aggregated.csv.gz</a>
+                    <td><a href="{{gcs-url}}/v3/aggregated.csv.gz">aggregated.csv.gz</a>
                     </td>
                     <td>All tables below</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-index.md">Index</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-index.md">Index</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Various names and codes, useful for joining with other datasets</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/index.csv">index.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/index.json">index.json</a></td>
+                    <td><a href="{{gcs-url}}/v3/index.csv">index.csv</a>, <a
+                            href="{{gcs-url}}/v3/index.json">index.json</a></td>
                     <td>Wikidata, DataCommons, Eurostat</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-demographics.md">Demographics</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-demographics.md">Demographics</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Various (current<sup>3</sup>) population statistics</td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/demographics.csv">demographics.csv</a>,
-                        <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/demographics.json">demographics.json</a>
+                    <td><a href="{{gcs-url}}/v3/demographics.csv">demographics.csv</a>,
+                        <a href="{{gcs-url}}/v3/demographics.json">demographics.json</a>
                     </td>
                     <td>Wikidata, DataCommons, WorldBank, WorldPop, Eurostat</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-economy.md">Economy</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-economy.md">Economy</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Various (current<sup>3</sup>) economic indicators</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/economy.csv">economy.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/economy.json">economy.json</a>
+                    <td><a href="{{gcs-url}}/v3/economy.csv">economy.csv</a>, <a
+                            href="{{gcs-url}}/v3/economy.json">economy.json</a>
                     </td>
                     <td>Wikidata, DataCommons, Eurostat</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-epidemiology.md">Epidemiology</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-epidemiology.md">Epidemiology</a>
                     </td>
                     <td><code>[key][date]</code></td>
                     <td>COVID-19 cases, deaths, recoveries and tests</td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/epidemiology.csv">epidemiology.csv</a>,
-                        <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/epidemiology.json">epidemiology.json</a>
+                    <td><a href="{{gcs-url}}/v3/epidemiology.csv">epidemiology.csv</a>,
+                        <a href="{{gcs-url}}/v3/epidemiology.json">epidemiology.json</a>
                     </td>
                     <td>Various<sup>2</sup></td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-emergency-declarations.md">Emergency
+                    <td><a href="{{repo-url}}/blob/main/docs/table-emergency-declarations.md">Emergency
                             Declarations</a></td>
                     <td><code>[key][date]</code></td>
                     <td>Government emergency declarations and mitigation policies</td>
                     <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/lawatlas-emergency-declarations.csv">lawatlas-emergency-declarations.csv</a>
+                            href="{{gcs-url}}/v3/lawatlas-emergency-declarations.csv">lawatlas-emergency-declarations.csv</a>
                     </td>
                     <td>LawAtlas Project</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-geography.md">Geography</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-geography.md">Geography</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Geographical information about the region</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/geography.csv">geography.csv</a>,
-                        <a href="https://storage.googleapis.com/covid19-open-data/v3/geography.json">geography.json</a>
+                    <td><a href="{{gcs-url}}/v3/geography.csv">geography.csv</a>,
+                        <a href="{{gcs-url}}/v3/geography.json">geography.json</a>
                     </td>
                     <td>Wikidata</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-health.md">Health</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-health.md">Health</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Health indicators for the region</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/health.csv">health.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/geography.json">health.json</a>
+                    <td><a href="{{gcs-url}}/v3/health.csv">health.csv</a>, <a
+                            href="{{gcs-url}}/v3/geography.json">health.json</a>
                     </td>
                     <td>Wikidata, WorldBank, Eurostat</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-hospitalizations.md">Hospitalizations</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-hospitalizations.md">Hospitalizations</a>
                     </td>
                     <td><code>[key][date]</code></td>
                     <td>Information related to patients of COVID-19 and hospitals</td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/hospitalizations.csv">hospitalizations.csv</a>,
-                        <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/hospitalization.json">hospitalizations.json</a>
+                    <td><a href="{{gcs-url}}/v3/hospitalizations.csv">hospitalizations.csv</a>,
+                        <a href="{{gcs-url}}/v3/hospitalization.json">hospitalizations.json</a>
                     </td>
                     <td>Various<sup>2</sup></td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-mobility.md">Mobility</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-mobility.md">Mobility</a>
                     </td>
                     <td><code>[key][date]</code></td>
                     <td>Various metrics related to the movement of people.<br><br>To download or use the data, you must
                         agree to the Google <a href="https://policies.google.com/terms">Terms of
                             Service</a>.</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/mobility.csv">mobility.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/mobility.json">mobility.json</a>
+                    <td><a href="{{gcs-url}}/v3/mobility.csv">mobility.csv</a>, <a
+                            href="{{gcs-url}}/v3/mobility.json">mobility.json</a>
                     </td>
                     <td>Google</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-search-trends.md">Search
+                    <td><a href="{{repo-url}}/blob/main/docs/table-search-trends.md">Search
                             Trends</a></td>
                     <td><code>[key][date]</code></td>
                     <td>Trends in symptom search volumes due to COVID-19.<br><br>To download or use the data, you must
                         agree to the Google <a href="https://policies.google.com/terms">Terms of
                             Service</a>.</td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/google-search-trends.csv">google-search-trends.csv</a>
+                    <td><a href="{{gcs-url}}/v3/google-search-trends.csv">google-search-trends.csv</a>
                     </td>
                     <td>Google</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-government-response.md">Government
+                    <td><a href="{{repo-url}}/blob/main/docs/table-government-response.md">Government
                             Response</a></td>
                     <td><code>[key][date]</code></td>
                     <td>Government interventions and their relative stringency</td>
-                    <td><a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/oxford-government-response.csv">oxford-government-response.csv</a>,
-                        <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/oxford-government-response.json">oxford-government-response.json</a>
+                    <td><a href="{{gcs-url}}/v3/oxford-government-response.csv">oxford-government-response.csv</a>,
+                        <a href="{{gcs-url}}/v3/oxford-government-response.json">oxford-government-response.json</a>
                     </td>
                     <td>University of Oxford</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-weather.md">Weather</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-weather.md">Weather</a>
                     </td>
                     <td><code>[key][date]</code></td>
                     <td>Dated meteorological information for each region</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/weather.csv">weather.csv</a></td>
+                    <td><a href="{{gcs-url}}/v3/weather.csv">weather.csv</a></td>
                     <td>NOAA</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-worldbank.md">WorldBank</a>
+                    <td><a href="{{repo-url}}/blob/main/docs/table-worldbank.md">WorldBank</a>
                     </td>
                     <td><code>[key]</code></td>
                     <td>Latest record for each indicator from WorldBank for all reporting countries</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/worldbank.csv">worldbank.csv</a>,
-                        <a href="https://storage.googleapis.com/covid19-open-data/v3/worldbank.json">worldbank.json</a>
+                    <td><a href="{{gcs-url}}/v3/worldbank.csv">worldbank.csv</a>,
+                        <a href="{{gcs-url}}/v3/worldbank.json">worldbank.json</a>
                     </td>
                     <td>WorldBank</td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-by-age.md">By
+                    <td><a href="{{repo-url}}/blob/main/docs/table-by-age.md">By
                             Age</a></td>
                     <td><code>[key][date]</code></td>
                     <td>Epidemiology and hospitalizations data stratified by age</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/by-age.csv">by-age.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/by-age.json">by-age.json</a></td>
+                    <td><a href="{{gcs-url}}/v3/by-age.csv">by-age.csv</a>, <a
+                            href="{{gcs-url}}/v3/by-age.json">by-age.json</a></td>
                     <td>Various<sup>2</sup></td>
                 </tr>
                 <tr>
-                    <td><a
-                            href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-by-sex.md">By
+                    <td><a href="{{repo-url}}/blob/main/docs/table-by-sex.md">By
                             Sex</a></td>
                     <td><code>[key][date]</code></td>
                     <td>Epidemiology and hospitalizations data stratified by sex</td>
-                    <td><a href="https://storage.googleapis.com/covid19-open-data/v3/by-sex.csv">by-sex.csv</a>, <a
-                            href="https://storage.googleapis.com/covid19-open-data/v3/by-sex.json">by-sex.json</a></td>
+                    <td><a href="{{gcs-url}}/v3/by-sex.csv">by-sex.csv</a>, <a
+                            href="{{gcs-url}}/v3/by-sex.json">by-sex.json</a></td>
                     <td>Various<sup>2</sup></td>
                 </tr>
             </tbody>
@@ -218,8 +198,7 @@
             <sup>1</sup> <code>key</code> is a unique string for the specific geographical region built from
             a combination of codes such as <code>ISO 3166</code>, <code>NUTS</code>, <code>FIPS</code> and other local
             equivalents.<br>
-            <sup>2</sup> Refer to the <a
-                href="https://github.com/GoogleCloudPlatform/covid-19-open-data/#sources-of-data">data sources</a>
+            <sup>2</sup> Refer to the <a href="{{repo-url}}/#sources-of-data">data sources</a>
             for specifics about each data source and the associated terms of use.<br>
             <sup>3</sup> Datasets without a <code>date</code> column contain the most recently reported information for
             each datapoint to date.

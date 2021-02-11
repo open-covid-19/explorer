@@ -2,9 +2,11 @@
   "displayName": "COVID-19 Open Data Explorer",
   "description": "Interactive map for the COVID-19 Open Data Project",
   "vars": {
+    "gcs-url": "https://storage.googleapis.com/covid19-open-data",
+    "repo-url": "https://github.com/GoogleCloudPlatform/covid-19-open-data",
     "analytics": "UA-103644138-1",
     "email": "owahltinez@google.com",
-    "covid-19-open-data-url": "https://github.com/GoogleCloudPlatform/covid-19-open-data",
+    "covid-19-open-data-url": "{{repo-url}}",
     "theme": {
       "primary": "#BF360C",
       "accent": "#F9683A",
@@ -45,7 +47,7 @@
     "gulp-htmlhint": "^2.2.1",
     "gulp-imagemin": "^6.1.0",
     "gulp-jimp": "^1.2.9",
-    "gulp-mancha": "^0.2.1",
+    "gulp-mancha": "^0.3.0",
     "gulp-minify-inline": "^1.1.0",
     "gulp-remote-src": "^0.4.4",
     "gulp-rename": "^1.4.0",

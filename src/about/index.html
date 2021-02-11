@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html>
 
-    <!-- HTML page head -->
-    <script src="../templates/head.tpl.html" data-include data-vars='{"root": ".."}'></script>
+<!-- HTML page head -->
+<script src="../templates/head.tpl.html" data-include></script>
 
-    <body class="single-column">
+<body class="single-column">
 
-        <!-- Header with links -->
-        <script src="../templates/header.tpl.html" data-include data-vars='{"root": ".."}'></script>
+    <!-- Header with links -->
+    <script src="../templates/header.tpl.html" data-include></script>
 
-        <main>
-            <h1 class="centered">{{name}}</h1>
+    <main>
+        <h1 class="centered">{{name}}</h1>
 
-            <h3 class="centered">Where does the data come from?</h3>
-            <p class="justify">
-                The dataset used in the Open COVID-19 map is the
-                <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
-                contains total confirmed positive cases and total fatal cases for all reporting
-                countries as well as subregions of Australia, China, Italy, Spain and USA.
-            </p>
+        <h3 class="centered">Where does the data come from?</h3>
+        <p class="justify">
+            The dataset used in the Open COVID-19 map is the
+            <a href="https://github.com/open-covid-19/data">Open COVID-19 Dataset</a>, which
+            contains total confirmed positive cases and total fatal cases for all reporting
+            countries as well as subregions of Australia, China, Italy, Spain and USA.
+        </p>
 
-            <h3 class="centered">How often is the data updated?</h3>
-            <p class="justify">
-                Data is updated daily for most countries and subregions. It's also worth noting that
-                the dates in the data represent when the data is reported to the relevant authorities,
-                like WHO or ECDC, which is normally done the following day.
-            </p>
+        <h3 class="centered">How often is the data updated?</h3>
+        <p class="justify">
+            Data is updated daily for most countries and subregions. It's also worth noting that
+            the dates in the data represent when the data is reported to the relevant authorities,
+            like WHO or ECDC, which is normally done the following day.
+        </p>
 
-            <h3 class="centered">How is the forecast done?</h3>
-            <p class="justify">
-                The forecast is done by fitting the data to a specialized logistic curve, called
-                <a href="https://en.wikipedia.org/wiki/Gompertz_function">Gompertz function</a>. For
-                a walk-through of why this model was chosen over other potential alternatives, see
-                <a href="https://github.com/open-covid-19/data/blob/master/examples/logistic_modeling.ipynb">this analysis</a>.
-            </p>
-        </main>
+        <h3 class="centered">How is the forecast done?</h3>
+        <p class="justify">
+            The forecast is done by fitting the data to a specialized logistic curve, called
+            <a href="https://en.wikipedia.org/wiki/Gompertz_function">Gompertz function</a>. For
+            a walk-through of why this model was chosen over other potential alternatives, see
+            <a href="https://github.com/open-covid-19/data/blob/master/examples/logistic_modeling.ipynb">this
+                analysis</a>.
+        </p>
+    </main>
 
-        <!-- Load analytics at the end of the page -->
-        <script src="../templates/analytics.tpl.html" data-include></script>
-    </body>
+    <!-- Load analytics at the end of the page -->
+    <script src="../templates/analytics.tpl.html" data-include></script>
+</body>
+
 </html>

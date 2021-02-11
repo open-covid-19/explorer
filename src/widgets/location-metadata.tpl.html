@@ -34,7 +34,18 @@
 
             // Fill the elements with data
             const metadata = locationData[0];
-            let tableData = `<tr><th colspan=2><span class="centered">Location Information</span></th></tr>`;
+            const locationLabelFactory = lvl => {
+                if (lvl === 0) return metadata.country_name;
+                else if (lvl === 1) return metadata.subregion1_name;
+                else if (lvl === 2) return metadata.subregion2_name;
+                else if (lvl === 3) return metadata.locality_name;
+                else return `Unknown`;
+            }
+            const locationLabel = locationLabelFactory(Number(metadata.aggregation_level));
+            let tableData = `<tr style="height: 2em;"><th colspan=2><span class="centered">${locationLabel}</span></th></tr>`;
+
+            // Make the location label a global variable
+            window.locationLabel = locationLabel;
 
             // Index aggregation level
             const aggregationLevelLabel = lvl => {
@@ -54,11 +65,11 @@
             const keyTokenCount = locationKey.split('_').length;
             const locatedInLabelMap = lvl => {
                 if (lvl === 0) return `World`;
-                else if (lvl === 1) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
-                else if (lvl === 3 && keyTokenCount === 2) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
-                else if (lvl === 3 && keyTokenCount === 3) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
-                else if (lvl === 3 && keyTokenCount === 4) return `<a href="{{root}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
+                else if (lvl === 1) return `<a href="{{wwwroot}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === 2) return `<a href="{{wwwroot}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 2) return `<a href="{{wwwroot}}/report/index.html?key=${metadata.country_code}">${metadata.country_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 3) return `<a href="{{wwwroot}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}">${metadata.subregion1_name}</a>`;
+                else if (lvl === 3 && keyTokenCount === 4) return `<a href="{{wwwroot}}/report/index.html?key=${metadata.country_code}_${metadata.subregion1_code}_${metadata.subregion2_code}">${metadata.subregion2_name}</a>`;
                 else return `Unknown`;
             }
             const locatedInLabelVal = locatedInLabelMap(Number(metadata.aggregation_level));
@@ -135,26 +146,26 @@
             // Related links information
             let relatedLinks = '';
             relatedLinks +=
-                `<a href="${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.csv" target="_blank">
-                    <img src="{{root}}/static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
-                </a>`
+                `<a style="text-decoration: none;" href="${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.csv" target="_blank">
+                    <img src="{{wwwroot}}/static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                </a>`;
             if (metadata.wikidata_id) {
                 relatedLinks +=
-                    `<a href="https://www.wikidata.org/wiki/${metadata.wikidata_id}" target="_blank">
-                        <img src="{{root}}/static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
-                    </a>`
+                    `<a style="text-decoration: none;" href="https://www.wikidata.org/wiki/${metadata.wikidata_id}" target="_blank">
+                        <img src="{{wwwroot}}/static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`;
             }
             if (metadata.datacommons_id) {
                 relatedLinks +=
-                    `<a href="https://datacommons.org/place?dcid=${metadata.datacommons_id}" target="_blank">
-                        <img src="{{root}}/static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />
-                    </a>`
+                    `<a style="text-decoration: none;" href="https://datacommons.org/place?dcid=${metadata.datacommons_id}" target="_blank">
+                        <img src="{{wwwroot}}/static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`;
             }
             if (metadata.openstreetmap_id) {
                 relatedLinks +=
-                    `<a href="https://www.openstreetmap.org/relation/${metadata.openstreetmap_id}" target="_blank">
-                        <img src="{{root}}/static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
-                    </a>`
+                    `<a style="text-decoration: none;" href="https://www.openstreetmap.org/relation/${metadata.openstreetmap_id}" target="_blank">
+                        <img src="{{wwwroot}}/static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />
+                    </a>`;
             }
             tableData += `<tr><td>Related Links</td><td>${relatedLinks}</td></tr>`;
 
