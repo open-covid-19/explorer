@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>COVID-19 Open Data Explorer</title>
     <meta name="description" content="Interactive map for the COVID-19 Open Data Project">
-    <link rel="icon" type="image/png" href="../../static/logo-64.png">
+    <link rel="icon" type="image/png" href="../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,10 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="COVID-19 Open Data Explorer">
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="../../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="64x64" href="../../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="../../static/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="../../static/icon-512x512.png">
+    <link rel="apple-touch-icon" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="64x64" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="../static/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="../static/icon-512x512.png">
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
@@ -23,32 +23,32 @@
     <link href="//fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Google+Sans:400,500|Product+Sans:400&amp;lang=en" rel="stylesheet">
 
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="../../third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="../../static/jquery.ui.combobox.min.js"></script>
-    <link rel="stylesheet" href="../../third_party/jquery-ui-dist/jquery-ui.min.css">
+    <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="../static/jquery.ui.combobox.min.js"></script>
+    <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- MomentJS -->
-    <script type="text/javascript" src="../../third_party/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
 
     <!-- CSV Parsing -->
-    <script type="text/javascript" src="../../third_party/papaparse/papaparse.min.js"></script>
+    <script type="text/javascript" src="../third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Character transliteration -->
-    <script type="text/javascript" src="../../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
+    <script type="text/javascript" src="../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="https://pair-code.github.io/covid19_symptom_dataset/style.css">
-    <link rel="stylesheet" href="../../third_party/picnic/picnic.min.css">
-    <link rel="stylesheet" href="../../static/styles.min.css">
+    <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
+    <link rel="stylesheet" href="../static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="../../static/polyfills.min.js"></script>
-    <script type="text/javascript" src="../../static/open-covid-19.min.js"></script>
+    <script type="text/javascript" src="../static/polyfills.min.js"></script>
+    <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
     <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-limit":0,"history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!0,"min-date":null,"max-date":null},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],backgroundColor:{fill:"#FCFCFC"},legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
@@ -66,14 +66,14 @@
     <div class="glue-header__logo-container ">
         <a href="https://www.google.com/" style>
             <svg role="img" aria-hidden="true" class="glue-header__logo-svg">
-                <use xlink:href="../../glue/glue-icons.svg#google-color-logo"/>
+                <use xlink:href="../glue/glue-icons.svg#google-color-logo"/>
             </svg>
         </a>
     </div>
 </header>
 
 <h1 class="centered glue-headline glue-headline--headline-1">
-    <a href="../.." style="text-decoration: none; color: initial;">COVID-19 Open-Data</a>
+    <a href=".." style="text-decoration: none; color: initial;">COVID-19 Open-Data</a>
 </h1>
 
     <main>

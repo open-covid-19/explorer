@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>COVID-19 Open Data Explorer</title>
     <meta name="description" content="Interactive map for the COVID-19 Open Data Project">
-    <link rel="icon" type="image/png" href="../../static/logo-64.png">
+    <link rel="icon" type="image/png" href="../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,10 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="COVID-19 Open Data Explorer">
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="../../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="64x64" href="../../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="../../static/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="../../static/icon-512x512.png">
+    <link rel="apple-touch-icon" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="64x64" href="../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="../static/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="../static/icon-512x512.png">
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
@@ -23,32 +23,32 @@
     <link href="//fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Google+Sans:400,500|Product+Sans:400&amp;lang=en" rel="stylesheet">
 
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="../../third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="../../static/jquery.ui.combobox.min.js"></script>
-    <link rel="stylesheet" href="../../third_party/jquery-ui-dist/jquery-ui.min.css">
+    <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="../static/jquery.ui.combobox.min.js"></script>
+    <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- MomentJS -->
-    <script type="text/javascript" src="../../third_party/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
 
     <!-- CSV Parsing -->
-    <script type="text/javascript" src="../../third_party/papaparse/papaparse.min.js"></script>
+    <script type="text/javascript" src="../third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Character transliteration -->
-    <script type="text/javascript" src="../../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
+    <script type="text/javascript" src="../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="https://pair-code.github.io/covid19_symptom_dataset/style.css">
-    <link rel="stylesheet" href="../../third_party/picnic/picnic.min.css">
-    <link rel="stylesheet" href="../../static/styles.min.css">
+    <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
+    <link rel="stylesheet" href="../static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="../../static/polyfills.min.js"></script>
-    <script type="text/javascript" src="../../static/open-covid-19.min.js"></script>
+    <script type="text/javascript" src="../static/polyfills.min.js"></script>
+    <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
     <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-limit":0,"history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!0,"min-date":null,"max-date":null},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],backgroundColor:{fill:"#FCFCFC"},legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
@@ -59,14 +59,14 @@
     <div class="glue-header__logo-container ">
         <a href="https://www.google.com/" style>
             <svg role="img" aria-hidden="true" class="glue-header__logo-svg">
-                <use xlink:href="../../glue/glue-icons.svg#google-color-logo"/>
+                <use xlink:href="../glue/glue-icons.svg#google-color-logo"/>
             </svg>
         </a>
     </div>
 </header>
 
 <h1 class="centered glue-headline glue-headline--headline-1">
-    <a href="../.." style="text-decoration: none; color: initial;">COVID-19 Open-Data</a>
+    <a href=".." style="text-decoration: none; color: initial;">COVID-19 Open-Data</a>
 </h1>
 
     <div class="spacer"></div>
@@ -86,7 +86,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const t=["wikidata_id","datacommons_id","openstreetmap_id"],e=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let a=await loadLocationData(n);if(a.filter(e=>t.some(t=>e[t]&&""!==e[t])).length<1)return console.error("Not enough records found for columns:",t),void(e.style.display="none");const o=attachElement("table",{className:"fullwidth"},e,prepend=!0);o.style.tableLayout="fixed";const i=a[0],r=(t=>0===t?i.country_name:1===t?i.subregion1_name:2===t?i.subregion2_name:3===t?i.locality_name:"Unknown")(Number(i.aggregation_level));let d=`<tr style="height: 2em;"><th colspan=2><span class="centered">${r}</span></th></tr>`;window.locationLabel=r;d+=`\n                <tr>\n                    <td>Aggregation Level</td>\n                    <td>${(t=>0===t?"Country":1===t?"Administrative Level 1":2===t?"Administrative Level 2":3===t?"Locality":"Unknown")(Number(i.aggregation_level))}</td>\n                </tr>`;const l=n.split("_").length,c=(t=>0===t?"World":1===t?`<a href="../../report/index.html?key=${i.country_code}">${i.country_name}</a>`:2===t?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&2===l?`<a href="../../report/index.html?key=${i.country_code}">${i.country_name}</a>`:3===t&&3===l?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&4===l?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}_${i.subregion2_code}">${i.subregion2_name}</a>`:"Unknown")(Number(i.aggregation_level));"World"!==c&&"Unknown"!==c&&(d+=`\n                    <tr>\n                        <td>Located in</td>\n                        <td>${c}</td>\n                    </tr>`),i.population&&(d+=`\n                    <tr>\n                        <td>Total Population</td>\n                        <td>${Number(i.population).toLocaleString()}</td>\n                    </tr>`);const s=a.filter(t=>t.cumulative_confirmed&&""!==t.cumulative_confirmed).slice(-1);s.length>0&&(d+=`\n                    <tr>\n                        <td>Total Confirmed Cases</td>\n                        <td>${Number(s[0].cumulative_confirmed).toLocaleString()}</td>\n                    </tr>`);const m=a.filter(t=>t.cumulative_deceased&&""!==t.cumulative_deceased).slice(-1);m.length>0&&(d+=`\n                    <tr>\n                        <td>Total Deceased Persons</td>\n                        <td>${Number(m[0].cumulative_deceased).toLocaleString()}</td>\n                    </tr>`);const u=a.filter(t=>t.cumulative_persons_vaccinated&&""!==t.cumulative_persons_vaccinated).slice(-1);u.length>0&&(d+=`\n                    <tr>\n                        <td>Total Vaccinated Persons</td>\n                        <td>${Number(u[0].cumulative_persons_vaccinated).toLocaleString()}</td>\n                    </tr>`),notNull=((t,e)=>parseInt(t[e])||null);const g=a.filter(t=>["new_confirmed","cumulative_confirmed"].some(e=>notNull(t,e))).slice(0,1);g.length>0&&(d+=`<tr><td>First Confirmed Case</td><td>${g[0].date}</td></tr>`);const _=a.filter(t=>["new_deceased","cumulative_deceased"].some(e=>notNull(t,e))).slice(0,1);_.length>0&&(d+=`<tr><td>First Deceased Person</td><td>${_[0].date}</td></tr>`);let p="";p+=`<a style="text-decoration: none;" href="${CURRENT_OPTIONS["data-url"]}/v3/location/${n}.csv" target="_blank">\n                    <img src="../../static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                </a>`,i.wikidata_id&&(p+=`<a style="text-decoration: none;" href="https://www.wikidata.org/wiki/${i.wikidata_id}" target="_blank">\n                        <img src="../../static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.datacommons_id&&(p+=`<a style="text-decoration: none;" href="https://datacommons.org/place?dcid=${i.datacommons_id}" target="_blank">\n                        <img src="../../static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.openstreetmap_id&&(p+=`<a style="text-decoration: none;" href="https://www.openstreetmap.org/relation/${i.openstreetmap_id}" target="_blank">\n                        <img src="../../static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),d+=`<tr><td>Related Links</td><td>${p}</td></tr>`,o.innerHTML=d,o.parentElement.style.visibility="visible"}();</script>
+    <script async>!async function(){const t=["wikidata_id","datacommons_id","openstreetmap_id"],e=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let a=await loadLocationData(n);if(a.filter(e=>t.some(t=>e[t]&&""!==e[t])).length<1)return console.error("Not enough records found for columns:",t),void(e.style.display="none");const o=attachElement("table",{className:"fullwidth"},e,prepend=!0);o.style.tableLayout="fixed";const i=a[0],r=(t=>0===t?i.country_name:1===t?i.subregion1_name:2===t?i.subregion2_name:3===t?i.locality_name:"Unknown")(Number(i.aggregation_level));let d=`<tr style="height: 2em;"><th colspan=2><span class="centered">${r}</span></th></tr>`;window.locationLabel=r;d+=`\n                <tr>\n                    <td>Aggregation Level</td>\n                    <td>${(t=>0===t?"Country":1===t?"Administrative Level 1":2===t?"Administrative Level 2":3===t?"Locality":"Unknown")(Number(i.aggregation_level))}</td>\n                </tr>`;const l=n.split("_").length,c=(t=>0===t?"World":1===t?`<a href="../report/index.html?key=${i.country_code}">${i.country_name}</a>`:2===t?`<a href="../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&2===l?`<a href="../report/index.html?key=${i.country_code}">${i.country_name}</a>`:3===t&&3===l?`<a href="../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&4===l?`<a href="../report/index.html?key=${i.country_code}_${i.subregion1_code}_${i.subregion2_code}">${i.subregion2_name}</a>`:"Unknown")(Number(i.aggregation_level));"World"!==c&&"Unknown"!==c&&(d+=`\n                    <tr>\n                        <td>Located in</td>\n                        <td>${c}</td>\n                    </tr>`),i.population&&(d+=`\n                    <tr>\n                        <td>Total Population</td>\n                        <td>${Number(i.population).toLocaleString()}</td>\n                    </tr>`);const s=a.filter(t=>t.cumulative_confirmed&&""!==t.cumulative_confirmed).slice(-1);s.length>0&&(d+=`\n                    <tr>\n                        <td>Total Confirmed Cases</td>\n                        <td>${Number(s[0].cumulative_confirmed).toLocaleString()}</td>\n                    </tr>`);const m=a.filter(t=>t.cumulative_deceased&&""!==t.cumulative_deceased).slice(-1);m.length>0&&(d+=`\n                    <tr>\n                        <td>Total Deceased Persons</td>\n                        <td>${Number(m[0].cumulative_deceased).toLocaleString()}</td>\n                    </tr>`);const u=a.filter(t=>t.cumulative_persons_vaccinated&&""!==t.cumulative_persons_vaccinated).slice(-1);u.length>0&&(d+=`\n                    <tr>\n                        <td>Total Vaccinated Persons</td>\n                        <td>${Number(u[0].cumulative_persons_vaccinated).toLocaleString()}</td>\n                    </tr>`),notNull=((t,e)=>parseInt(t[e])||null);const g=a.filter(t=>["new_confirmed","cumulative_confirmed"].some(e=>notNull(t,e))).slice(0,1);g.length>0&&(d+=`<tr><td>First Confirmed Case</td><td>${g[0].date}</td></tr>`);const _=a.filter(t=>["new_deceased","cumulative_deceased"].some(e=>notNull(t,e))).slice(0,1);_.length>0&&(d+=`<tr><td>First Deceased Person</td><td>${_[0].date}</td></tr>`);let p="";p+=`<a style="text-decoration: none;" href="${CURRENT_OPTIONS["data-url"]}/v3/location/${n}.csv" target="_blank">\n                    <img src="../static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                </a>`,i.wikidata_id&&(p+=`<a style="text-decoration: none;" href="https://www.wikidata.org/wiki/${i.wikidata_id}" target="_blank">\n                        <img src="../static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.datacommons_id&&(p+=`<a style="text-decoration: none;" href="https://datacommons.org/place?dcid=${i.datacommons_id}" target="_blank">\n                        <img src="../static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.openstreetmap_id&&(p+=`<a style="text-decoration: none;" href="https://www.openstreetmap.org/relation/${i.openstreetmap_id}" target="_blank">\n                        <img src="../static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),d+=`<tr><td>Related Links</td><td>${p}</td></tr>`,o.innerHTML=d,o.parentElement.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
