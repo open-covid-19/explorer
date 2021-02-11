@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>COVID-19 Open Data Explorer</title>
     <meta name="description" content="Interactive map for the COVID-19 Open Data Project">
-    <link rel="icon" type="image/png" href="../static/logo-64.png">
+    <link rel="icon" type="image/png" href="../../static/logo-64.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,53 +11,63 @@
     <meta name="apple-mobile-web-app-title" content="COVID-19 Open Data Explorer">
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="64x64" href="../static/icon-64x64.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="../static/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="../static/icon-512x512.png">
+    <link rel="apple-touch-icon" href="../../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="64x64" href="../../static/icon-64x64.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="../../static/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="../../static/icon-512x512.png">
 
     <!-- Capabilities-related metadata -->
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 
+    <!-- Google Fonts -->
+    <link href="//fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Google+Sans:400,500|Product+Sans:400&amp;lang=en" rel="stylesheet">
+
     <!-- JQuery and plugins -->
-    <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script type="text/javascript" src="../static/jquery.ui.combobox.min.js"></script>
-    <script type="text/javascript" src="../third_party/jqvmap/dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="../third_party/jqvmap/dist/jqvmap.min.css">
-    <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
+    <script type="text/javascript" src="../../third_party/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+    <script type="text/javascript" src="../../static/jquery.ui.combobox.min.js"></script>
+    <link rel="stylesheet" href="../../third_party/jquery-ui-dist/jquery-ui.min.css">
 
     <!-- Google Charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- MomentJS -->
-    <script type="text/javascript" src="../third_party/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="../../third_party/moment/min/moment.min.js"></script>
 
     <!-- CSV Parsing -->
-    <script type="text/javascript" src="../third_party/papaparse/papaparse.min.js"></script>
+    <script type="text/javascript" src="../../third_party/papaparse/papaparse.min.js"></script>
 
     <!-- Character transliteration -->
-    <script type="text/javascript" src="../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
+    <script type="text/javascript" src="../../third_party/transliteration/dist/browser/bundle.umd.min.js"></script>
 
     <!-- Custom styles -->
-    <link rel="stylesheet" href="../third_party/picnic/picnic.min.css">
-    <link rel="stylesheet" href="../static/styles.min.css">
+    <link rel="stylesheet" href="https://pair-code.github.io/covid19_symptom_dataset/style.css">
+    <link rel="stylesheet" href="../../third_party/picnic/picnic.min.css">
+    <link rel="stylesheet" href="../../static/styles.min.css">
 
     <!-- Polyfills, custom functions and constants -->
-    <script type="text/javascript" src="../static/polyfills.min.js"></script>
-    <script type="text/javascript" src="../static/open-covid-19.min.js"></script>
-    <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-limit":0,"history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!0,"min-date":null,"max-date":null},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
+    <script type="text/javascript" src="../../static/polyfills.min.js"></script>
+    <script type="text/javascript" src="../../static/open-covid-19.min.js"></script>
+    <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-limit":0,"history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!0,"min-date":null,"max-date":null},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],backgroundColor:{fill:"#FCFCFC"},legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
 </head><body class="single-column">
 
     <!-- Header with links -->
     <header>
-    <a class="centered uppercase" href="..">World Map</a>
-    <a class="centered uppercase" href="../health/">Data Health</a>
-    <a class="centered uppercase" href="https://github.com/GoogleCloudPlatform/covid-19-open-data" target="_blank">About</a>
+    <div class="glue-header__logo-container ">
+        <a href="https://www.google.com/" style>
+            <svg role="img" aria-hidden="true" class="glue-header__logo-svg">
+                <use xlink:href="../../glue/glue-icons.svg#google-color-logo"/>
+            </svg>
+        </a>
+    </div>
 </header>
+
+<h1 class="centered glue-headline glue-headline--headline-1">
+    <a href="../.." style="text-decoration: none; color: initial;">COVID-19 Open-Data</a>
+</h1>
 
     <div class="spacer"></div>
 
@@ -65,26 +75,23 @@
     <div class="centered fullwidth">
     <input disabled id="location-selector" type="search" placeholder="Search for any location" results="0">
 </div>
-<script async>function searchify(e){return transliterate(e).toLocaleLowerCase()}function*filter(e,a,o){for(var t=0;o>0;){for(;t<e.length&&!a(e[t]);)t++;if(t>=e.length)return;yield e[t++],o--}}!async function(){const e=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/demographics.csv`)).reduce((e,a)=>(e[a.location_key]=parseInt(a.population)||0,e),{}),a=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/index.csv`)).map(a=>Object.assign({},a,{population:e[a.location_key]})).sort((e,a)=>(a.population||0)-(e.population||0)).map(e=>{let a="";switch(parseInt(e.aggregation_level)){case 0:return a=`${e.country_name} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 1:return a=`${e.subregion1_name}, ${e.country_name} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 2:return a=`${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};case 3:return a=`${e.locality_name}, ${e.subregion1_name} ${e.country_code} [${e.location_key}]`,{value:e.location_key,label:a,match:searchify(a)};default:console.error("Unknown aggregation level for record:"),console.error(e)}}).filter(e=>e&&e.value&&e.label);$("#location-selector").autocomplete({minLength:2,source:(e,o)=>{const t=searchify(e.term);return o(Array.from(filter(a,e=>-1!==e.match.indexOf(t),10)))},select:function(e,o){const t=o.item.value;-1!==a.map(e=>e.value).indexOf(t)&&window.goto(`?key=${t}`)}}),$("#location-selector").attr("disabled",!1),$("#location-selector").focus()}();</script>
+<script async>function searchify(e){return transliterate(e).toLocaleLowerCase()}function*filter(e,a,o){for(var n=0;o>0;){for(;n<e.length&&!a(e[n]);)n++;if(n>=e.length)return;yield e[n++],o--}}!async function(){const e=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/demographics.csv`)).reduce((e,a)=>(e[a.location_key]=parseInt(a.population)||0,e),{}),a=(await loadCSV(`${CURRENT_OPTIONS["data-url"]}/v3/index.csv`)).map(a=>Object.assign({},a,{population:e[a.location_key]})).sort((e,a)=>(a.population||0)-(e.population||0)).map(e=>{let a="";switch(parseInt(e.aggregation_level)){case 0:return a=`<div>${e.country_name} <span class="mono">${e.location_key}</span</div>`,{value:e.location_key,label:a,match:searchify(a)};case 1:return a=`<div>${e.subregion1_name}, ${e.country_name} <span class="mono">${e.location_key}</span></div>`,{value:e.location_key,label:a,match:searchify(a)};case 2:return a=`<div>${e.subregion2_name}, ${e.subregion1_name} ${e.country_code} <span class="mono">${e.location_key}</span></div>`,{value:e.location_key,label:a,match:searchify(a)};case 3:return a=`<div>${e.locality_name}, ${e.subregion1_name} ${e.country_code} <span class="mono">${e.location_key}</span></div>`,{value:e.location_key,label:a,match:searchify(a)};default:console.error("Unknown aggregation level for record:"),console.error(e)}}).filter(e=>e&&e.value&&e.label);$("#location-selector").autocomplete({minLength:2,source:(e,o)=>{const n=searchify(e.term);return o(Array.from(filter(a,e=>-1!==e.match.indexOf(n),10)))},select:function(e,o){const n=o.item.value;-1!==a.map(e=>e.value).indexOf(n)&&window.goto(`?key=${n}`)},create:function(){$(this).data("ui-autocomplete")._renderItem=function(e,a){return $("<li></li>").data("item.autocomplete",a).append(a.label).appendTo(e)}}}),$("#location-selector").attr("disabled",!1),$("#location-selector").focus()}();</script>
+
+    <div class="spacer"></div>
+    <div class="spacer"></div>
 
     <main>
-        <!-- Wrap the whole widget into a DIV -->
-<div id="location-title" style="visibility: hidden;">
-
-    <script async>!async function(){const e=["country_name","subregion1_name","subregion2_name","locality_name"],n=document.currentScript.parentElement,t=new URLSearchParams(location.search).get("key");let a=await loadLocationData(t);if(a.filter(n=>e.some(e=>n[e]&&""!==n[e])).length<1)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const o=attachElement("h1",{className:"centered"},n,prepend=!0);o.style.paddingLeft="64px;",o.style.paddingRight="64px;";const r=a[0];o.innerText=(e=>0===e?r.country_name:1===e?r.subregion1_name:2===e?r.subregion2_name:3===e?r.locality_name:"Unknown")(Number(r.aggregation_level)),o.parentElement.style.visibility="visible"}();</script>
-</div>
-
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const t=["wikidata_id","datacommons_id","openstreetmap_id"],e=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let a=await loadLocationData(n);if(a.filter(e=>t.some(t=>e[t]&&""!==e[t])).length<1)return console.error("Not enough records found for columns:",t),void(e.style.display="none");const i=attachElement("table",{className:"fullwidth"},e,prepend=!0);i.style.tableLayout="fixed";const o=a[0];let r='<tr><th colspan=2><span class="centered">Location Information</span></th></tr>';r+=`\n                <tr>\n                    <td>Aggregation Level</td>\n                    <td>${(t=>0===t?"Country":1===t?"Administrative Level 1":2===t?"Administrative Level 2":3===t?"Locality":"Unknown")(Number(o.aggregation_level))}</td>\n                </tr>`;const d=n.split("_").length,c=(t=>0===t?"World":1===t?`<a href="../report/index.html?key=${o.country_code}">${o.country_name}</a>`:2===t?`<a href="../report/index.html?key=${o.country_code}_${o.subregion1_code}">${o.subregion1_name}</a>`:3===t&&2===d?`<a href="../report/index.html?key=${o.country_code}">${o.country_name}</a>`:3===t&&3===d?`<a href="../report/index.html?key=${o.country_code}_${o.subregion1_code}">${o.subregion1_name}</a>`:3===t&&4===d?`<a href="../report/index.html?key=${o.country_code}_${o.subregion1_code}_${o.subregion2_code}">${o.subregion2_name}</a>`:"Unknown")(Number(o.aggregation_level));"World"!==c&&"Unknown"!==c&&(r+=`\n                    <tr>\n                        <td>Located in</td>\n                        <td>${c}</td>\n                    </tr>`),o.population&&(r+=`\n                    <tr>\n                        <td>Total Population</td>\n                        <td>${Number(o.population).toLocaleString()}</td>\n                    </tr>`);const s=a.filter(t=>t.cumulative_confirmed&&""!==t.cumulative_confirmed).slice(-1);s.length>0&&(r+=`\n                    <tr>\n                        <td>Total Confirmed Cases</td>\n                        <td>${Number(s[0].cumulative_confirmed).toLocaleString()}</td>\n                    </tr>`);const l=a.filter(t=>t.cumulative_deceased&&""!==t.cumulative_deceased).slice(-1);l.length>0&&(r+=`\n                    <tr>\n                        <td>Total Deceased Persons</td>\n                        <td>${Number(l[0].cumulative_deceased).toLocaleString()}</td>\n                    </tr>`);const m=a.filter(t=>t.cumulative_persons_vaccinated&&""!==t.cumulative_persons_vaccinated).slice(-1);m.length>0&&(r+=`\n                    <tr>\n                        <td>Total Vaccinated Persons</td>\n                        <td>${Number(m[0].cumulative_persons_vaccinated).toLocaleString()}</td>\n                    </tr>`),notNull=((t,e)=>parseInt(t[e])||null);const u=a.filter(t=>["new_confirmed","cumulative_confirmed"].some(e=>notNull(t,e))).slice(0,1);u.length>0&&(r+=`<tr><td>First Confirmed Case</td><td>${u[0].date}</td></tr>`);const g=a.filter(t=>["new_deceased","cumulative_deceased"].some(e=>notNull(t,e))).slice(0,1);g.length>0&&(r+=`<tr><td>First Deceased Person</td><td>${g[0].date}</td></tr>`);let p="";p+=`<a href="${CURRENT_OPTIONS["data-url"]}/v3/location/${n}.csv" target="_blank">\n                    <img src="../static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                </a>`,o.wikidata_id&&(p+=`<a href="https://www.wikidata.org/wiki/${o.wikidata_id}" target="_blank">\n                        <img src="../static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),o.datacommons_id&&(p+=`<a href="https://datacommons.org/place?dcid=${o.datacommons_id}" target="_blank">\n                        <img src="../static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),o.openstreetmap_id&&(p+=`<a href="https://www.openstreetmap.org/relation/${o.openstreetmap_id}" target="_blank">\n                        <img src="../static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),r+=`<tr><td>Related Links</td><td>${p}</td></tr>`,i.innerHTML=r,i.parentElement.style.visibility="visible"}();</script>
+    <script async>!async function(){const t=["wikidata_id","datacommons_id","openstreetmap_id"],e=document.currentScript.parentElement,n=new URLSearchParams(location.search).get("key");let a=await loadLocationData(n);if(a.filter(e=>t.some(t=>e[t]&&""!==e[t])).length<1)return console.error("Not enough records found for columns:",t),void(e.style.display="none");const o=attachElement("table",{className:"fullwidth"},e,prepend=!0);o.style.tableLayout="fixed";const i=a[0],r=(t=>0===t?i.country_name:1===t?i.subregion1_name:2===t?i.subregion2_name:3===t?i.locality_name:"Unknown")(Number(i.aggregation_level));let d=`<tr style="height: 2em;"><th colspan=2><span class="centered">${r}</span></th></tr>`;window.locationLabel=r;d+=`\n                <tr>\n                    <td>Aggregation Level</td>\n                    <td>${(t=>0===t?"Country":1===t?"Administrative Level 1":2===t?"Administrative Level 2":3===t?"Locality":"Unknown")(Number(i.aggregation_level))}</td>\n                </tr>`;const l=n.split("_").length,c=(t=>0===t?"World":1===t?`<a href="../../report/index.html?key=${i.country_code}">${i.country_name}</a>`:2===t?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&2===l?`<a href="../../report/index.html?key=${i.country_code}">${i.country_name}</a>`:3===t&&3===l?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}">${i.subregion1_name}</a>`:3===t&&4===l?`<a href="../../report/index.html?key=${i.country_code}_${i.subregion1_code}_${i.subregion2_code}">${i.subregion2_name}</a>`:"Unknown")(Number(i.aggregation_level));"World"!==c&&"Unknown"!==c&&(d+=`\n                    <tr>\n                        <td>Located in</td>\n                        <td>${c}</td>\n                    </tr>`),i.population&&(d+=`\n                    <tr>\n                        <td>Total Population</td>\n                        <td>${Number(i.population).toLocaleString()}</td>\n                    </tr>`);const s=a.filter(t=>t.cumulative_confirmed&&""!==t.cumulative_confirmed).slice(-1);s.length>0&&(d+=`\n                    <tr>\n                        <td>Total Confirmed Cases</td>\n                        <td>${Number(s[0].cumulative_confirmed).toLocaleString()}</td>\n                    </tr>`);const m=a.filter(t=>t.cumulative_deceased&&""!==t.cumulative_deceased).slice(-1);m.length>0&&(d+=`\n                    <tr>\n                        <td>Total Deceased Persons</td>\n                        <td>${Number(m[0].cumulative_deceased).toLocaleString()}</td>\n                    </tr>`);const u=a.filter(t=>t.cumulative_persons_vaccinated&&""!==t.cumulative_persons_vaccinated).slice(-1);u.length>0&&(d+=`\n                    <tr>\n                        <td>Total Vaccinated Persons</td>\n                        <td>${Number(u[0].cumulative_persons_vaccinated).toLocaleString()}</td>\n                    </tr>`),notNull=((t,e)=>parseInt(t[e])||null);const g=a.filter(t=>["new_confirmed","cumulative_confirmed"].some(e=>notNull(t,e))).slice(0,1);g.length>0&&(d+=`<tr><td>First Confirmed Case</td><td>${g[0].date}</td></tr>`);const _=a.filter(t=>["new_deceased","cumulative_deceased"].some(e=>notNull(t,e))).slice(0,1);_.length>0&&(d+=`<tr><td>First Deceased Person</td><td>${_[0].date}</td></tr>`);let p="";p+=`<a style="text-decoration: none;" href="${CURRENT_OPTIONS["data-url"]}/v3/location/${n}.csv" target="_blank">\n                    <img src="../../static/csv-icon.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                </a>`,i.wikidata_id&&(p+=`<a style="text-decoration: none;" href="https://www.wikidata.org/wiki/${i.wikidata_id}" target="_blank">\n                        <img src="../../static/wikipedia.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.datacommons_id&&(p+=`<a style="text-decoration: none;" href="https://datacommons.org/place?dcid=${i.datacommons_id}" target="_blank">\n                        <img src="../../static/datacommons.png" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),i.openstreetmap_id&&(p+=`<a style="text-decoration: none;" href="https://www.openstreetmap.org/relation/${i.openstreetmap_id}" target="_blank">\n                        <img src="../../static/openstreetmap.svg" width=32 height=32 style="padding:8px 8px 0 0;" />\n                    </a>`),d+=`<tr><td>Related Links</td><td>${p}</td></tr>`,o.innerHTML=d,o.parentElement.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="partial-vaccinations" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Computed as the count of persons which have received at least one dose of a COVID-19 vaccine
     </p>
     <div class="spacer"></div>
@@ -103,7 +110,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="confirmed-cases-100k" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Computed using a 14-day count of cases per 100,000 persons
     </p>
     <div class="spacer"></div>
@@ -183,7 +190,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="deceased-persons" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Mortality rate is computed using a 14-day moving average
     </p>
     <div class="spacer"></div>
@@ -194,7 +201,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="active-cases" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Active cases are estimated as the 14-day rolling sum of cases
     </p>
     <div class="spacer"></div>
@@ -205,7 +212,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Positivity rate is computed using a 7-day moving average
     </p>
     <div class="spacer"></div>
@@ -216,7 +223,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Infection rates are computed as the 14-day count of cases per 1,000 persons
     </p>
     <div class="spacer"></div>
@@ -358,7 +365,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Active cases are estimated as the 14-day count of cases
     </p>
     <div class="spacer"></div>
@@ -369,7 +376,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div id="age-stratified-active-cases" style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Computed as the 14-day count of deaths per 1,000 persons
     </p>
     <div class="spacer"></div>
@@ -540,7 +547,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Data from <a href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-mobility.md" target="_blank">
             Google's Mobility Reports
         </a>
@@ -553,7 +560,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Data from <a href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-search-trends.md" target="_blank">
             Google's Search Trends
         </a>
@@ -566,7 +573,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Data from <a href="https://github.com/GoogleCloudPlatform/covid-19-open-data/blob/main/docs/table-government-response.md" target="_blank">
             Oxford's Government Response Dataset
         </a>
@@ -579,7 +586,7 @@
 
         <!-- Wrap the whole widget into a DIV -->
 <div style="visibility: hidden;">
-    <p style="text-align: end; font-size: small;">
+    <p class="chart-footer">
         Data from <a href="https://www.ncei.noaa.gov" target="_blank">NOAA</a>
     </p>
     <div class="spacer"></div>
@@ -596,6 +603,49 @@
     <script async>!async function(){const t=document.currentScript.parentElement,e=new URLSearchParams(location.search).get("key");let a=await loadLocationData(e);if(a.length<1)return console.error("Not enough records found for columns:",columns),void(t.style.display="none");const n=attachElement("details",{},root=t,prepend=!0),o=(attachElement("summary",{innerHTML:"Show the latest data for this location"},n),attachElement("table",{className:"fullwidth"},n));o.style.tableLayout="fixed";const l=a.slice(-1)[0];let s='<tr><th colspan=2><span class="centered">Latest Location Data</span></th></tr>';Object.keys(l).forEach(t=>{const e=a.filter(e=>e[t]&&""!==e[t]).slice(-1)[0]||{};e[t]&&(s+=`<tr><td>${t}</td><td>${e[t]}</td></tr>`)}),o.innerHTML=s,n.parentElement.style.visibility="visible"}();</script>
 </div>
     </main>
+
+    <!-- Footer with links -->
+    <footer class="glue-footer glue-mod-spacer-3-top">
+    <section class="glue-footer__global">
+        <div class="glue-footer__logo">
+            <a href="https://www.google.com" title="Google">
+                <svg role="img" aria-hidden="true" class="glue-footer__logo-img">
+                    <use xlink:href="../glue/glue-icons.svg#google-solid-logo"/>
+                </svg>
+            </a>
+        </div>
+
+        <ul class="glue-footer__global-links glue-no-bullet">
+            <li class="glue-footer__global-links-list-item">
+                <a class="glue-footer__link" href="https://goo.gle/covid-19-open-data">
+                    Dataset
+                </a>
+            </li>
+
+            <li class="glue-footer__global-links-list-item">
+                <a class="glue-footer__link" href="https://policies.google.com/privacy">
+                    Privacy
+                </a>
+            </li>
+
+            <li class="glue-footer__global-links-list-item">
+                <a class="glue-footer__link" href="https://policies.google.com/terms">
+                    Terms
+                </a>
+            </li>
+        </ul>
+
+        <ul class="glue-footer__global-links glue-footer__global-links--extra glue-no-bullet">
+            <li class="glue-footer__global-links-list-item glue-footer__global-links-list-item--extra">
+                <a class="glue-footer__link false" href="https://github.com/open-covid-19/explorer.git">
+                    Visualization Code
+                </a>
+            </li>
+        </ul>
+
+
+    </section>
+</footer>
 
     <!-- Load analytics at the end of the page -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>

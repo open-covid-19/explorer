@@ -191,8 +191,7 @@ function mapToNumeric(records, columns, positive = true) {
 }
 
 function chartLabel(title) {
-    const locationName = document.querySelector('#location-title').innerText;
-    return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${locationName}` : '');
+    return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${window.locationLabel}` : '');
 }
 
 function mergeAgeBins(records, columnPrefix) {
