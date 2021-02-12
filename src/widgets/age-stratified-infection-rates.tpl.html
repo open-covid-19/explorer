@@ -122,6 +122,12 @@
                 return;
             }
 
+            // Compute a linear color scale
+            const rgb0 = [244, 244, 24];
+            const rgb1 = [12, 122, 244];
+            const ageBucketCount = Object.keys(data[0]).length - 1;
+            const colors = Array.from(colorScaleGenerator(rgb0, rgb1, ageBucketCount));
+
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, true);
@@ -130,8 +136,8 @@
                 title: chartLabel(title),
                 curveType: 'function',
                 legend: { position: 'in' },
-                colors: undefined,  // automatic from material theme
                 interpolateNulls: true,
+                colors: colors,
             }));
 
             // Unhide element
