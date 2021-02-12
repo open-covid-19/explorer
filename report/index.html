@@ -345,6 +345,12 @@
                 return;
             }
 
+            // Compute a linear color scale
+            const rgb0 = [244, 244, 24];
+            const rgb1 = [12, 122, 244];
+            const ageBucketCount = Object.keys(data[0]).length - 1;
+            const colors = Array.from(colorScaleGenerator(rgb0, rgb1, ageBucketCount));
+
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, true);
@@ -353,8 +359,8 @@
                 title: chartLabel(title),
                 curveType: 'function',
                 legend: { position: 'in' },
-                colors: undefined,  // automatic from material theme
                 interpolateNulls: true,
+                colors: colors,
             }));
 
             // Unhide element
@@ -371,7 +377,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],n=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);const t=["age_bin_0","new_confirmed_age_0"];if(i.filter(e=>t.every(n=>e[n]&&""!==e[n])).length<34)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const r=e.filter(e=>!e.startsWith("age_bin_"));i=mapToNumeric(i,r,!0);const _=e.filter(e=>e.startsWith("new_confirmed_age_")),o=new Set(filterDataIndices(i,14,_));i=i.filter((e,n)=>o.has(n)).filter(n=>e.some(e=>!Number.isNaN(n[e])));const c=(i=mergeAgeBins(i,"new_confirmed")).reduce((n,a)=>(e.forEach(e=>{const i=`age_bin_${e.split("_").slice(-1)[0]}`;a[i]&&(n[e]=a[i])}),n),{}),s=i.map((n,a)=>{const t={Date:n.date},r=Math.max(0,a-14);return e.forEach(e=>{const n=c[e];if(!n)return;const _=n.endsWith("-")?n.replace("-","+"):n;i.slice(r,a).map(n=>n[e]).every(e=>Number.isNaN(e))?t[_]=Number.NaN:t[_]=i.slice(r,a).reduce((n,a)=>n+(Number.isNaN(a[e])?0:a[e]),0)}),t}).slice(14);await loadGoogleCharts(["corechart"]);const l=attachElement("div",{},n,prepend=!0);new google.visualization.AreaChart(l).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Estimated active cases by age group"),isStacked:!0,curveType:"function",interpolateNulls:!0,legend:{position:"in"},colors:void 0})),n.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
+    <script async>!async function(){const e=["age_bin_0","age_bin_1","age_bin_2","age_bin_3","age_bin_4","age_bin_5","age_bin_6","age_bin_7","age_bin_8","age_bin_9","new_confirmed_age_0","new_confirmed_age_1","new_confirmed_age_2","new_confirmed_age_3","new_confirmed_age_4","new_confirmed_age_5","new_confirmed_age_6","new_confirmed_age_7","new_confirmed_age_8","new_confirmed_age_9"],n=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);const t=["age_bin_0","new_confirmed_age_0"];if(i.filter(e=>t.every(n=>e[n]&&""!==e[n])).length<34)return console.error("Not enough records found for columns:",e),void(n.style.display="none");const r=e.filter(e=>!e.startsWith("age_bin_"));i=mapToNumeric(i,r,!0);const o=e.filter(e=>e.startsWith("new_confirmed_age_")),_=new Set(filterDataIndices(i,14,o));i=i.filter((e,n)=>_.has(n)).filter(n=>e.some(e=>!Number.isNaN(n[e])));const c=(i=mergeAgeBins(i,"new_confirmed")).reduce((n,a)=>(e.forEach(e=>{const i=`age_bin_${e.split("_").slice(-1)[0]}`;a[i]&&(n[e]=a[i])}),n),{}),s=i.map((n,a)=>{const t={Date:n.date},r=Math.max(0,a-14);return e.forEach(e=>{const n=c[e];if(!n)return;const o=n.endsWith("-")?n.replace("-","+"):n;i.slice(r,a).map(n=>n[e]).every(e=>Number.isNaN(e))?t[o]=Number.NaN:t[o]=i.slice(r,a).reduce((n,a)=>n+(Number.isNaN(a[e])?0:a[e]),0)}),t}).slice(14),l=Object.keys(s[0]).length-1;await loadGoogleCharts(["corechart"]);const g=attachElement("div",{},n,prepend=!0);new google.visualization.AreaChart(g).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Estimated active cases by age group"),isStacked:!0,curveType:"function",interpolateNulls:!0,legend:{position:"in"},colors:Array.from(colorScaleGenerator([244,244,24],[12,122,244],l))})),n.style.visibility="visible",document.querySelector("#active-cases").style.display="none"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
@@ -511,6 +517,11 @@
                 return;
             }
 
+            // Compute a linear color scale
+            const rgb0 = [244, 244, 24];
+            const rgb1 = [12, 122, 244];
+            const ageBucketCount = Object.keys(data[0]).length - 1;
+
             // Make sure Google Charts loads and attach element to page
             await loadGoogleCharts(['corechart']);
             const elem = attachElement('div', {}, rootElement, true);
@@ -519,7 +530,7 @@
                 title: chartLabel(title),
                 curveType: 'function',
                 legend: { position: 'in' },
-                colors: undefined,  // automatic from material theme
+                colors: Array.from(colorScaleGenerator(rgb0, rgb1, ageBucketCount)),
                 interpolateNulls: true,
             }));
 

@@ -225,3 +225,23 @@ function mergeAgeBins(records, columnPrefix) {
         return row;
     });
 }
+
+function colorScaleValue(rgb0, rgb1, val) {
+    const val_ = 1 - val;
+    const [r0, g0, b0] = rgb0;
+    const [r1, g1, b1] = rgb1;
+    const [r, g, b] = [
+        Math.round(r0 * val_ + r1 * val),
+        Math.round(g0 * val_ + g1 * val),
+        Math.round(b0 * val_ + b1 * val),
+    ];
+    const [rh, gh, bh] = [r, g, b].map(c => ('00' + c.toString(16)).slice(-2));
+    return '#' + [rh, gh, bh].join('');
+}
+
+function *colorScaleGenerator(rgb0, rgb1, size) {
+    for (let i = 0; i < size - 1; i++) {
+        yield colorScaleValue(rgb0, rgb1, i / (size - 1));
+    }
+    yield colorScaleValue(rgb0, rgb1, 1);
+}
