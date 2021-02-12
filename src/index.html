@@ -18,6 +18,47 @@
     <div class="spacer"></div>
 
     <main>
+        <p>
+            This repository contains datasets of daily time-series data related to COVID-19 for over 20,000
+            distinct locations around the world. The data is at the spatial resolution of states/provinces for
+            most regions and at county/municipality resolution for many countries such as Argentina, Brazil,
+            Chile, Colombia, Czech Republic, Mexico, Netherlands, Peru, United Kingdom, and USA. All regions are
+            assigned a unique location key, which resolves discrepancies between ISO / NUTS / FIPS codes, etc.
+            The different aggregation levels are:
+        </p>
+        <ul>
+            <li>0: Country</li>
+            <li>1: Province, state, or local equivalent</li>
+            <li>2: Municipality, county, or local equivalent</li>
+            <li>3: Locality which may not follow strict hierarchical order, such as "city" or "nursing homes in X
+                location"</li>
+        </ul>
+        <p>There are multiple types of data:</p>
+        <ul>
+            <li>
+                Outcome data <span class="mono">Y(i,t)</span>, such as cases, tests, hospitalizations, deaths and
+                recoveries, for region <span class="mono">i</span> and time <span class="mono">t</span>
+            </li>
+            <li>
+                Static covariate data <span class="mono">X(i)</span>, such as population size, health statistics,
+                economic indicators,
+                geographic boundaries
+            </li>
+            <li>
+                Dynamic covariate data <span class="mono">X(i,t)</span>, such as mobility, search trends, weather, and
+                government
+                interventions
+            </li>
+        </ul>
+        <p>
+            The data is drawn from multiple sources, as listed below, and stored in separate
+            tables as CSV files grouped by context, which can be easily merged due to the use of consistent
+            geographic (and temporal) keys as it is done for the main table.
+        </p>
+
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+
         <table>
             <thead>
                 <tr>
