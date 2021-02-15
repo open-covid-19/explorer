@@ -105,7 +105,15 @@
                 return acc;
             }, {});
 
-            const ageBins = Object.keys(latest).filter(col => col.startsWith('age_bin_'));
+            // Ensure the age bins are monotonically increasing
+            const ageBins = Object.keys(latest)
+                .filter(col => col.startsWith('age_bin_'))
+                .filter((col, idx, arr) => {
+                    if (idx === arr.length - 1) return true;
+                    const [lo0, hi0] = latest[col].replace('+', '').split('-').map(Number);
+                    const [lo1, hi1] = latest[arr[idx + 1]].replace('+', '').split('-').map(Number);
+                    return hi0 > 0 && hi0 < lo1;
+                });
             const data = ageBins.map((label, idx) => {
                 const [lo, hi] = latest[label].split('-');
                 const mortalityRate = latest[`cumulative_deceased_age_${idx}`] /

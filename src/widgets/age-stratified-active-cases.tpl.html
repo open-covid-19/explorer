@@ -64,11 +64,32 @@
             // Special case: merge 80-90 and 90-100 and 100+
             locationData = mergeAgeBins(locationData, 'new_confirmed');
 
+            // Get the latest data for each column
+            const latest = locationData.reduce((acc, row) => {
+                const recordColumns = Object.keys(row);
+                columns.forEach(col => {
+                    if (recordColumns.includes(col) && row[col] !== '' && !Number.isNaN(row[col])) {
+                        acc[col] = row[col];
+                    }
+                });
+                return acc;
+            }, {});
+
+            // Ensure the age bins are monotonically increasing
+            const ageBins = Object.keys(latest)
+                .filter(col => col.startsWith('age_bin_'))
+                .filter((col, idx, arr) => {
+                    if (idx === arr.length - 1) return true;
+                    const [lo0, hi0] = latest[col].replace('+', '').split('-').map(Number);
+                    const [lo1, hi1] = latest[arr[idx + 1]].replace('+', '').split('-').map(Number);
+                    return hi0 > 0 && hi0 < lo1;
+                });
+
             // Map from new_confirmed_x to corresponding age bin
             const ageBinMap = locationData.reduce((acc, row) => {
-                columns.forEach(col => {
+                columns.filter(col => !col.startsWith('age_bin_')).forEach(col => {
                     const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
-                    if (row[binColumn]) acc[col] = row[binColumn];
+                    if (row[binColumn] && ageBins.includes(binColumn)) acc[col] = row[binColumn];
                 });
                 return acc;
             }, {});
@@ -91,6 +112,7 @@
                 });
                 return record;
             }).slice(rollingWindowSize);
+            console.log(data);
 
             // Compute a linear color scale
             const rgb0 = [244, 244, 24];
