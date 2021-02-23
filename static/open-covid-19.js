@@ -226,6 +226,31 @@ function mergeAgeBins(records, columnPrefix) {
     });
 }
 
+function ageBinAdapterBuilder(dataAgeBins, populationBinsMap) {
+    // Convert the population bins to 1-year bins as an intermediate step
+    const popest = [];
+    Object.keys(populationBinsMap).sort((a, b) => a - b).forEach(popbin => {
+        const popval = populationBinsMap[popbin];
+        const [lo, hi] = popbin.substr(-5).split('_', 2).map(x => parseInt(x));
+        if (Number.isNaN(hi)) {
+            popest.push(popval);
+        } else {
+            for (let i = lo; i <= hi; i++) popest.push(popval / (hi - lo));
+        }
+    });
+
+    // Use the 1-year bins to estimate population between each sub-range
+    return dataAgeBins.reduce((acc, agebin) => {
+        const [lo, hi] = agebin.split('-', 2).map(x => parseInt(x));
+        if (Number.isNaN(hi)) {
+            acc[agebin] = popest.slice(lo).reduce((tot, x) => tot + x, 0);
+        } else {
+            acc[agebin] = popest.slice(lo, hi + 1).reduce((tot, x) => tot + x, 0);
+        }
+        return acc;
+    }, {});
+}
+
 function colorScaleValue(rgb0, rgb1, val) {
     const val_ = 1 - val;
     const [r0, g0, b0] = rgb0;
