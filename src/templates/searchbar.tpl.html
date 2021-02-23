@@ -32,7 +32,7 @@
             let label = '';
             switch (parseInt(row.aggregation_level)) {
                 case 0:
-                    label = `<div>${row.country_name} <span class="mono">${row.location_key}</span</div>`
+                    label = `<div>${row.country_name} <span class="mono">${row.location_key}</span></div>`
                     return { value: row.location_key, label: label, match: searchify(label) };
                 case 1:
                     label = `<div>${row.subregion1_name}, ${row.country_name} <span class="mono">${row.location_key}</span></div>`;

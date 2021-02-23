@@ -73,54 +73,65 @@
             // Special case: merge 80-90 and 90-100 and 100+
             locationData = mergeAgeBins(locationData, 'new_deceased');
 
-            // Keep only the columns where the age bin matches what's in the population bucket
-            const getAgeBins = row =>
-                Object.keys(row).filter(col => col.startsWith('age_bin_')).map(col => row[col])
-            const ageBinPopulationMap = getAgeBins(locationData.slice(-7)[0]).reduce((agg, bin) => {
-                const [lo, hi] = bin.split('-', 2).map(x => parseInt(x));
-                if (lo % 10 === 0 && (hi === lo + 9 || hi === lo + 10)) {
-                    agg[bin] = `population_age_${lo}_${lo + 9}`;
-                } else if ((lo === 80 || lo === 90) && Number.isNaN(hi)) {
-                    agg[bin] = `population_age_${lo}_and_older`;
-                }
-                return agg;
+            // Get the latest data for each column
+            const latest = locationData.reduce((acc, row) => {
+                const recordColumns = Object.keys(row);
+                columns.forEach(col => {
+                    if (recordColumns.includes(col) && row[col] !== '' && !Number.isNaN(row[col])) {
+                        acc[col] = row[col];
+                    }
+                });
+                return acc;
             }, {});
+
+            // Ensure the age bins are monotonically increasing
+            const ageBins = Object.keys(latest)
+                .filter(col => col.startsWith('age_bin_'))
+                .filter((col, idx, arr) => {
+                    if (idx === arr.length - 1) return true;
+                    const [lo0, hi0] = latest[col].replace('+', '').split('-').map(Number);
+                    const [lo1, hi1] = latest[arr[idx + 1]].replace('+', '').split('-').map(Number);
+                    return hi0 > 0 && hi0 < lo1;
+                });
 
             // Map from new_confirmed_x to corresponding age bin XX-YY
             const ageBinConfirmedMap = locationData.reduce((acc, row) => {
                 columns.forEach(col => {
                     const binColumn = `age_bin_${col.split('_').slice(-1)[0]}`;
-                    if (row[binColumn]) acc[col] = row[binColumn];
+                    if (row[binColumn] && ageBins.includes(binColumn)) acc[col] = row[binColumn];
                 });
                 return acc;
             }, {});
 
+            // List of age bins found in the data
+            const ageBinConfirmedList = Object.keys(ageBinConfirmedMap).map(col => ageBinConfirmedMap[col]);
+
+            // Map from population_age_xx_yy to corresponding population estimate
+            const populationAgeBins = Object.keys(locationData[0])
+                .filter(col => col.startsWith('population_age_'))
+                .reduce((acc, col) => Object.assign(acc, { [col]: locationData[0][col] }), {});
+
+            // Build the adapter to get the population estimate for any age bin
+            const ageBinConfirmedAdapter = ageBinAdapterBuilder(ageBinConfirmedList, populationAgeBins);
+
             // Compute a rolling sum to estimate active cases and divide by age band population
             const data = locationData.map((row, idx) => {
                 const record = { 'Date': row.date };
-                const start = Math.max(0, idx - rollingWindowSize);
-                confirmedColumns.forEach(col => {
-                    const ageBin = ageBinConfirmedMap[col];
-                    if (!ageBin || !ageBinPopulationMap[ageBin]) return;
-                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
+                const startIdx = Math.max(0, idx - rollingWindowSize);
 
-                    if (row[col] && ageBinPopulationMap[ageBin]) {
-                        const rollingSum = locationData.slice(start, idx)
-                            .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
-                        record[binLabel] = 1_000 * rollingSum / row[ageBinPopulationMap[ageBin]];
-                    } else if (ageBinPopulationMap[ageBin]) {
-                        record[binLabel] = Number.NaN;
-                    }
+                confirmedColumns.forEach(col => {
+                    if (!(col in ageBinConfirmedMap)) return;
+                    const ageBin = ageBinConfirmedMap[col];
+                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
+                    const binPopulation = ageBinConfirmedAdapter[ageBin];
+
+                    const rollingSum = locationData.slice(startIdx, idx)
+                        .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
+
+                    record[binLabel] = 1_000 * rollingSum / binPopulation;
                 });
                 return record;
             }).slice(rollingWindowSize);
-
-            // Early exit: not enough bins mapped to population
-            if (!data.every(row => Object.keys(row).length > 1)) {
-                console.error('Age bins for cases do not match population buckets:', ageBinConfirmedMap);
-                rootElement.style.display = 'none';
-                return;
-            }
 
             // Compute a linear color scale
             const rgb0 = [244, 244, 24];
