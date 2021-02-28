@@ -62,7 +62,7 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Special case: merge 80-90 and 90-100 and 100+
-            locationData = mergeAgeBins(locationData, 'new_confirmed');
+            locationData = mergeAgeBins(locationData);
 
             // Get the latest data for each column
             const latest = locationData.reduce((acc, row) => {
@@ -97,22 +97,19 @@
             // Compute a rolling sum to estimate active cases
             const data = locationData.map((row, idx) => {
                 const record = { 'Date': row.date };
-                const start = Math.max(0, idx - rollingWindowSize);
-                columns.forEach(col => {
+                columns.filter(col => ageBinMap[col]).forEach(col => {
                     const ageBin = ageBinMap[col];
-                    if (!ageBin) return;
                     const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
-                    const subset = locationData.slice(start, idx).map(x => x[col]);
-                    if (subset.every(x => Number.isNaN(x))) {
-                        record[binLabel] = Number.NaN;
-                    } else {
-                        record[binLabel] = locationData.slice(start, idx)
-                            .reduce((total, row) => total + (Number.isNaN(row[col]) ? 0 : row[col]), 0);
-                    }
+                    record[binLabel] = row[col];
                 });
                 return record;
+            }).rolling(rollingWindowSize).map(rows => {
+                return Object.keys(rows.slice(-1)[0]).reduce((record, col) => {
+                    if (col === 'Date') record[col] = rows.slice(-1)[0][col];
+                    else record[col] = rows.map(x => x[col]).sum()
+                    return record;
+                }, {});
             }).slice(rollingWindowSize);
-            console.log(data);
 
             // Compute a linear color scale
             const rgb0 = [244, 244, 24];

@@ -35,4 +35,25 @@
         return elem;
     };
 
+    Array.prototype.roll = function* roll(windowSize) {
+        for (let idx = 1; idx <= this.length; idx++) {
+            const start = Math.max(0, idx - windowSize);
+            yield this.slice(start, idx);
+        }
+    };
+
+    Array.prototype.sum = function sum() {
+        if (this.every(x => Number.isNaN(x))) return Number.NaN;
+        return this.reduce((a, b) => a + (Number.isNaN(b) ? 0 : b), 0);
+    };
+
+    Array.prototype.rolling = function rolling(windowSize) {
+        const generator = this.roll(windowSize);
+        return {
+            map: (func) => Array.from(generator).map(func),
+            sum: () => Array.from(generator).map(iter => iter.sum()),
+            avg: () => Array.from(generator).map(iter => iter.sum() / iter.length),
+        };
+    };
+
 })();

@@ -83,7 +83,7 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Special case: merge 80-90 and 90-100 and 100+
-            locationData = mergeAgeBins(locationData, 'new_deceased');
+            locationData = mergeAgeBins(locationData);
 
             // Get the latest data for each column
             const latest = locationData.reduce((acc, row) => {
@@ -122,28 +122,34 @@
             const populationAgeBins = Object.keys(locationData[0])
                 .filter(col => col.startsWith('population_age_'))
                 .reduce((acc, col) => Object.assign(acc, { [col]: locationData[0][col] }), {});
+            console.log(populationAgeBins);
 
             // Build the adapter to get the population estimate for any age bin
             const ageBinDeceasedAdapter = ageBinAdapterBuilder(ageBinDeceasedList, populationAgeBins);
 
-            // Use a moving average for the mortality rate to avoid spikes
+            // Compute the mortality rate per 100K
             const data = locationData.map((row, idx) => {
                 const record = { 'Date': row.date };
-                const startIdx = Math.max(0, idx - rollingWindowSize);
 
-                deceasedColumns.forEach(col => {
-                    if (!(col in ageBinDeceasedMap)) return;
+                deceasedColumns.filter(col => col in ageBinDeceasedMap).forEach(col => {
+                    const value = Number.isNaN(row[col]) ? 0 : row[col];
+
                     const ageBin = ageBinDeceasedMap[col];
-                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
                     const binPopulation = ageBinDeceasedAdapter[ageBin];
 
-                    const rollingSum = locationData.slice(startIdx, idx)
-                        .reduce((total, row) => total + row[col], 0);
-
-                    record[binLabel] = 100_000 * rollingSum / binPopulation;
-                })
+                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
+                    record[binLabel] = 100_000 * value / binPopulation;
+                });
 
                 return record;
+
+            }).rolling(rollingWindowSize).map(rows => {
+                // Use a moving average for the mortality rate to avoid spikes
+                return Object.keys(rows.slice(-1)[0]).reduce((record, col) => {
+                    if (col === 'Date') record[col] = rows.slice(-1)[0][col];
+                    else record[col] = rows.map(x => x[col]).sum()
+                    return record;
+                }, {});
             }).slice(rollingWindowSize);
 
             // Compute a linear color scale

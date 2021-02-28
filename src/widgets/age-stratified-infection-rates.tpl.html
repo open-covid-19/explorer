@@ -71,7 +71,7 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Special case: merge 80-90 and 90-100 and 100+
-            locationData = mergeAgeBins(locationData, 'new_deceased');
+            locationData = mergeAgeBins(locationData);
 
             // Get the latest data for each column
             const latest = locationData.reduce((acc, row) => {
@@ -115,22 +115,26 @@
             const ageBinConfirmedAdapter = ageBinAdapterBuilder(ageBinConfirmedList, populationAgeBins);
 
             // Compute a rolling sum to estimate active cases and divide by age band population
-            const data = locationData.map((row, idx) => {
+            const data = locationData.map(row => {
                 const record = { 'Date': row.date };
-                const startIdx = Math.max(0, idx - rollingWindowSize);
 
-                confirmedColumns.forEach(col => {
-                    if (!(col in ageBinConfirmedMap)) return;
+                confirmedColumns.filter(col => col in ageBinConfirmedMap).forEach(col => {
+                    const value = Number.isNaN(row[col]) ? 0 : row[col];
+
                     const ageBin = ageBinConfirmedMap[col];
-                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
                     const binPopulation = ageBinConfirmedAdapter[ageBin];
 
-                    const rollingSum = locationData.slice(startIdx, idx)
-                        .reduce((total, row) => total + (parseInt(row[col]) || 0), 0);
-
-                    record[binLabel] = 1_000 * rollingSum / binPopulation;
+                    const binLabel = ageBin.endsWith('-') ? ageBin.replace('-', '+') : ageBin;
+                    record[binLabel] = 1_000 * value / binPopulation;
                 });
                 return record;
+
+            }).rolling(rollingWindowSize).map(rows => {
+                return Object.keys(rows.slice(-1)[0]).reduce((record, col) => {
+                    if (col === 'Date') record[col] = rows.slice(-1)[0][col];
+                    else record[col] = rows.map(x => x[col]).sum()
+                    return record;
+                }, {});
             }).slice(rollingWindowSize);
 
             // Compute a linear color scale

@@ -38,11 +38,9 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Put the confirmed cases from the state data into a table and draw it in the chart
-            const data = locationData.map((row, idx) => {
-                const start = Math.max(0, idx - rollingWindowSize);
-                const rollingSum = locationData.slice(start, idx).reduce((total, row) =>
-                    total + (Number.isNaN(row.new_confirmed) ? 0 : row.new_confirmed), 0);
-                return { ['Date']: row.date, ['Estimated Active Cases']: rollingSum };
+            const data = locationData.rolling(rollingWindowSize).map(rows => {
+                const rollingSum = rows.map(x => x.new_confirmed).sum();
+                return { ['Date']: rows.slice(-1)[0].date, ['Estimated Active Cases']: rollingSum };
             }).slice(rollingWindowSize);
 
             // Make sure Google Charts loads and attach element to page

@@ -194,8 +194,8 @@ function chartLabel(title) {
     return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${window.locationLabel}` : '');
 }
 
-function mergeAgeBins(records, columnPrefix) {
-    const mergeBins = ['80-89', '80-90', '90-99', '90-100', '90-', '100-'];
+function mergeAgeBins(records) {
+    const mergeBins = ['80-', '80-89', '80-90', '90-99', '90-100', '90-', '100-'];
 
     return records.map(row => {
         row = Object.assign({}, row);
@@ -205,23 +205,39 @@ function mergeAgeBins(records, columnPrefix) {
             .filter(col => col.startsWith('age_bin_'))
             .reduce((acc, col, idx) => Object.assign(acc, { [idx]: row[col] }), {});
 
-        // Early exit: age bins already contain 80-
-        if (Object.keys(ageBinsMap).map(idx => ageBinsMap[idx]).includes('80-')) return row;
+        // Early exit: no bins to merge
+        if (Object.keys(ageBinsMap).length === 0) return row;
+
+        // Enumerate the columns that are stratified by age
+        const stratifiedColumns = [...new Set(columns
+            .filter(col => col.match(/.+_age_\d$/))
+            .map(col => col.slice(0, -('_age_n'.length))))];
+
+        // Compute the corresponding indices for the stratified age bins
+        const mergeAgeBinIndices = Object.keys(ageBinsMap)
+            .filter(idx => mergeBins.includes(ageBinsMap[idx]))
+            .map(idx => Number(idx));
+
+        // Add up the totals for all merged age bins
+        const totalValues = stratifiedColumns.reduce((acc, col) =>
+            Object.assign(acc, { [col]: mergeAgeBinIndices.map(idx => row[`${col}_age_${idx}`]).sum() }), {});
 
         // Clear all age bins to be merged
-        const mergeAgeBinIndices = Object.keys(ageBinsMap)
-            .filter(idx => mergeBins.includes(ageBinsMap[idx]));
         mergeAgeBinIndices.forEach(idx => {
-            row[`age_bin_${idx}`] = '';
+            row[`age_bin_${idx}`] = Number.NaN;
+            stratifiedColumns.forEach(col => {
+                row[`${col}_age_${idx}`] = Number.NaN;
+            });
         });
 
-        // Merge the desired column as the sum of all merged bins
-        const replaceIndex = mergeAgeBinIndices[0];
-        row[`${columnPrefix}_age_${replaceIndex}`] = mergeAgeBinIndices.reduce((total, idx) =>
-            total + row[`${columnPrefix}_age_${idx}`], 0);
+        // Set the total for the lowest indexed bin
+        const replaceIndex = Math.min(...mergeAgeBinIndices);
+        stratifiedColumns.forEach(col => {
+            row[`${col}_age_${replaceIndex}`] = totalValues[col];
+        });
 
         // Add the new age bin to the record
-        row[`age_bin_${replaceIndex}`] = '80-';
+        row[`age_bin_${replaceIndex}`] = mergeBins[0];
         return row;
     });
 }
@@ -231,7 +247,7 @@ function ageBinAdapterBuilder(dataAgeBins, populationBinsMap) {
     const popest = [];
     Object.keys(populationBinsMap).sort((a, b) => a - b).forEach(popbin => {
         const popval = populationBinsMap[popbin];
-        const [lo, hi] = popbin.substr(-5).split('_', 2).map(x => parseInt(x));
+        const [lo, hi] = popbin.substr('population_age_'.length).split('_', 2).map(x => parseInt(x));
         if (Number.isNaN(hi)) {
             popest.push(popval);
         } else {

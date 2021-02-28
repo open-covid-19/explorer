@@ -38,39 +38,16 @@
                 .filter(row => columns.some(col => !Number.isNaN(row[col])));
 
             // Use a moving average for the positivity rate to avoid spikes
-            let cumulativeTests = 0;
-            const data = locationData.map((row, idx) => {
-                const record = {
-                    ['Date']: row.date,
-                    ['Tested Persons']: row.new_tested,
-                    ['Positivity Rate']: Number.NaN,
+            const data = locationData.rolling(rollingWindowSize).map(rows => {
+                const rollingSumNumerator = Math.max(0, rows.map(x => x.new_confirmed).sum());
+                const rollingSumDenominator = Math.max(1, rows.map(x => x.new_tested).sum());
+                const positivityRate = Math.min(1, rollingSumNumerator / rollingSumDenominator);
+
+                return {
+                    ['Date']: rows.slice(-1)[0].date,
+                    ['Tested Persons']: rows.slice(-1)[0].new_tested,
+                    ['Positivity Rate']: positivityRate,
                 };
-
-                // Increment cumulative count of deaths
-                cumulativeTests += Number.isNaN(row.new_tested) ? 0 : row.new_tested;
-
-                if (idx > rollingWindowSize) {
-
-                    const startIdx = Math.max(0, idx - rollingWindowSize);
-                    const rollingSumNumerator = locationData.slice(startIdx, idx)
-                        .reduce((total, row) => total + row.new_confirmed, 0);
-                    const rollingSumDenominator = locationData.slice(startIdx, idx)
-                        .reduce((total, row) => total + (row.new_tested || row.new_confirmed), 0);
-
-                    const positivityRate = Math.min(1, rollingSumNumerator / rollingSumDenominator);
-
-                    if (cumulativeTests < 100) {
-                        // Only compute positivity rate if there are at least 100 cumulative tests
-                        record['Positivity Rate'] = 0;
-                    } else if (positivityRate < 1) {
-                        // Avoid charting suspiciously high positivity rates
-                        record['Positivity Rate'] = positivityRate
-                    } else {
-                        record['Positivity Rate'] = Number.NaN;
-                    }
-                }
-
-                return record
             }).slice(rollingWindowSize);
 
             await loadGoogleCharts(['corechart']);
