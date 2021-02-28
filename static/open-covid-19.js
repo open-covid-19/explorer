@@ -209,18 +209,18 @@ function mergeAgeBins(records) {
         if (Object.keys(ageBinsMap).length === 0) return row;
 
         // Enumerate the columns that are stratified by age
-        const stratifiedColumns = columns
+        const stratifiedColumns = [...new Set(columns
             .filter(col => col.match(/.+_age_\d$/))
-            .map(col => col.slice(-('_age_n'.length)));
+            .map(col => col.slice(0, -('_age_n'.length))))];
 
         // Compute the corresponding indices for the stratified age bins
         const mergeAgeBinIndices = Object.keys(ageBinsMap)
-            .filter(idx => mergeBins.includes(ageBinsMap[idx]));
+            .filter(idx => mergeBins.includes(ageBinsMap[idx]))
+            .map(idx => Number(idx));
 
         // Add up the totals for all merged age bins
         const totalValues = stratifiedColumns.reduce((acc, col) =>
-            Object.assign(acc, { [col]: mergeAgeBinIndices.reduce((total, idx) =>
-                total + row[`${col}_age_${idx}`], 0) }), {});
+            Object.assign(acc, { [col]: mergeAgeBinIndices.map(idx => row[`${col}_age_${idx}`]).sum() }), {});
 
         // Clear all age bins to be merged
         mergeAgeBinIndices.forEach(idx => {
@@ -231,13 +231,13 @@ function mergeAgeBins(records) {
         });
 
         // Set the total for the lowest indexed bin
-        const replaceIndex = mergeAgeBinIndices[0];
+        const replaceIndex = Math.min(...mergeAgeBinIndices);
         stratifiedColumns.forEach(col => {
             row[`${col}_age_${replaceIndex}`] = totalValues[col];
         });
 
         // Add the new age bin to the record
-        row[`age_bin_${replaceIndex}`] = '80-';
+        row[`age_bin_${replaceIndex}`] = mergeBins[0];
         return row;
     });
 }
