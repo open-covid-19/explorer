@@ -19,12 +19,52 @@
 
     <main>
         <p>
-            This repository contains datasets of daily time-series data related to COVID-19 for over 20,000
-            distinct locations around the world. The data is at the spatial resolution of states/provinces for
-            most regions and at county/municipality resolution for many countries such as Argentina, Brazil,
-            Chile, Colombia, Czech Republic, Mexico, Netherlands, Peru, United Kingdom, and USA. All regions are
-            assigned a unique location key, which resolves discrepancies between ISO / NUTS / FIPS codes, etc.
-            The different aggregation levels are:
+            This repository contains the largest Covid-19 epidemiological database available in
+            addition to a powerful set of expansive covariates. It includes open sourced data with a
+            permissive license (enabling commercial use) relating to vaccinations, epidemiology,
+            hospitalizations, demographics, economy, geography, health, mobility, government
+            response, weather, and more. Moreover, the data merges daily time-series from hundreds
+            of data sources at a fine spatial resolution, containing over 20,000 locations and using
+            a consistent set of region keys.
+        </p>
+
+        <div style="border: 1px solid black; border-radius: 4px; margin: 1em 0; padding: 1em;">
+            <p class="centered">
+                For folks who want to <b style="color: red">jump right in</b>...
+            </p>
+
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/jiQAvsbaYNI"
+                style="margin-left: auto; margin-right: auto; display: block;" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+
+            <p>
+                For the research oriented - a data goldmine upon which to perform
+                <b>ML/AI forecasting, investigations</b> anchored to myriad covariates, and much
+                more.
+            </p>
+
+            <img style="width: 100%; height: auto" src="{{wwwroot}}/static/rt-chart.png" />
+
+            <p>
+                For policy makers - auto-magically generated data visualizations that express
+                thousand words (or <b>sentiments</b>) from anywhere in the world to aid in
+                governance.
+            </p>
+
+            <img style="width: 100%; height: auto" src="{{wwwroot}}/static/government-response-chart.png" />
+
+        </div>
+
+        <p>
+            Surface data anywhere from as high as country level down to ISO/NUTS /FIPS codes. The
+            different aggregation levels are:
         </p>
         <ul>
             <li>0: Country</li>
