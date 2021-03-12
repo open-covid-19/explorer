@@ -21,7 +21,7 @@
             let locationData = await loadLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
-            if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
+            if (locationData.filter(row => columns.every(col => row[col] !== null)).length < minRows) {
                 console.error('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;
