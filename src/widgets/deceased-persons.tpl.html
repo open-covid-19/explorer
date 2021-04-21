@@ -29,7 +29,7 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, true);
+            locationData = mapToNumeric(locationData, columns, false);
 
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData, rollingWindowSize * 2));

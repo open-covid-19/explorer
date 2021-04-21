@@ -29,8 +29,7 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, positive = true);
-
+            locationData = mapToNumeric(locationData, columns, positive = false);
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData, rollingWindowSize, ['new_tested']));
             locationData = locationData
@@ -39,9 +38,9 @@
 
             // Use a moving average for the positivity rate to avoid spikes
             const data = locationData.rolling(rollingWindowSize).map(rows => {
-                const rollingSumNumerator = Math.max(0, rows.map(x => x.new_confirmed).sum());
-                const rollingSumDenominator = Math.max(1, rows.map(x => x.new_tested).sum());
-                const positivityRate = Math.min(1, rollingSumNumerator / rollingSumDenominator);
+                const rollingSumNumerator = rows.map(x => x.new_confirmed).sum();
+                const rollingSumDenominator = rows.map(x => x.new_tested).sum();
+                const positivityRate = rollingSumNumerator / rollingSumDenominator;
 
                 return {
                     ['Date']: rows.slice(-1)[0].date,
