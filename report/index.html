@@ -105,7 +105,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["new_confirmed"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);if(i.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<20)return void(t.style.display="none");i=mapToNumeric(i,e,positive=!0);const n=new Set(filterDataIndices(i)),o=(i=i.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).map(e=>({Date:e.date,Cases:e.new_confirmed}));await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ColumnChart(r).draw(recordsToDataTable(o),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Confirmed cases"),colors:["#0277BD"]})),t.style.visibility="visible"}();</script>
+    <script async>!async function(){const e=["new_confirmed"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let i=await loadLocationData(a);if(i.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<20)return void(t.style.display="none");i=mapToNumeric(i,e,positive=!1);const n=new Set(filterDataIndices(i)),o=(i=i.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).map(e=>({Date:e.date,Cases:e.new_confirmed}));await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ColumnChart(r).draw(recordsToDataTable(o),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Confirmed cases"),colors:["#0277BD"]})),t.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
@@ -139,7 +139,7 @@
             }
 
             // Convert the relevant rows to numbers
-            locationData = mapToNumeric(locationData, columns, true);
+            locationData = mapToNumeric(locationData, columns, false);
 
             // Get rid of irrelevant data according to settings
             const indices = new Set(filterDataIndices(locationData, rollingWindowSize));
@@ -194,7 +194,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["new_confirmed","new_deceased"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let n=await loadLocationData(a);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,!0);const i=new Set(filterDataIndices(n,28)),o=(n=n.filter((e,t)=>i.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).rolling(14).map(e=>{const t=Math.max(0,e.map(e=>e.new_deceased).sum()),a=Math.max(1,e.map(e=>e.new_confirmed).sum()),n=Math.min(1,t/a);return{Date:e.slice(-1)[0].date,"Deceased Persons":e.slice(-1)[0].new_deceased,"Mortality Rate":n}}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(r).draw(recordsToDataTable(o),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Deceased persons and mortality rate"),colors:["#D32F2F","#757575"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:.5}}}})),t.style.visibility="visible"}();</script>
+    <script async>!async function(){const e=["new_confirmed","new_deceased"],t=document.currentScript.parentElement,a=new URLSearchParams(location.search).get("key");let n=await loadLocationData(a);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<34)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,!1);const i=new Set(filterDataIndices(n,28)),o=(n=n.filter((e,t)=>i.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).rolling(14).map(e=>{const t=Math.max(0,e.map(e=>e.new_deceased).sum()),a=Math.max(1,e.map(e=>e.new_confirmed).sum()),n=Math.min(1,t/a);return{Date:e.slice(-1)[0].date,"Deceased Persons":e.slice(-1)[0].new_deceased,"Mortality Rate":n}}).slice(14);await loadGoogleCharts(["corechart"]);const r=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(r).draw(recordsToDataTable(o),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Deceased persons and mortality rate"),colors:["#D32F2F","#757575"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:.5}}}})),t.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
@@ -216,7 +216,7 @@
     <div class="spacer"></div>
     <div class="spacer"></div>
 
-    <script async>!async function(){const e=["new_confirmed","new_tested"],t=document.currentScript.parentElement,i=new URLSearchParams(location.search).get("key");let a=await loadLocationData(i);if(a.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<27)return console.error("Not enough records found for columns:",e),void(t.style.display="none");a=mapToNumeric(a,e,positive=!0);const n=new Set(filterDataIndices(a,7,["new_tested"])),o=(a=a.filter((e,t)=>n.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).rolling(7).map(e=>{const t=Math.max(0,e.map(e=>e.new_confirmed).sum()),i=Math.max(1,e.map(e=>e.new_tested).sum()),a=Math.min(1,t/i);return{Date:e.slice(-1)[0].date,"Tested Persons":e.slice(-1)[0].new_tested,"Positivity Rate":a}}).slice(7);await loadGoogleCharts(["corechart"]);const s=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(s).draw(recordsToDataTable(o),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Tests Performed and Positivity Rate"),colors:["#009688","#536DFE"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:1}}}})),t.style.visibility="visible"}();</script>
+    <script async>!async function(){const e=["new_confirmed","new_tested"],t=document.currentScript.parentElement,i=new URLSearchParams(location.search).get("key");let n=await loadLocationData(i);if(n.filter(t=>e.every(e=>t[e]&&""!==t[e])).length<27)return console.error("Not enough records found for columns:",e),void(t.style.display="none");n=mapToNumeric(n,e,positive=!1);const o=new Set(filterDataIndices(n,7,["new_tested"])),s=(n=n.filter((e,t)=>o.has(t)).filter(t=>e.some(e=>!Number.isNaN(t[e])))).rolling(7).map(e=>{const t=e.map(e=>e.new_confirmed).sum()/e.map(e=>e.new_tested).sum();return{Date:e.slice(-1)[0].date,"Tested Persons":e.slice(-1)[0].new_tested,"Positivity Rate":t}}).slice(7);await loadGoogleCharts(["corechart"]);const a=attachElement("div",{},t,prepend=!0);new google.visualization.ComboChart(a).draw(recordsToDataTable(s),Object.assign({},GOOGLE_CHARTS_CONFIG,{title:chartLabel("Tests Performed and Positivity Rate"),colors:["#009688","#536DFE"],curveType:"function",series:{0:{targetAxisIndex:0,type:"bars"},1:{targetAxisIndex:1,type:"line"}},vAxes:{1:{textPosition:"in",viewWindow:{min:0,max:1}}}})),t.style.visibility="visible"}();</script>
 </div>
 
         <!-- Wrap the whole widget into a DIV -->
