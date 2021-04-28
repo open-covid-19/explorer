@@ -1,7 +1,7 @@
 <!-- Wrap the whole widget into a DIV -->
-<div id="partial-vaccinations" style="visibility: hidden;">
+<div id="full-vaccinations" style="visibility: hidden;">
     <p class="chart-footer">
-        Computed as the count of persons which have received at least one dose of a COVID-19 vaccine
+        Computed as the count of persons which have received all required doses of a COVID-19 vaccine
     </p>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -10,9 +10,9 @@
 
         (async function () {
             const minRows = 16;
-            const columns = ['new_persons_vaccinated', 'cumulative_persons_vaccinated', 'population'];
+            const columns = ['new_persons_fully_vaccinated', 'cumulative_persons_fully_vaccinated', 'population'];
             const rootElement = document.currentScript.parentElement;
-            const title = `Persons vaccinated and population vaccination rate`;
+            const title = `Persons fully vaccinated and population vaccination rate`;
 
             // Get the location key from the URL
             const locationKey = new URLSearchParams(location.search).get('key');
@@ -39,8 +39,8 @@
             const pop = locationData[0]['population'];
             const data = locationData.map(row => ({
                 'Date': row.date,
-                'Persons Vaccinated': row.new_persons_vaccinated,
-                'Population Vaccination Rate': row.cumulative_persons_vaccinated / pop,
+                'Persons Fully Vaccinated': row.new_persons_fully_vaccinated,
+                'Population Vaccination Rate': row.cumulative_persons_fully_vaccinated / pop,
             }));
 
             await loadGoogleCharts(['corechart']);
@@ -62,9 +62,6 @@
 
             // Unhide element
             rootElement.style.visibility = 'visible';
-
-            // If this chart loaded correctly, we can get rid of the full vaccination rates
-            document.querySelector('#full-vaccinations').style.display = 'none';
         })();
     </script>
 </div>

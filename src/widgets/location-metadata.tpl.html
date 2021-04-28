@@ -115,14 +115,26 @@
             }
 
             // Total vaccinated persons count
-            const lastVaccination = locationData
+            const lastPartialVaccination = locationData
                 .filter(row => row.cumulative_persons_vaccinated && row.cumulative_persons_vaccinated !== '')
                 .slice(-1);
-            if (lastVaccination.length > 0) {
+            if (lastPartialVaccination.length > 0) {
                 tableData += `
                     <tr>
-                        <td>Total Vaccinated Persons</td>
-                        <td>${Number(lastVaccination[0].cumulative_persons_vaccinated).toLocaleString()}</td>
+                        <td>Total Vaccinated Persons (1+ doses)</td>
+                        <td>${Number(lastPartialVaccination[0].cumulative_persons_vaccinated).toLocaleString()}</td>
+                    </tr>`;
+            }
+
+            // Total vaccinated persons count
+            const lastFullVaccination = locationData
+                .filter(row => row.cumulative_persons_fully_vaccinated && row.cumulative_persons_fully_vaccinated !== '')
+                .slice(-1);
+            if (lastFullVaccination.length > 0) {
+                tableData += `
+                    <tr>
+                        <td>Total Fully Vaccinated Persons</td>
+                        <td>${Number(lastFullVaccination[0].cumulative_persons_fully_vaccinated).toLocaleString()}</td>
                     </tr>`;
             }
 
