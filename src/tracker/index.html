@@ -4,6 +4,17 @@
 <!-- HTML page head -->
 <script src="../templates/head.tpl.html" data-include></script>
 
+<!-- Mapping utils -->
+<script type="text/javascript" src="{{wwwroot}}/third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+<script type="text/javascript" src="{{wwwroot}}/third_party/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+
+<style>
+    #vmap {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
 <body>
 
     <!-- Map section -->
@@ -15,17 +26,22 @@
 
         const prevParams = params.toString();
         if (!params.get('q')) params.set('q', 'subregions');
-        if (!params.get('s')) params.set('s', 'total_confirmed');
+        if (!params.get('s')) params.set('s', 'cumulative_confirmed');
 
         const currParams = params.toString();
         if (prevParams !== currParams) {
             window.location = "?" + currParams;
         }
 
-        loadData([`latest/main`], (name, table) => {
-            const cutoff = moment().subtract(14, 'days').format('YYYY-MM-DD');
+        (async function () {
+            const latestDataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/latest/aggregated.json`;
+            const latestData = await fetch(latestDataUrl).then(res => res.json());
+            const records = latestData.data.map(row =>
+                latestData.columns.reduce((acc, col, idx) =>
+                    Object.assign(acc, { [col]: row[idx] }), {}));
 
-            const records = tableToRecords(table);
+            const cutoff = moment().subtract(60, 'days').format('YYYY-MM-DD');
+
             const nullCheckColumns = params.get('s').split(',');
             const recordsWithEpi = records.filter(row =>
                 nullCheckColumns.some(col => row[col] !== null));
@@ -47,6 +63,8 @@
                     }
                     return acc;
                 }, {});
+            console.log(records);
+            console.log(subregions);
 
 
             $('#vmap').vectorMap({
@@ -56,14 +74,8 @@
                 backgroundColor: '#626262',
                 scaleColors: ['#000000', '#4287f5'],
             });
-        });
+        })();
     </script>
-
-    <!-- Information button -->
-    <a id="vmap-help" href="../about">?</a>
-
-    <!-- Title -->
-    <a id="vmap-title" href="../about">{{name}}</a>
 
     <!-- Load analytics at the end of the page -->
     <script src="../templates/analytics.tpl.html" data-include></script>
