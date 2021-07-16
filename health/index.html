@@ -25,7 +25,6 @@
     <!-- JQuery and plugins -->
     <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
     <script type="text/javascript" src="../static/jquery.ui.combobox.min.js"></script>
     <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
@@ -57,7 +56,7 @@
 
 <script type="text/javascript">let chartLoaded=!1;const pendingCallbacks=[];window.chart=function(a){chartLoaded?retryCallback(a):pendingCallbacks.push(a)},google.charts.load("current",{packages:["corechart","bar","sankey","table"],callback:()=>{chartLoaded=!0,pendingCallbacks.forEach(a=>retryCallback(a))}});</script>
 
-<style>.table-wrapper{max-height:400px;overflow-y:auto}</style>
+<style>#table-picker{padding-left:8px}.table-wrapper{max-height:400px;overflow-y:auto}</style>
 
 </head><body class="single-column">
 
@@ -77,34 +76,97 @@
 </h1>
 
     <main>
-        <!-- Title of the report -->
-        <h1 id="health-title" class="centered">COVID-19 Data Health Dashboard</h1>
-
-        <!-- Create a selector with each data table -->
-        <p class="justify">
-            See below for a list of tables. Click on the table name for more details. Refer to the
-            <a href="https://github.com/open-covid-19/data">documentation</a> for a description of
-            each field.
-        </p>
-
-        <table id="table-list" class="fullwidth"></table>
+        <h1 class="centered">COVID-19 Data Status Dashboard</h1>
 
         <div class="spacer"></div>
 
-        <h2 id="table-subsection" class="centered">
-            </h2>
+        <h2 class="centered">Stale data sources</h2>
+        <div class="table-wrapper">
+            <table id="table-metadata" class="fullwidth"></table>
+        </div>
 
-            <div class="table-wrapper">
-                <table id="table-metadata" class="fullwidth"></table>
-            </div>
-            <div id="country-coverage-chart" style="display: inline-block;"></div>
-            <div id="admin-level-chart" style="display: inline-block;"></div>
-            <div id="null-analysis-chart" class="fullwidth" style="padding-bottom: 2em;"></div>
+        <div class="spacer"></div>
 
-            <!-- Load all the data -->
-            <script>function onTableSelected(t){const e=window.data[t],a=OPEN_COVID_CONFIG.tables[t];$("#table-subsection").text(a),$("#table-metadata").html(["<tr><th>Column Name</th><th>Type</th><th>Last Non-Null Value</th></tr>"].concat(e.columns.map((t,a)=>{const n=e.data.filter(t=>t[a]);if(n.length>0){const e=n[n.length-1][a];let l=typeof e;return Number.isInteger(e)?l="int":"number"===l&&(l="double"),`<tr><td>${t}</td><td>${l}</td><td>${e}</td>`}return`<tr><td>${t}</td><td>null</td><td>null</td></tr>`}))),chart(()=>{const t=e.columns.indexOf("location_key"),a=e.data.map(e=>e[t].split("_")[0]).reduce((t,e)=>(t[e]=t[e]||0,t[e]+=1,t),{}),n=google.visualization.arrayToDataTable([["Country","Record Count"]].concat(Object.keys(a).map(t=>[t,a[t]]).sort((t,e)=>e[1]-t[1]))),l=document.getElementById("country-coverage-chart");new google.visualization.PieChart(l).draw(n,{title:"Coverage by Country",width:500,height:400,pieHole:.3})}),chart(()=>{const t=e.columns.indexOf("location_key"),a=e.data.map(e=>e[t].split("_").length-1).reduce((t,e)=>(t[e]+=1,t),{0:0,1:0,2:0}),n=google.visualization.arrayToDataTable([["Admin Level","Record Count"],["Country",a[0]],["State/Province",a[1]],["County/Municipality",a[2]]]),l=document.getElementById("admin-level-chart");new google.visualization.PieChart(l).draw(n,{title:"Coverage by Admin Level",width:500,height:400,pieHole:.3})}),chart(()=>{const t=new google.visualization.DataTable;t.addColumn("string","Column"),t.addColumn("string","Value"),t.addColumn("number","Records");const a=[];e.columns.forEach((t,n)=>{const l=e.data.filter(t=>null==t[n]).length;a.push([t,"null",l]),a.push([t,"non-null",e.data.length-l])}),t.addRows(a);const n=document.getElementById("null-analysis-chart");a.length>20?new google.visualization.Table(n).draw(t,{width:"100%",height:"400px",cssClassNames:{headerRow:"google-charts-column-header"}}):new google.visualization.Sankey(n).draw(t,{height:"400px"})})}window.data={},$("#table-list").html(["<tr><th>Table Name</th><th>Date Range</th><th>Column Count</th></tr>"].concat(Object.keys(OPEN_COVID_CONFIG.tables).map(t=>{return`<tr data-value="${t}"><td>${OPEN_COVID_CONFIG.tables[t]}</td><td colspan=2>Loading...</td></tr>`})));</script>
+        <h2 class="centered">Locations with stale data</h2>
+        <select id="table-picker" class="fullwidth">
+            <option disabled selected>Select Table</option>
+        </select>
+        <div class="table-wrapper">
+            <table id="table-stale" class="fullwidth"></table>
+        </div>
 
-            <script async>Object.keys(OPEN_COVID_CONFIG.tables).forEach(async t=>{const a=OPEN_COVID_CONFIG.tables[t];if(["by-age","weather","google-search-trends"].includes(t))return void $(`tr[data-value=${t}]`).html(`<td>${a}</td><td colspan=2>Table too large to load</td>`);let e;const l=`${OPEN_COVID_CONFIG["data-url"]}/v3/${t}.json`;try{e=await loadJSON(l)}catch(e){return console.error(e),void $(`tr[data-value=${t}]`).html(`<td>${a}</td><td colspan=2>Error Loading</td>`)}window.data[t]=e;let d="Static";if(e.columns.includes("date")){let t="2020-01-01",a=moment().format("YYYY-MM-DD");const l=e.columns.indexOf("date"),o=e.data.map(t=>t[l]).sort(),n=o[0],c=o.slice(-1)[0];n>t&&(t=n),c<a&&(a=c),d=`${t} – ${a}`}$(`tr[data-value=${t}]`).html(`<td><a href="#table-subsection" onclick="onTableSelected('${t}')">${a}</a></td>\n                        <td>${d}</td>\n                        <td>${e.columns.length}</td>\n                    `),console.log(`${a} table loaded successfully`)});</script>
+        <script>
+            (async function () {
+                const staleLimit = moment().subtract(14, 'days').startOf('day');
+
+                const metadataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/metadata.json`;
+                const metadata = await fetch(metadataUrl).then(res => res.json());
+
+                $('#table-picker').html(
+                    [`<option disabled selected>Select Table</option>`]
+                        .concat(metadata.tables
+                            .map(table => table.name)
+                            .map(x => `<option value="${x}">${x}</option>`))
+                        .join(''));
+
+                $('#table-picker').on('change', async () => {
+
+                    // Get the latest data to determine stale locations
+                    const tableName = $('#table-picker').val();
+                    const latestDataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/latest/${tableName}.json`;
+                    const latestData = await fetch(latestDataUrl).then(res => res.json());
+
+                    const staleLocations = latestData.data.reduce((acc, row) => {
+                        const record = latestData.columns
+                            .reduce((dict, x, idx) => Object.assign(dict, { [x]: row[idx] }), {});
+
+                        let simpleLocation = record.location_key;
+                        const tokens = simpleLocation.split('_');
+                        if (tokens.length === 2) simpleLocation = `${tokens[0]}_*`;
+                        if (tokens.length === 3) simpleLocation = `${tokens[0]}_${tokens[1]}_*`;
+
+                        const date = moment(record.date).startOf('day');
+                        if (acc[simpleLocation]?.isBefore(date) ?? true) acc[simpleLocation] = date;
+                        return acc;
+                    }, {});
+
+                    $('#table-stale').html(
+                        ['<tr><th>Location</th><th>Last Update</th></tr>']
+                            .concat(Object.entries(staleLocations)
+                                .filter(([location, date]) =>
+                                    date?.isBefore(staleLimit) ?? true)
+                                .map(([location, date]) =>
+                                    `<tr><td>${location}</td><td>${date?.format('YYYY-MM-DD') || 'Unknown'}</td></tr>`)
+                                .join('')
+                            )
+                    );
+                });
+
+                $('#table-picker').val('epidemiology');
+                $('#table-picker').trigger('change');
+
+                const versionsUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/versions.json`;
+                const versions = await fetch(versionsUrl).then(res => res.json());
+                const lastUpdated = Object.keys(versions).reduce((acc, x) => {
+                    const prefix = 'intermediate/';
+                    if (x.startsWith(prefix)) acc[x.slice(prefix.length).replace('.csv', '')] = moment(versions[x][0] / 1000);
+                    return acc;
+                }, {});
+                $('#table-metadata').html(
+                    [`<tr><th>Data Source</th><th>Class Name</th><th>Table</th><th>Last Update</th></tr>`]
+                        .concat(metadata.sources
+                            .filter(x =>
+                                lastUpdated[x.uuid]?.isBefore(staleLimit) ?? true)
+                            .map(x =>
+                                `<tr>
+                                <td>${x.label || ''}</td>
+                                <td>${x.class}</td>
+                                <td>${x.table}</td>
+                                <td>${lastUpdated[x.uuid]?.format('YYYY-MM-DD') || 'Unknown'}</td>
+                                </tr>`))
+                )
+            })();
+        </script>
     </main>
 
     <!-- Load analytics at the end of the page -->

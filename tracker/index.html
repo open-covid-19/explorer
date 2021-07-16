@@ -25,7 +25,6 @@
     <!-- JQuery and plugins -->
     <script type="text/javascript" src="../third_party/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="../third_party/jquery-ui-dist/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
     <script type="text/javascript" src="../static/jquery.ui.combobox.min.js"></script>
     <link rel="stylesheet" href="../third_party/jquery-ui-dist/jquery-ui.min.css">
 
@@ -52,19 +51,19 @@
     <script type="text/javascript">CACHE=window.CACHE||{JSON:{},CSV:{},gcharts:{}};const DEFAULT_OPTIONS={"data-url":"https://storage.googleapis.com/covid19-open-data","history-size-limit":0,"history-size-mobile":100,"skip-until-outbreak":!0,"outbreak-threshold-ratio":.05,"read-format":"JSON","shareable-charts":!0,"min-date":null,"max-date":null},CURRENT_OPTIONS=Object.keys(DEFAULT_OPTIONS).reduce((e,t)=>Object.assign(e,{[t]:sessionStorage.getItem(t)||DEFAULT_OPTIONS[t]}),{}),OPEN_COVID_CONFIG=Object.assign({tables:{index:"Index",demographics:"Demographics",economy:"Economy",epidemiology:"Epidemiology",geography:"Geography",health:"Health",hospitalizations:"Hospitalizations",mobility:"Mobility","oxford-government-response":"Oxford Government Response","lawatlas-emergency-declarations":"LawAtlas Emergency Declarations",weather:"Weather",worldbank:"Worldbank","by-age":"Breakdown by Age","by-sex":"Breakdown by Sex","google-search-trends":"Google Search Trends"}},CURRENT_OPTIONS);GOOGLE_CHARTS_CONFIG=window.GOOGLE_CHARTS_CONFIG||{theme:"material",colors:["#BF360C"],backgroundColor:{fill:"#FCFCFC"},legend:{position:CURRENT_OPTIONS.chart_legend_position||"none"},chartArea:{width:"100%",height:"100%",left:parseInt(CURRENT_OPTIONS.chart_padding_left||64),bottom:parseInt(CURRENT_OPTIONS.chart_padding_bottom||48),top:parseInt(CURRENT_OPTIONS.chart_padding_top||24)},titlePosition:"in",axisTitlesPosition:"in",hAxis:{textPosition:"bottom"},vAxis:{textPosition:"out",viewWindow:{min:0}},height:parseInt(CURRENT_OPTIONS.chart_height||300)};</script>
 
 
+<!-- Mapping utils -->
+<script type="text/javascript" src="../third_party/jqvmap/dist/jquery.vmap.min.js"></script>
+<script type="text/javascript" src="../third_party/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+
+<style>#vmap{width:100%;height:100%}</style>
+
 </head><body>
 
     <!-- Map section -->
     <div id="vmap"></div>
 
     <!-- Setup map data -->
-    <script>const params=new URLSearchParams(window.location.search),prevParams=params.toString();params.get("q")||params.set("q","subregions"),params.get("s")||params.set("s","total_confirmed");const currParams=params.toString();prevParams!==currParams&&(window.location="?"+currParams),loadData(["latest/main"],(a,e)=>{const r=moment().subtract(14,"days").format("YYYY-MM-DD"),t=tableToRecords(e),o=params.get("s").split(","),s=t.filter(a=>o.some(e=>null!==a[e])),l=t.filter(a=>0===a.aggregation_level).reduce((a,e)=>{const t=e.country_code,o=s.filter(a=>a.country_code===t&&1===a.aggregation_level&&a.date>r);return s.filter(a=>a.country_code===t&&2===a.aggregation_level&&a.date>r).length>0?a[t.toLowerCase()]=2:o.length>0?a[t.toLowerCase()]=1:a[t.toLowerCase()]=0,a},{});$("#vmap").vectorMap({map:"world_en",values:l,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})});</script>
-
-    <!-- Information button -->
-    <a id="vmap-help" href="../about">?</a>
-
-    <!-- Title -->
-    <a id="vmap-title" href="../about">COVID-19 Open Data Explorer</a>
+    <script>const params=new URLSearchParams(window.location.search),prevParams=params.toString();params.get("q")||params.set("q","subregions"),params.get("s")||params.set("s","cumulative_confirmed");const currParams=params.toString();prevParams!==currParams&&(window.location="?"+currParams),async function(){const a=`${OPEN_COVID_CONFIG["data-url"]}/v3/latest/aggregated.json`,e=await fetch(a).then(a=>a.json()),r=e.data.map(a=>e.columns.reduce((e,r,o)=>Object.assign(e,{[r]:a[o]}),{})),o=moment().subtract(60,"days").format("YYYY-MM-DD"),t=params.get("s").split(","),s=r.filter(a=>t.some(e=>null!==a[e])),n=r.filter(a=>0===a.aggregation_level).reduce((a,e)=>{const r=e.country_code,t=s.filter(a=>a.country_code===r&&1===a.aggregation_level&&a.date>o);return s.filter(a=>a.country_code===r&&2===a.aggregation_level&&a.date>o).length>0?a[r.toLowerCase()]=2:t.length>0?a[r.toLowerCase()]=1:a[r.toLowerCase()]=0,a},{});console.log(r),console.log(n),$("#vmap").vectorMap({map:"world_en",values:n,selectedColor:null,backgroundColor:"#626262",scaleColors:["#000000","#4287f5"]})}();</script>
 
     <!-- Load analytics at the end of the page -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53249564-6"></script>
