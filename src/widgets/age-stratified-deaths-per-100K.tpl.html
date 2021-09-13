@@ -122,7 +122,6 @@
             const populationAgeBins = Object.keys(locationData[0])
                 .filter(col => col.startsWith('population_age_'))
                 .reduce((acc, col) => Object.assign(acc, { [col]: locationData[0][col] }), {});
-            console.log(populationAgeBins);
 
             // Build the adapter to get the population estimate for any age bin
             const ageBinDeceasedAdapter = ageBinAdapterBuilder(ageBinDeceasedList, populationAgeBins);
