@@ -40,7 +40,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadLocationData(locationKey);
+            let locationData = await CacheHelper.getLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             const requiredColumns = ['age_bin_0', 'new_confirmed_age_0'];
@@ -117,7 +117,7 @@
             const ageBucketCount = Object.keys(data[0]).length - 1;
 
             // Make sure Google Charts loads and attach element to page
-            await loadGoogleCharts(['corechart']);
+            await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.AreaChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {

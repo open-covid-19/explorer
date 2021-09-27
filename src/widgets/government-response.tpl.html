@@ -26,7 +26,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadLocationData(locationKey);
+            let locationData = await CacheHelper.getLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             // NOTE: Using `some` since we want to display this table with a subset of data too
@@ -56,7 +56,7 @@
                     return record;
                 });
 
-            await loadGoogleCharts(['corechart']);
+            await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.LineChart(elem);
             chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {

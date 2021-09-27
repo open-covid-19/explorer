@@ -23,7 +23,7 @@
             const locationKey = new URLSearchParams(location.search).get('key');
 
             // Load the location data using the location key
-            let locationData = await loadLocationData(locationKey);
+            let locationData = await CacheHelper.getLocationData(locationKey);
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
@@ -56,7 +56,7 @@
                 });
 
             // Create a custom data table since we use the fancy interval type
-            await loadGoogleCharts(['corechart']);
+            await google.charts.load('current', { packages: ['corechart'] });
             const numString = num => num.toLocaleString(undefined, { maximumFractionDigits: 1 });
             const rowTooltip = row =>
                 `${row['Date']}\n` +

@@ -49,12 +49,10 @@
     <link rel="stylesheet" href="{{wwwroot}}/static/styles.min.css" />
 
     <!-- Polyfills, custom functions and constants -->
+    <script type="text/javascript" src="{{wwwroot}}/static/cache.min.js"></script>
     <script type="text/javascript" src="{{wwwroot}}/static/polyfills.min.js"></script>
     <script type="text/javascript" src="{{wwwroot}}/static/open-covid-19.min.js"></script>
     <script type="text/javascript">
-
-        // Global object used to cache objects and data
-        CACHE = window.CACHE || { 'JSON': {}, 'CSV': {}, 'gcharts': {} };
 
         // Define constants and default options
         const DEFAULT_OPTIONS = {
