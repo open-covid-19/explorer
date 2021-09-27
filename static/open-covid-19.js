@@ -17,20 +17,6 @@ function loadData(tableNames, callback) {
     tableNames.forEach(key => downloadTable(key, `${key}.csv`));
 }
 
-async function loadLocationData(locationKey) {
-    if (CURRENT_OPTIONS['read-format'] === 'CSV') {
-        return await loadCSV(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.csv`);
-    } else {
-        return tableToRecords(
-            await loadJSON(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.json`));
-    }
-}
-
-function tableToRecords(table) {
-    return table.data.map(row =>
-        table.columns.reduce((acc, col, idx) => Object.assign(acc, { [col]: row[idx] }), {}));
-}
-
 function removeEmptyColumns(table) {
     const nnColumns = [];
     table.forEach(row => {
@@ -56,79 +42,26 @@ function retryCallback(callback) {
     }, 250);
 }
 
-async function loadResource(url) {
-    const response = await fetch(url);
-    if (response.ok) {
-        return response;
-    } else {
-        throw new Error('Response failed');
-    }
-}
-
-function loadJSON(url, forceCors = false) {
-    // Early exit: return from cache
-    if (url in CACHE['JSON']) return CACHE['JSON'][url];
-    // Add promise to cache to avoid others loading simultaneously
-    CACHE['JSON'][url] = new Promise(async (resolve, reject) => {
-        if (forceCors) url = `https://cors-anywhere.herokuapp.com/${url}`;
-        loadResource(url).then(res => res.json().then(resolve)).catch(reject);
-    });
-    return CACHE['JSON'][url];
-}
-
-function loadCSV(url, forceCors = false) {
-    // Early exit: return from cache
-    if (url in CACHE['CSV']) return CACHE['CSV'][url];
-    // Add promise to cache to avoid others loading simultaneously
-    CACHE['CSV'][url] = new Promise(async (resolve, reject) => {
-        if (forceCors) url = `https://cors-anywhere.herokuapp.com/${url}`;
-        const response = await loadResource(url);
-        const csvText = await response.text();
-        Papa.parse(csvText, {
-            header: true,
-            delimiter: ',',
-            skipEmptyLines: true,
-            complete: result => {
-                if (result.errors.length > 0) {
-                    reject(result.errors[0]);
-                } else {
-                    resolve(result.data);
-                }
-            }
-        });
-    });
-    return CACHE['CSV'][url];
-}
-
 function recordsToDataTable(records, columns = null) {
     columns = columns || Object.keys(records[0]);
     const data = [columns].concat(records.map(row => columns.map(col => row[col])));
     return google.visualization.arrayToDataTable(data);
 }
 
-function loadGoogleCharts(packages = ['corechart']) {
-    // Early exit: return from cache
-    const cacheKey = packages.join(',');
-    if (cacheKey in CACHE['gcharts']) return CACHE['gcharts'][cacheKey];
-    // Add promise to cache to avoid others loading simultaneously
-    CACHE['gcharts'][cacheKey] = google.charts.load('current', { packages: packages });
-    return CACHE['gcharts'][cacheKey];
-}
-
 function filterDataIndices(records, pad = 0, columns = null) {
     let indices = records.map((row, idx) => Object.assign({}, row, { 'idx': idx }));
 
     // Get rid of irrelevant data prior to the first outbreak
-    if (CURRENT_OPTIONS['skip-until-outbreak']) {
-        const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
-        const maxDaily = Math.max(...indices.filter(row =>
-            row.date < '2020-06-01' && !Number.isNaN(row.new_confirmed))
-            .map(row => row.new_confirmed));
-        const firstDataPointIndex = indices
-            .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
-            .filter(idx => idx)[0];
-        indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
-    }
+    // if (CURRENT_OPTIONS['skip-until-outbreak']) {
+    //     const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
+    //     const maxDaily = Math.max(...indices.filter(row =>
+    //         row.date < '2020-06-01' && !Number.isNaN(row.new_confirmed))
+    //         .map(row => row.new_confirmed));
+    //     const firstDataPointIndex = indices
+    //         .map((row, idx) => ((Number(row.new_confirmed) || 0) / ratio > maxDaily) ? idx : null)
+    //         .filter(idx => idx)[0];
+    //     indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
+    // }
 
     // Filter by dates if requested in the settings
     if (CURRENT_OPTIONS['min-date']) {
@@ -146,17 +79,15 @@ function filterDataIndices(records, pad = 0, columns = null) {
 
     // Remove the data at the beginning which has null values
     const nullColumns = columns || ['new_confirmed', 'new_deceased'];
-    const firstRecord = col => indices.slice(0, 1)[0][col];
     const nullish = val => val === '' || val === null || Number.isNaN(val);
-    while (nullColumns.every(col => nullish(firstRecord(col)))) {
-        indices.shift();
-    }
+    let firstNonNullIndex = 0;
+    while (nullColumns.every(col => nullish(indices[firstNonNullIndex][col]))) firstNonNullIndex++;
+    if (firstNonNullIndex > 0) indices = indices.slice(Math.max(0, firstNonNullIndex));
 
     // Remove the data at the end which has null values
-    const latestRecord = col => indices.slice(-1)[0][col];
-    while (nullColumns.every(col => nullish(latestRecord(col)))) {
-        indices.pop();
-    }
+    let lastNonNullIndex = indices.length - 1;
+    while (nullColumns.every(col => nullish(indices[lastNonNullIndex][col]))) lastNonNullIndex--;
+    if (lastNonNullIndex < indices.length - 1) indices = indices.slice(0, Math.min(lastNonNullIndex + 1, indices.length));
 
     // Use only the last few data points if this is a touchscreen device or history is limited
     if ('ontouchstart' in document.documentElement) {
@@ -172,20 +103,23 @@ function filterDataIndices(records, pad = 0, columns = null) {
 }
 
 function mapToNumeric(records, columns, positive = true) {
-    // Make sure the confirmed and deceased cases are always mapped to numeric
-    columns = columns.concat(['new_confirmed', 'new_deceased']);
-    return records.map(row => {
-        const record = Object.assign({}, row);
+    return records.map(record => {
         columns.forEach(col => {
-            const num = parseInt(record[col]);
-            if (record[col] === null || Number.isNaN(num)) {
+            if (record[col] === null) {
                 record[col] = Number.NaN;
-            } else if (positive) {
-                record[col] = Math.max(0, num);
-            } else {
-                record[col] = num;
+                return;
+            }
+
+            if (typeof record[col] !== 'number') {
+                record[col] = parseInt(record[col]);
+                if (Number.isNaN(record[col])) return;
+            }
+
+            if (positive && record[col] < 0) {
+                record[col] = Math.max(0, record[col]);
             }
         });
+
         return record;
     });
 }
@@ -280,7 +214,7 @@ function colorScaleValue(rgb0, rgb1, val) {
     return '#' + [rh, gh, bh].join('');
 }
 
-function *colorScaleGenerator(rgb0, rgb1, size) {
+function* colorScaleGenerator(rgb0, rgb1, size) {
     for (let i = 0; i < size - 1; i++) {
         yield colorScaleValue(rgb0, rgb1, i / (size - 1));
     }
