@@ -25,16 +25,6 @@
             <div class="spacer"></div>
         </section>
 
-        <section id="section-history-size">
-            <h3 class="centered">Historical View</h3>
-            <p class="justify">
-                Select the number of days to display historical data in the charts. Set to zero to
-                display the full history.
-            </p>
-            <input id="history-size-option" type="number" min="0" />
-            <div class="spacer"></div>
-        </section>
-
         <section id="section-epi-reporting">
             <h3 class="centered">Epidemiology Reporting</h3>
             <p class="justify">
@@ -70,13 +60,6 @@
                 } else {
                     sessionStorage.setItem('data-url', `${DEFAULT_OPTIONS['data-url']}/staging/${branch}`);
                 }
-            });
-
-            // Options for the history window size
-            $('#history-size-option').val(_CFG['history-size'])
-            $('#history-size-option').on('change', event => {
-                const optionValue = $('#history-size-option').val();
-                sessionStorage.setItem('history-size', optionValue);
             });
 
             // Options for the epi reporting
