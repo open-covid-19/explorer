@@ -89,15 +89,6 @@ function filterDataIndices(records, pad = 0, columns = null) {
     while (nullColumns.every(col => nullish(indices[lastNonNullIndex][col]))) lastNonNullIndex--;
     if (lastNonNullIndex < indices.length - 1) indices = indices.slice(0, Math.min(lastNonNullIndex + 1, indices.length));
 
-    // Use only the last few data points if this is a touchscreen device or history is limited
-    if ('ontouchstart' in document.documentElement) {
-        const historySize = _CFG['history-size-mobile'];
-        indices = indices.slice(-historySize - pad);
-    } else if (_CFG['history-size-limit'] > 0) {
-        const historySize = _CFG['history-size-limit'];
-        indices = indices.slice(-historySize - pad);
-    }
-
     // Return the indices of data which we keep
     return indices.map(row => row['idx']);
 }
