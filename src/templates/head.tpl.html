@@ -72,7 +72,7 @@
             Object.assign(acc, { [key]: sessionStorage.getItem(key) || DEFAULT_OPTIONS[key] }), {});
 
         // Set the constants that will be read throughout the rest of the app
-        const OPEN_COVID_CONFIG = Object.assign(
+        const _CFG = Object.assign(
             {
                 'tables': {
                     'index': 'Index',
@@ -101,14 +101,14 @@
             colors: ['{{theme-primary}}'],
             backgroundColor: { fill: "#FCFCFC" },
             legend: {
-                position: CURRENT_OPTIONS.chart_legend_position || 'none'
+                position: _CFG.chart_legend_position || 'none'
             },
             chartArea: {
                 width: '100%',
                 height: '100%',
-                left: parseInt(CURRENT_OPTIONS.chart_padding_left || 64),
-                bottom: parseInt(CURRENT_OPTIONS.chart_padding_bottom || 48),
-                top: parseInt(CURRENT_OPTIONS.chart_padding_top || 24),
+                left: parseInt(_CFG.chart_padding_left || 64),
+                bottom: parseInt(_CFG.chart_padding_bottom || 48),
+                top: parseInt(_CFG.chart_padding_top || 24),
             },
             titlePosition: 'in',
             axisTitlesPosition: 'in',
@@ -119,7 +119,7 @@
                 textPosition: 'out',
                 viewWindow: { min: 0 }
             },
-            height: parseInt(CURRENT_OPTIONS.chart_height || 300),
+            height: parseInt(_CFG.chart_height || 300),
         }
 
     </script>

@@ -9,11 +9,11 @@ function setting(key, val) {
 function loadData(tableNames, callback) {
     async function downloadTable(key, path) {
         const oneMinuteCache = Math.round(Date.now() / 1000 / 60);
-        const tableUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/${path}`;
+        const tableUrl = `${_CFG['data-url']}/v3/${path}`;
         const data = await loadJSON(`${tableUrl}?cache=${oneMinuteCache}`);
         callback(key, data);
     }
-    tableNames = tableNames || Object.keys(OPEN_COVID_CONFIG['tables']);
+    tableNames = tableNames || Object.keys(_CFG['tables']);
     tableNames.forEach(key => downloadTable(key, `${key}.csv`));
 }
 
@@ -52,8 +52,8 @@ function filterDataIndices(records, pad = 0, columns = null) {
     let indices = records.map((row, idx) => Object.assign({}, row, { 'idx': idx }));
 
     // Get rid of irrelevant data prior to the first outbreak
-    // if (CURRENT_OPTIONS['skip-until-outbreak']) {
-    //     const ratio = CURRENT_OPTIONS['outbreak-threshold-ratio'];
+    // if (_CFG['skip-until-outbreak']) {
+    //     const ratio = _CFG['outbreak-threshold-ratio'];
     //     const maxDaily = Math.max(...indices.filter(row =>
     //         row.date < '2020-06-01' && !Number.isNaN(row.new_confirmed))
     //         .map(row => row.new_confirmed));
@@ -64,15 +64,15 @@ function filterDataIndices(records, pad = 0, columns = null) {
     // }
 
     // Filter by dates if requested in the settings
-    if (CURRENT_OPTIONS['min-date']) {
+    if (_CFG['min-date']) {
         const firstDataPointIndex = indices
-            .map((row, idx) => row['date'] >= CURRENT_OPTIONS['min-date'] ? idx : null)
+            .map((row, idx) => row['date'] >= _CFG['min-date'] ? idx : null)
             .filter(idx => idx)[0];
         indices = indices.slice(Math.max(0, firstDataPointIndex - pad));
     }
-    if (CURRENT_OPTIONS['max-date']) {
+    if (_CFG['max-date']) {
         const lastDataPointIndex = indices
-            .map((row, idx) => row['date'] <= CURRENT_OPTIONS['max-date'] ? idx : null)
+            .map((row, idx) => row['date'] <= _CFG['max-date'] ? idx : null)
             .filter(idx => idx).slice(-1)[0];
         indices = indices.slice(0, Math.min(indices.length, lastDataPointIndex));
     }
@@ -91,10 +91,10 @@ function filterDataIndices(records, pad = 0, columns = null) {
 
     // Use only the last few data points if this is a touchscreen device or history is limited
     if ('ontouchstart' in document.documentElement) {
-        const historySize = CURRENT_OPTIONS['history-size-mobile'];
+        const historySize = _CFG['history-size-mobile'];
         indices = indices.slice(-historySize - pad);
-    } else if (CURRENT_OPTIONS['history-size-limit'] > 0) {
-        const historySize = CURRENT_OPTIONS['history-size-limit'];
+    } else if (_CFG['history-size-limit'] > 0) {
+        const historySize = _CFG['history-size-limit'];
         indices = indices.slice(-historySize - pad);
     }
 
@@ -125,7 +125,7 @@ function mapToNumeric(records, columns, positive = true) {
 }
 
 function chartLabel(title) {
-    return title + (CURRENT_OPTIONS['shareable-charts'] ? ` in ${window.locationLabel}` : '');
+    return title + (_CFG['shareable-charts'] ? ` in ${window.locationLabel}` : '');
 }
 
 function mergeAgeBins(records) {

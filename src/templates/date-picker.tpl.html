@@ -1,0 +1,35 @@
+<style>
+    .date-picker {
+        display: flex;
+    }
+
+    .date-picker input {
+        margin-left: 24px;
+        margin-right: 24px;
+    }
+</style>
+
+<div class="date-picker">
+    <label for="date-start">Start Date</label>
+    <input id="date-start" type="date" min="2020-01-01" />
+    <label for="date-end">End Date</label>
+    <input id="date-end" type="date" min="2020-01-01" />
+</div>
+<script async>
+    const dateStart = document.querySelector('#date-start');
+    const dateEnd = document.querySelector('#date-end');
+
+    dateStart.value = _CFG['min-date'];
+    dateStart.addEventListener('change', event => {
+        const val = dateStart.value || '2020-09-01';
+        sessionStorage.setItem('min-date', val);
+        console.log(`Setting min-date to ${val}`);
+    });
+
+    dateEnd.value = _CFG['max-date'];
+    dateEnd.addEventListener('change', event => {
+        const val = dateEnd.value || '';
+        sessionStorage.setItem('max-date', val);
+        console.log(`Setting max-date to ${val}`);
+    });
+</script>

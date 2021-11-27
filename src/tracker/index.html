@@ -34,7 +34,7 @@
         }
 
         (async function () {
-            const latestDataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/latest/aggregated.json`;
+            const latestDataUrl = `${_CFG['data-url']}/v3/latest/aggregated.json`;
             const latestData = await fetch(latestDataUrl).then(res => res.json());
             const records = latestData.data.map(row =>
                 latestData.columns.reduce((acc, col, idx) =>

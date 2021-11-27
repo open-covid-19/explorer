@@ -19,12 +19,12 @@
 
     (async function () {
 
-        const populations = (await CacheHelper.getCSV(`${CURRENT_OPTIONS['data-url']}/v3/demographics.csv`))
+        const populations = (await CacheHelper.getCSV(`${_CFG['data-url']}/v3/demographics.csv`))
             .reduce((acc, row) => {
                 acc[row.location_key] = parseInt(row.population) || 0;
                 return acc;
             }, {});
-        const indexRecords = (await CacheHelper.getCSV(`${CURRENT_OPTIONS['data-url']}/v3/index.csv`))
+        const indexRecords = (await CacheHelper.getCSV(`${_CFG['data-url']}/v3/index.csv`))
             .map(row => Object.assign({}, row, { 'population': populations[row.location_key] }))
             .sort((a, b) => (b.population || 0) - (a.population || 0));
 

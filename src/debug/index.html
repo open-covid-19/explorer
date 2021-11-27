@@ -59,7 +59,7 @@
             $('#repo-branch-option').html([
                 `<option value="" disabled=1>Select Branch</option>`
             ].concat(allBranches.map(branch => {
-                const selected = OPEN_COVID_CONFIG['data-url'].indexOf(`/staging/${branch}`) !== -1;
+                const selected = _CFG['data-url'].indexOf(`/staging/${branch}`) !== -1;
                 return `<option value="${branch}" ${selected ? 'selected=1' : ''}>${branch}</option>`;
             })));
             $('#repo-branch-option').on('change', event => {
@@ -73,7 +73,7 @@
             });
 
             // Options for the history window size
-            $('#history-size-option').val(OPEN_COVID_CONFIG['history-size'])
+            $('#history-size-option').val(_CFG['history-size'])
             $('#history-size-option').on('change', event => {
                 const optionValue = $('#history-size-option').val();
                 sessionStorage.setItem('history-size', optionValue);
@@ -84,7 +84,7 @@
             $('#epi-reporting-option').html([
                 `<option value="" disabled=1>Epidemiology Reporting</option>`
             ].concat(allEpiReporting.map(optionValue => {
-                const selected = OPEN_COVID_CONFIG['epi-reporting'] === optionValue ? 'selected=1' : '';
+                const selected = _CFG['epi-reporting'] === optionValue ? 'selected=1' : '';
                 return `<option value="${optionValue}" ${selected}>${optionValue}</option>`;
             })));
             $('#epi-reporting-option').on('change', event => {
@@ -98,7 +98,7 @@
             $('#chart-style-option').html([
                 `<option value="" disabled=1>Chart Style</option>`
             ].concat(allChartStyles.map(optionValue => {
-                const selected = OPEN_COVID_CONFIG['chart-style'] === optionValue ? 'selected=1' : '';
+                const selected = _CFG['chart-style'] === optionValue ? 'selected=1' : '';
                 return `<option value="${optionValue}" ${selected}>${optionValue}</option>`;
             })));
             $('#chart-style-option').on('change', event => {

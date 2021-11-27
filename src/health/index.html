@@ -64,7 +64,7 @@
             (async function () {
                 const staleLimit = moment().subtract(14, 'days').startOf('day');
 
-                const metadataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/metadata.json`;
+                const metadataUrl = `${_CFG['data-url']}/v3/metadata.json`;
                 const metadata = await fetch(metadataUrl).then(res => res.json());
 
                 $('#table-picker').html(
@@ -78,7 +78,7 @@
 
                     // Get the latest data to determine stale locations
                     const tableName = $('#table-picker').val();
-                    const latestDataUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/latest/${tableName}.json`;
+                    const latestDataUrl = `${_CFG['data-url']}/v3/latest/${tableName}.json`;
                     const latestData = await fetch(latestDataUrl).then(res => res.json());
 
                     const staleLocations = latestData.data.reduce((acc, row) => {
@@ -110,7 +110,7 @@
                 $('#table-picker').val('epidemiology');
                 $('#table-picker').trigger('change');
 
-                const versionsUrl = `${OPEN_COVID_CONFIG['data-url']}/v3/versions.json`;
+                const versionsUrl = `${_CFG['data-url']}/v3/versions.json`;
                 const versions = await fetch(versionsUrl).then(res => res.json());
                 const lastUpdated = Object.keys(versions).reduce((acc, x) => {
                     const prefix = 'intermediate/';

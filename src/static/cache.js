@@ -62,11 +62,11 @@ class CacheHelper {
     static async getLocationData(locationKey, resolution = 10000) {
         const cacheKey = CacheHelper._formatUrl(locationKey, resolution);
         return CacheHelper._setInMemoryItem(cacheKey, CacheHelper._loadInMemoryItem(cacheKey) ?? new Promise(async resolve => {
-            if (CURRENT_OPTIONS['read-format'] === 'CSV') {
-                resolve(CacheHelper.getCSV(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.csv`));
+            if (_CFG['read-format'] === 'CSV') {
+                resolve(CacheHelper.getCSV(`${_CFG['data-url']}/v3/location/${locationKey}.csv`));
             } else {
                 resolve(CacheHelper._tableToRecords(
-                    await CacheHelper.getJSON(`${CURRENT_OPTIONS['data-url']}/v3/location/${locationKey}.json`)));
+                    await CacheHelper.getJSON(`${_CFG['data-url']}/v3/location/${locationKey}.json`)));
             }
         }));
     }
