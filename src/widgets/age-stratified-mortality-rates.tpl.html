@@ -51,7 +51,7 @@
             // Early exit: there is not enough relevant data for this chart
             const requiredColumns = ['age_bin_0', 'population_age_00_09'];
             if (locationData.filter(row => requiredColumns.every(col => row[col] && row[col] !== '')).length < minRows) {
-                console.error('Not enough records found for columns:', requiredColumns);
+                console.warn('Not enough records found for columns:', requiredColumns);
                 rootElement.style.display = 'none';
                 return;
             }
@@ -63,7 +63,7 @@
                 'cumulative_deceased_age_2',
             ];
             if (locationData.filter(row => optionalColumns1.some(col => row[col] && row[col] !== '')).length < minRows) {
-                console.error('Not enough records found for columns:', optionalColumns1);
+                console.warn('Not enough records found for columns:', optionalColumns1);
                 rootElement.style.display = 'none';
                 return;
             }
@@ -75,7 +75,7 @@
                 'cumulative_confirmed_age_2',
             ];
             if (locationData.filter(row => optionalColumns2.some(col => row[col] && row[col] !== '')).length < minRows) {
-                console.error('Not enough records found for columns:', optionalColumns2);
+                console.warn('Not enough records found for columns:', optionalColumns2);
                 rootElement.style.display = 'none';
                 return;
             }

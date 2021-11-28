@@ -23,7 +23,7 @@
 
             // Early exit: there is not enough relevant data for this chart
             if (locationData.filter(row => columns.every(col => row[col] && row[col] !== '')).length < minRows) {
-                console.error('Not enough records found for columns:', columns);
+                console.warn('Not enough records found for columns:', columns);
                 rootElement.style.display = 'none';
                 return;
             }
