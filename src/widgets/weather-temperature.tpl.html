@@ -74,7 +74,7 @@
 
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.LineChart(elem);
-            chartObject.draw(dataTable, Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+            chartObject.draw(dataTable, Object.assign({}, _CFG.GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
                 legend: 'in',
                 curveType: 'function',

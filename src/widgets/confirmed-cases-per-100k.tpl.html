@@ -50,26 +50,11 @@
             await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, true);
             const chartObject = new google.visualization.ComboChart(elem);
-            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+            chartObject.draw(recordsToDataTable(data), {
+                ..._CFG.COMBO_CHART_CONFIG,
                 title: chartLabel(title),
                 colors: ['#0277BD', '#78002E'],  // material light blue, dark pink
-                curveType: 'function',
-                chartArea: {
-                    width: '100%',
-                    height: '100%',
-                    left: parseInt(_CFG.chart_padding_left || 64),
-                    right: parseInt(_CFG.chart_padding_left || 48),
-                    bottom: parseInt(_CFG.chart_padding_bottom || 48),
-                    top: parseInt(_CFG.chart_padding_top || 24),
-                },
-                series: {
-                    0: { targetAxisIndex: 0, type: 'bars' },
-                    1: { targetAxisIndex: 1, type: 'line' },
-                },
-                vAxes: {
-                    1: { textPosition: 'out' },
-                },
-            }));
+            });
 
             // Unhide element
             rootElement.style.visibility = 'visible';

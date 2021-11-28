@@ -120,7 +120,7 @@
             await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.AreaChart(elem);
-            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+            chartObject.draw(recordsToDataTable(data), Object.assign({}, _CFG.GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
                 isStacked: true,
                 curveType: 'function',

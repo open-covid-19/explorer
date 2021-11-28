@@ -41,7 +41,7 @@
             await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, prepend = true);
             const chartObject = new google.visualization.ColumnChart(elem);
-            const chartConfig = Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+            const chartConfig = Object.assign({}, _CFG.GOOGLE_CHARTS_CONFIG, {
                 title: chartLabel(title),
                 colors: ['#4E342E'],  // material brown 800
                 vAxis: { textPosition: 'out', viewWindow: { min: 0 } },

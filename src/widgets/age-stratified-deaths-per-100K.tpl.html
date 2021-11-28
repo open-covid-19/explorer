@@ -160,13 +160,11 @@
             await google.charts.load('current', { packages: ['corechart'] });
             const elem = attachElement('div', {}, rootElement, true);
             const chartObject = new google.visualization.LineChart(elem);
-            chartObject.draw(recordsToDataTable(data), Object.assign({}, GOOGLE_CHARTS_CONFIG, {
+            chartObject.draw(recordsToDataTable(data), {
+                ..._CFG.GOOGLE_CHARTS_CONFIG,
                 title: chartLabel(title),
-                curveType: 'function',
-                legend: { position: 'in' },
                 colors: Array.from(colorScaleGenerator(rgb0, rgb1, ageBucketCount)),
-                interpolateNulls: true,
-            }));
+            });
 
             // Unhide element
             rootElement.style.visibility = 'visible';

@@ -61,7 +61,7 @@
             'outbreak-threshold-ratio': 0.05,
             'read-format': 'JSON',
             'shareable-charts': true,
-            'min-date': '2020-09-01',
+            'min-date': '2021-07-01',
             'max-date': null,
         }
 
@@ -93,31 +93,54 @@
             CURRENT_OPTIONS,
         );
 
+        const gchartTextStyle = {
+            color: 'rgba(32, 33, 36, 0.71);',
+            fontName: 'Roboto',
+            fontSize: 12,
+        };
+
         // Create a default configuration for Google Charts
-        GOOGLE_CHARTS_CONFIG = window.GOOGLE_CHARTS_CONFIG || {
+        _CFG.GOOGLE_CHARTS_CONFIG = {
             theme: 'material',
             colors: ['{{theme-primary}}'],
             backgroundColor: { fill: "#FCFCFC" },
-            legend: {
-                position: _CFG.chart_legend_position || 'none'
-            },
+            legend: { position: _CFG.chart_legend_position || 'none' },
             chartArea: {
                 width: '100%',
                 height: '100%',
-                left: parseInt(_CFG.chart_padding_left || 64),
+                left: parseInt(_CFG.chart_padding_left || 32),
                 bottom: parseInt(_CFG.chart_padding_bottom || 48),
                 top: parseInt(_CFG.chart_padding_top || 24),
             },
             titlePosition: 'in',
             axisTitlesPosition: 'in',
             hAxis: {
-                textPosition: 'bottom'
+                textPosition: 'bottom',
+                textStyle: gchartTextStyle,
+                gridlines: { count: 8 }
             },
             vAxis: {
                 textPosition: 'out',
-                viewWindow: { min: 0 }
+                viewWindow: { min: 0 },
+                format: 'short',
+                textStyle: gchartTextStyle,
+                minorGridlines: { count: 0 }
             },
             height: parseInt(_CFG.chart_height || 300),
+        };
+
+        _CFG.COMBO_CHART_CONFIG = {
+            ..._CFG.GOOGLE_CHARTS_CONFIG,
+            curveType: 'function',
+            chartArea: {
+                ..._CFG.GOOGLE_CHARTS_CONFIG.chartArea,
+                right: parseInt(_CFG.chart_padding_right || 24),
+            },
+            bar: { groupWidth: '90%' },
+            series: {
+                0: { targetAxisIndex: 0, type: 'bars' },
+                1: { targetAxisIndex: 1, type: 'line' },
+            },
         }
 
     </script>
